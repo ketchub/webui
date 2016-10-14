@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My App Page</title>
+</head>
+
+<body>
+  <h1>This is sumn ain't it?</h1>
+
+<% _.forEach (webpackConfig.templatePartials(), function( partial ) { %>
+<script type="text/template" id="<%= partial.relativePath %>">
+<%= partial.contents %>
+</script>
+<% }) %>
+
+<% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
+<script type="text/javascript" src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
+<% } %>
+</body>
+</html>

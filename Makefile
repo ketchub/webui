@@ -1,23 +1,37 @@
-export COMPOSE_PROJECT_NAME = catchalongwebui
-
 SHELL = /bin/bash
+NODE_ENV ?= development
+DOCKER_IMAGE_NAME = catchalongwebui
 
-dev: export NODE_ENV = development
-dev: dev-setup
-	docker-compose -f _docker/docker-compose.yml up -d
-	docker-compose -f _docker/docker-compose.yml logs -f; true && \
-	make dev-halt
+dev: RUN_COMMAND = npm start
+dev: run
 
-dev-halt:
-	docker-compose -f _docker/docker-compose.yml down
+build: NODE_ENV = production
+build: RUN_COMMAND = npm run-script build
+build: run
 
-dev-setup:
+run: setup
+	@docker run -it --rm \
+	-p 8080:8080 \
+	-v $$PWD:/app \
+	-w /app \
+	-e NODE_ENV=$(NODE_ENV) \
+	$(DOCKER_IMAGE_NAME) \
+	$(RUN_COMMAND)
+
+setup: ensure-docker-image
 ifneq ($(wildcard ./node_modules/.*),)
-	@echo "Initial setup complete; run make dev-npm-install to reinstall npm mods"
+	@echo "NPM setup OK; run make npm-setup to rebuild node modules."
 else
-	make dev-npm-install
+	make npm-setup
 endif
 
-dev-npm-install:
-	echo "Setting up with intermediate container..."
-	docker run -it --rm -v $$PWD:/app -w /app mhart/alpine-node:6.7.0 npm install && npm rebuild
+npm-setup: ensure-docker-image
+	@echo "Setting up with intermediate container..."
+	docker run -it --rm -v $$PWD:/app -w /app $(DOCKER_IMAGE_NAME) npm install
+	docker run -it --rm -v $$PWD:/app -w /app $(DOCKER_IMAGE_NAME) npm rebuild
+
+ensure-docker-image:
+	@if [ "$$(docker images -q $(DOCKER_IMAGE_NAME))" == "" ]; then \
+		echo "Building $(DOCKER_IMAGE_NAME)..."; \
+		docker build -t $(DOCKER_IMAGE_NAME) .; \
+	fi
