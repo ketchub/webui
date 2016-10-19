@@ -2,13 +2,49 @@ const fs        = require('fs');
 const _         = require('lodash');
 const path      = require('path');
 const webpack   = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const babelRc   = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'));
+const context   = path.join(__dirname);
+const output    = {
+  path: path.join(__dirname, '_dist'),
+  filename: '[name].js'
+};
 const excludes  = /node_modules/;
 const includes  = [
   path.join(__dirname, './src/js'),
   path.join(__dirname, './test')
 ];
+const resolve = {
+  alias: {
+    'vue$': 'vue/dist/vue.js'
+  }
+};
+const modules = {
+  preLoaders: [{
+    loader: 'jshint-loader',
+    test: /\.js$/,
+    exclude: excludes,
+    include: includes
+  }],
+  loaders: [{
+    test: /\.js$/,
+    loader: 'babel-loader',
+    exclude: excludes,
+    include: includes,
+    query: _.merge({
+      // cacheDirectory: false
+    }, babelRc)
+  }]
+};
+const minifyPlugin = new webpack.optimize.UglifyJsPlugin({
+  minimize: true,
+  compress: {
+    warnings: false
+  }
+});
+const jshint = {
+  emitErrors: false,
+  failOnHint: true
+};
 
 console.log(`Running with NODE_ENV: ${process.env.NODE_ENV}`);
 
@@ -39,110 +75,31 @@ function templatePartials() {
 
 const configs = {
   development: {
-    templatePartials,
-    resolve: {
-      alias: {
-        'vue$': 'vue/dist/vue.js'
-      }
-    },
-    watch: true,
-    context: path.join(__dirname),
-    devtool: 'source-map',
+    name: 'js',
     entry: {
       app: path.join(__dirname, 'src/js/_entry.js')
     },
-    output: {
-      path: path.join(__dirname, '_dist'),
-      filename: '[name].js'
-    },
-    plugins: [
-      new HtmlWebpackPlugin({
-        inject: false,
-        minify: {
-          collapseWhitespace: true,
-          removeComments: true,
-          caseSensitive: true
-        },
-        template: './src/index.html'
-      })
-    ],
-    module: {
-      preLoaders: [{
-        loader: 'jshint-loader',
-        test: /\.js$/,
-        exclude: excludes,
-        include: includes
-      }],
-      loaders: [{
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: excludes,
-        include: includes,
-        query: _.merge({
-          // cacheDirectory: false
-        }, babelRc)
-      }]
-    },
-    jshint: {
-      emitErrors: false,
-      failOnHint: true
-    },
-    devServer: {
-      contentBase: './_dist',
-      host: '0.0.0.0',
-      port: 8080
-    }
+    templatePartials,
+    resolve,
+    context,
+    devtool: 'source-map',
+    output,
+    module: modules,
+    jshint
   },
 
   production: {
-    templatePartials,
-    context: path.join(__dirname),
     entry: {
-      app: path.join(__dirname, 'src/js/_entry.js')
+      'app.min': path.join(__dirname, 'src/js/_entry.js')
     },
-    output: {
-      path: path.join(__dirname, '_dist'),
-      filename: '[name].min.js'
-    },
+    templatePartials,
+    resolve,
+    context,
+    output,
     // @todo: figure out a way to output both minified/unminified versions
-    plugins: [
-      new HtmlWebpackPlugin({
-        inject: false,
-        minify: {
-          collapseWhitespace: true,
-          removeComments: true,
-          caseSensitive: true
-        },
-        template: './src/index.html'
-      }),
-      new webpack.optimize.UglifyJsPlugin({
-        minimize: true,
-        compress: {
-          warnings: false
-        }
-      })
-    ],
-    module: {
-      preLoaders: [{
-        loader: 'jshint-loader',
-        test: /\.js$/,
-        exclude: excludes,
-        include: includes
-      }],
-      loaders: [{
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: excludes,
-        include: includes,
-        query: _.merge({
-          cacheDirectory: false
-        }, babelRc)
-      }]
-    },
-    jshint: {
-      emitErrors: false,
-      failOnHint: true
-    }
+    plugins: [ minifyPlugin ],
+    module: modules,
+    jshint
   }
 };
 

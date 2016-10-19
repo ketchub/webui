@@ -5,16 +5,10 @@
 </head>
 
 <body>
-  <h1>This is sumn ain't it?</h1>
+  <!-- PARTIALS -->
 
-<% _.forEach (webpackConfig.templatePartials(), function( partial ) { %>
-<script type="text/template" id="<%= partial.relativePath %>">
-<%= partial.contents %>
-</script>
-<% }) %>
-
-<% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
-<script type="text/javascript" src="<%= htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>
-<% } %>
+  <h1>All new changed</h1>
+say what
+<script type="text/javascript" src="/app.js"></script>
 </body>
 </html>

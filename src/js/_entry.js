@@ -5,7 +5,7 @@ import Vuex from 'vuex';
 // import bindings from '@/bootstrap/bindings';
 
 Vue.use(Vuex);
-console.log('aww yea so dope dude');
+console.log('aww yea so dope dudez sdf mk mk2 again');
 
 // let instance;
 //

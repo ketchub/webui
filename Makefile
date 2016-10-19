@@ -1,37 +1,40 @@
+export COMPOSE_PROJECT_NAME = catchalongwebui
+export RUN_COMMAND ?= npm start
+export NODE_ENV ?= development
+
 SHELL = /bin/bash
-NODE_ENV ?= development
-DOCKER_IMAGE_NAME = catchalongwebui
-
-dev: RUN_COMMAND = npm start
-dev: run
-
-build: NODE_ENV = production
-build: RUN_COMMAND = npm run-script build
-build: run
 
 run: setup
-	@docker run -it --rm \
-	-p 8080:8080 \
-	-v $$PWD:/app \
-	-w /app \
-	-e NODE_ENV=$(NODE_ENV) \
-	$(DOCKER_IMAGE_NAME) \
-	$(RUN_COMMAND)
+	@docker-compose -f _docker/docker-compose.yml up -d
+	@docker-compose -f _docker/docker-compose.yml logs -f; true && \
+	make halt
 
-setup: ensure-docker-image
+halt:
+	@docker-compose -f _docker/docker-compose.yml down
+
+setup:
 ifneq ($(wildcard ./node_modules/.*),)
-	@echo "NPM setup OK; run make npm-setup to rebuild node modules."
+	@echo "Initial setup complete; run make dev-npm-install to reinstall npm mods"
 else
-	make npm-setup
+	make npm-install
 endif
 
-npm-setup: ensure-docker-image
-	@echo "Setting up with intermediate container..."
-	docker run -it --rm -v $$PWD:/app -w /app $(DOCKER_IMAGE_NAME) npm install
-	docker run -it --rm -v $$PWD:/app -w /app $(DOCKER_IMAGE_NAME) npm rebuild
+npm-install: RUN_COMMAND = npm install
+npm-install:
+	make exec-buildsystem
 
-ensure-docker-image:
-	@if [ "$$(docker images -q $(DOCKER_IMAGE_NAME))" == "" ]; then \
-		echo "Building $(DOCKER_IMAGE_NAME)..."; \
-		docker build -t $(DOCKER_IMAGE_NAME) .; \
-	fi
+build-prod: NODE_ENV = production
+build-prod: RUN_COMMAND = npm run-script build
+build-prod:
+	make exec-buildsystem
+
+exec-buildsystem:
+	@docker-compose -f _docker/docker-compose.yml run \
+	--no-deps \
+	--rm \
+	buildsystem \
+	$(RUN_COMMAND); true && \
+	make halt
+
+inspect-docker-compose-config:
+	docker-compose -f _docker/docker-compose.yml config
