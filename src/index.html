@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html app-version="<%= package.version %>" gmaps-apikey="<%= getEnvVar('GOOGLE_MAPS_API_KEY') %>">
 <head>
-  <title>My App Page</title>
+  <title>CatchAlong :: Share Seats On The Same Route</title>
+  <link rel="stylesheet" type="text/css" href="/app.css" />
 </head>
 
 <body>
-  <!-- PARTIALS -->
+  <div gmap></div>
 
-  <h1>All new changed</h1>
-say what
-<script type="text/javascript" src="/app.js"></script>
+<!-- BEGIN: TEMPLATE PARTIALS -->
+<!-- PARTIALS -->
+<!-- END: TEMPLATE PARTIALS -->
+<% _.forEach(scripts, function (scriptPath) { %>
+<script type="text/javascript" src="<%= scriptPath %>"></script><% }) %>
 </body>
 </html>

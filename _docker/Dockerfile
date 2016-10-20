@@ -8,4 +8,4 @@ git \
 build-base \
 python
 
-EXPOSE 8080
+EXPOSE 35729

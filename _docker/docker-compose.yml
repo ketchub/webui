@@ -12,8 +12,12 @@ services:
     build:
       context: ../
       dockerfile: _docker/Dockerfile
+    ports:
+      - "35729:35729"
     volumes:
       - ./../:/app
     command: "${RUN_COMMAND}"
     environment:
       NODE_ENV: "${NODE_ENV}"
+    env_file:
+      - "$PWD/.env.${NODE_ENV}"

@@ -1,36 +1,55 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
+const _               = require('lodash');
 const gulp            = require('gulp');
 const path            = require('path');
 const gulpSass        = require('gulp-sass');
 const gulpUtil        = require('gulp-util');
 const gulpSourceMaps  = require('gulp-sourcemaps');
 const gulpInception   = require('gulp-inception');
+const gulpLiveReload  = require('gulp-livereload');
+const gulpTemplate    = require('gulp-template');
 const webpack         = require('webpack')(require('./webpack.config'));
-const dirPath         = function(_path) {
+const config          = {
+  package: require(dirPath('./package.json')),
+  envIs(_env) { return process.env.NODE_ENV === _env; },
+  getEnvVar(_env) { return process.env[_env]; }
+}
+
+function dirPath(_path) {
   return `/${path.join(path.basename(__dirname), _path || '')}`;
-};
-const envIs           = function(_env) {
-  return process.env.NODE_ENV === _env;
-};
+}
+
+function handleError(err) {
+  gulpUtil.log(err.message);
+  this.emit('end');
+}
 
 gulp.task('webpack', _webpack);
 gulp.task('sass', _sass);
 gulp.task('html', _html);
-gulp.task('default', () => {
-  gulp.watch(dirPath('./src/scss/**/*.scss'), ['sass']);
-  gulp.watch(dirPath('./src/js/**/*.js'), ['webpack']);
-  gulp.watch(dirPath('./src/views/**/*.html'), ['html']);
+gulp.task('prior', () => {
+  gulpLiveReload.listen();
+  gulpUtil.log(gulpUtil.colors.green.bold('LiveReload started'));
+});
+gulp.task('default', ['prior'], () => {
+  gulp.watch('src/**/*.scss', ['sass']);
+  gulp.watch('src/**/*.js', ['webpack']);
+  gulp.watch('src/**/*.html', ['html']);
 });
 
 function _sass() {
   return gulp.src(dirPath('./src/scss/app.scss'))
     .pipe(gulpSourceMaps.init())
     .pipe(gulpSass({
-      outputStyle: envIs('production') ? 'compressed' : 'nested'
+      outputStyle: config.envIs('production') ? 'compressed' : 'nested',
+      includePaths: [
+        './node_modules'
+      ]
     }).on('error', gulpSass.logError))
     .pipe(gulpSourceMaps.write('./'))
-    .pipe(gulp.dest(dirPath('./_dist')));
+    .pipe(gulp.dest(dirPath('./_dist')))
+    .pipe(gulpLiveReload());
 }
 
 function _webpack( callback ) {
@@ -39,12 +58,19 @@ function _webpack( callback ) {
       throw new gulpUtil.PluginError('webpack:error', err);
     }
     gulpUtil.log(stats.toString({colors:true, chunks:false}));
-    // gulpLiveReload.reload();
+    gulpLiveReload.reload();
     callback();
   });
 }
 
 function _html() {
+  const scripts = [
+    '/app.js'
+  ];
+  if (config.envIs('development')) {
+    scripts.push('//localhost:35729/livereload.js?snipver=1');
+  }
+
   return gulp.src(dirPath('./src/index.html'))
     .pipe(gulpInception({
       files: ['./src/views/**/*.html'],
@@ -57,5 +83,10 @@ function _html() {
         }
       }
     }))
-    .pipe(gulp.dest('./_dist'));
+    .pipe(gulpTemplate(_.extend({}, config, {
+      scripts
+    })))
+    .on('error', handleError)
+    .pipe(gulp.dest('./_dist'))
+    .pipe(gulpLiveReload());
 }

@@ -1,5 +1,5 @@
-const fs        = require('fs');
 const _         = require('lodash');
+const fs        = require('fs');
 const path      = require('path');
 const webpack   = require('webpack');
 const babelRc   = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'));

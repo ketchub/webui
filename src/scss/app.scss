@@ -1,1 +1,4 @@
-body {background:#ddd;font-size:30px;line-height:1;}
+@import 'bootstrap/scss/bootstrap';
+
+html, body {width:100%;height:100%;}
+[gmap] {width:100%;height:100%;}

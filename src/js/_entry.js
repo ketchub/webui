@@ -5,7 +5,23 @@ import Vuex from 'vuex';
 // import bindings from '@/bootstrap/bindings';
 
 Vue.use(Vuex);
-console.log('aww yea so dope dudez sdf mk mk2 again');
+
+let gMapsApiKey = document.documentElement.getAttribute('gmaps-apikey');
+loadScript(`//maps.googleapis.com/maps/api/js?key=${gMapsApiKey}`, () => {
+  let google = window['google'];
+  let map = new google.maps.Map(document.querySelector('[gmap]'), {
+    center: {lat:-34, lng:150},
+    zoom: 8
+  });
+});
+
+function loadScript(url, callback) {
+  let script  = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = url;
+  script.onreadystatechange = script.onload = callback;
+  document.querySelector('head').appendChild(script);
+}
 
 // let instance;
 //
