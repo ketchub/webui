@@ -75,11 +75,12 @@ function _html() {
     .pipe(gulpInception({
       files: ['./src/views/**/*.html'],
       attributes: {
+        type: 'text/x-template',
         id( fileInfo ) {
           return path.join(
             fileInfo.dir.replace(dirPath('./src/views'), '/'),
-            fileInfo.base
-          );
+            fileInfo.name
+          ).replace('/', '').replace(/\//g, "_");
         }
       }
     }))

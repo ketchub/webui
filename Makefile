@@ -9,6 +9,10 @@ run: setup
 	@docker-compose -f _docker/docker-compose.yml logs -f; true && \
 	make halt
 
+gen-indexes: RUN_COMMAND = node ./bin/gen-indexes
+gen-indexes:
+	make exec-buildsystem; true
+
 halt:
 	@docker-compose -f _docker/docker-compose.yml down
 
@@ -26,15 +30,14 @@ npm-install:
 build-prod: NODE_ENV = production
 build-prod: RUN_COMMAND = npm run-script build
 build-prod:
-	make exec-buildsystem
+	make exec-buildsystem; true && make halt
 
 exec-buildsystem:
 	@docker-compose -f _docker/docker-compose.yml run \
 	--no-deps \
 	--rm \
 	buildsystem \
-	$(RUN_COMMAND); true && \
-	make halt
+	$(RUN_COMMAND)
 
 inspect-docker-compose-config:
 	docker-compose -f _docker/docker-compose.yml config

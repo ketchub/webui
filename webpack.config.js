@@ -31,7 +31,7 @@ const modules = {
     exclude: excludes,
     include: includes,
     query: _.merge({
-      // cacheDirectory: false
+      cacheDirectory: false
     }, babelRc)
   }]
 };

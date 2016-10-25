@@ -27,6 +27,7 @@
     "jshint-loader": "0.8.3",
     "jshint-stylish": "2.2.1",
     "lodash": "4.16.4",
+    "vue-router": "2.0.1",
     "vue": "2.0.3",
     "vuex": "2.0.0",
     "webpack": "1.13.2"

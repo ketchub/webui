@@ -3,7 +3,7 @@
   "plugins": [
     ["babel-root-import", {
       "rootPathPrefix": "@",
-      "rootPathSuffix": "./runtime/js"
+      "rootPathSuffix": "./src/js"
     }]
   ]
 }
