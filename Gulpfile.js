@@ -10,6 +10,7 @@ const gulpInception   = require('gulp-inception');
 const gulpLiveReload  = require('gulp-livereload');
 const gulpTemplate    = require('gulp-template');
 const webpack         = require('webpack')(require('./webpack.config'));
+const spawn           = require('child_process').spawn;
 const config          = {
   package: require(dirPath('./package.json')),
   envIs(_env) { return process.env.NODE_ENV === _env; },
@@ -34,7 +35,25 @@ gulp.task('prior', () => {
 });
 gulp.task('default', ['prior'], () => {
   gulp.watch('src/**/*.scss', ['sass']);
-  gulp.watch('src/**/*.js', ['webpack']);
+  gulp.watch('src/**/*.js', ['webpack'])
+    .on('change', function(ev) {
+      if (ev.type === 'changed') { return; }
+      console.log(`JS file (${ev.type}): regenerating indexes...\n`);
+      // Spawn gen-indexes as a subprocess
+      let proc = spawn('node', [dirPath('./bin/gen-indexes')]);
+      proc.stdout.on('data', (data) => {
+        process.stdout.write(`${data}`);
+      });
+      proc.stderr.on('data', (data) => {
+        process.stdout.write(`${data}`);
+      });
+      proc.on('error', function(err) {
+        console.log(`Error regenerating indexes: ${e.message}\n`);
+      });
+      proc.on('close', (code) => {
+        console.log(`Indexes recreated OK.\n`);
+      });
+    });
   gulp.watch('src/**/*.html', ['html']);
 });
 
@@ -56,6 +75,7 @@ function _webpack( callback ) {
   webpack.run((err, stats) => {
     if( err ){
       throw new gulpUtil.PluginError('webpack:error', err);
+      return callback(err);
     }
     gulpUtil.log(stats.toString({colors:true, chunks:false}));
     gulpLiveReload.reload();
