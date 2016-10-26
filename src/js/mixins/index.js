@@ -3,3 +3,4 @@
   from the CLI.
   */
 
+export {default as toggleClass} from './toggleClass.js';

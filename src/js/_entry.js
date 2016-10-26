@@ -5,17 +5,17 @@ const routes = [];
 
 routes.push({
   path: '/',
-  component: BootstrapVue.component('map-view')
+  component: BootstrapVue.component('mapView')
 });
 
-routes.push({
-  path: '/test',
-  component: BootstrapVue.component('otro')
-});
+// routes.push({
+//   path: '/test',
+//   component: BootstrapVue.component('otro')
+// });
 
 const app = new BootstrapVue({
   router: new VueRouter({
     mode: 'history',
     routes
   })
-}).$mount('#app');
+}).$mount('#application');

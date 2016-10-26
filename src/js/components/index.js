@@ -3,5 +3,5 @@
   from the CLI.
   */
 
+export {default as appNav} from './appNav.js';
 export {default as map} from './map.js';
-export {default as otro} from './otro.js';

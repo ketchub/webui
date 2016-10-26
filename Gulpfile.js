@@ -29,12 +29,13 @@ function handleError(err) {
 gulp.task('webpack', _webpack);
 gulp.task('sass', _sass);
 gulp.task('html', _html);
-gulp.task('prior', () => {
-  gulpLiveReload.listen();
-  gulpUtil.log(gulpUtil.colors.green.bold('LiveReload started'));
-});
-gulp.task('default', ['prior'], () => {
+gulp.task('assets', _assets);
+gulp.task('startLiveReload', _startLiveReload);
+
+gulp.task('default', ['webpack', 'sass', 'html', 'assets', 'startLiveReload'], () => {
   gulp.watch('src/**/*.scss', ['sass']);
+  gulp.watch('src/**/*.html', ['html']);
+  gulp.watch('src/assets/**', ['assets']);
   gulp.watch('src/**/*.js', ['webpack'])
     .on('change', function(ev) {
       if (ev.type === 'changed') { return; }
@@ -54,9 +55,27 @@ gulp.task('default', ['prior'], () => {
         console.log(`Indexes recreated OK.\n`);
       });
     });
-  gulp.watch('src/**/*.html', ['html']);
 });
 
+/**
+ * Initialize live reload.
+ */
+function _startLiveReload() {
+  gulpLiveReload.listen();
+  gulpUtil.log(gulpUtil.colors.green.bold('LiveReload started'));
+}
+
+/**
+ * Copy assets folder.
+ */
+function _assets() {
+  return gulp.src(dirPath('./src/assets/**/*'))
+    .pipe(gulp.dest(dirPath('./_dist')));
+}
+
+/**
+ * Compile SASS files.
+ */
 function _sass() {
   return gulp.src(dirPath('./src/scss/app.scss'))
     .pipe(gulpSourceMaps.init())
@@ -71,6 +90,9 @@ function _sass() {
     .pipe(gulpLiveReload());
 }
 
+/**
+ * Build javascript.
+ */
 function _webpack( callback ) {
   webpack.run((err, stats) => {
     if( err ){
@@ -83,10 +105,11 @@ function _webpack( callback ) {
   });
 }
 
+/**
+ * Build static HTML with templates compiled in.
+ */
 function _html() {
-  const scripts = [
-    '/app.js'
-  ];
+  const scripts = ['/app.js'];
   if (config.envIs('development')) {
     scripts.push('//localhost:35729/livereload.js?snipver=1');
   }
@@ -104,9 +127,7 @@ function _html() {
         }
       }
     }))
-    .pipe(gulpTemplate(_.extend({}, config, {
-      scripts
-    })))
+    .pipe(gulpTemplate(_.extend({}, config, { scripts })))
     .on('error', handleError)
     .pipe(gulp.dest('./_dist'))
     .pipe(gulpLiveReload());

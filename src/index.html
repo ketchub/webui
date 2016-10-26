@@ -1,13 +1,26 @@
 <!DOCTYPE html>
 <html app-version="<%= package.version %>" gmaps-apikey="<%= getEnvVar('GOOGLE_MAPS_API_KEY') %>">
 <head>
+  <meta charset="utf-8" />
   <title>CatchAlong :: Share Seats On The Same Route</title>
+  <base href="/" />
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <link rel="stylesheet" type="text/css" href="/app.css" />
 </head>
 
 <body>
-  <div id="app">
-    <router-view></router-view>
+  <div id="application">
+    <app-nav></app-nav>
+    <header class="clearfix">
+      <img class="logo" src="/img/logo.png" alt="" />
+    </header>
+    <main>
+      <router-view></router-view>
+      <div style="height:1000px;"></div>
+    </main>
   </div>
 
 <!-- BEGIN: TEMPLATE PARTIALS -->
