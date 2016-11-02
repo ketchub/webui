@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html app-version="<%= package.version %>" gmaps-apikey="<%= getEnvVar('GOOGLE_MAPS_API_KEY') %>">
+<html lang="en" app-version="<%= package.version %>" gmaps-apikey="<%= getEnvVar('GOOGLE_MAPS_API_KEY') %>">
 <head>
   <meta charset="utf-8" />
   <title>CatchAlong :: Share Seats On The Same Route</title>
   <base href="/" />
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
@@ -13,20 +14,45 @@
 
 <body>
   <div id="application">
-    <app-nav></app-nav>
+
     <header class="clearfix">
-      <img class="logo" src="/img/logo.png" alt="" />
+      <div class="header-content">
+        <a class="icon-close toggle-nav" v-on:click="toggleDocumentClass('nav-open')"></a>
+        <div class="tabular">
+          <div class="cellular">
+            <nav>
+              <ul class="nav">
+                <router-link class="nav-item" tag="li" to="/"><a class="nav-link">Home</a></router-link>
+                <router-link class="nav-item" tag="li" to="/get-started"><a class="nav-link">Get Started</a></router-link>
+                <router-link class="nav-item" tag="li" to="/how-it-works"><a class="nav-link">How It Works</a></router-link>
+                <router-link class="nav-item" tag="li" to="/about-us"><a class="nav-link">About Us</a></router-link>
+                <router-link class="nav-item" tag="li" to="/safety"><a class="nav-link">Safety</a></router-link>
+                <router-link class="nav-item" tag="li" to="/contact"><a class="nav-link">Contact</a></router-link>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="page-overlay page-overlay-left">
+        <a class="icon-navicon toggle-nav" v-on:click="toggleDocumentClass('nav-open')"></a>
+      </div>
+      <div class="page-overlay page-overlay-right">
+        <span>CatchAlong</span>
+      </div>
     </header>
+
     <main>
       <router-view></router-view>
       <div style="height:1000px;"></div>
     </main>
+
   </div>
 
 <!-- BEGIN: TEMPLATE PARTIALS -->
 <!-- PARTIALS -->
 <!-- END: TEMPLATE PARTIALS -->
 <% _.forEach(scripts, function (scriptPath) { %>
-<script type="text/javascript" src="<%= scriptPath %>"></script><% }) %>
+<script type="text/javascript" src="<%= scriptPath %>"></script>
+<% }) %>
 </body>
 </html>

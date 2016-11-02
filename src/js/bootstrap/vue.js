@@ -14,7 +14,6 @@ bindings(() => {
   instance = Vue.extend({
     name: 'runtime',
     mixins: registry.mixins(),
-    partials: registry.partials(),
     store: new Vuex.Store({
       modules: registry.modules(),
       strict: true

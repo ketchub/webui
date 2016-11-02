@@ -1,4 +1,4 @@
-export default { modules, actions, getters, components, mixins, plugins, partials };
+export default { modules, actions, getters, components, mixins, plugins };
 
     // Vuex related
 let _modules    = {},
@@ -7,8 +7,7 @@ let _modules    = {},
     // Regular VueJS
     _components = [],
     _mixins     = [],
-    _plugins    = [],
-    _partials   = {};
+    _plugins    = [];
 
 function modules( name, definition ){
   if( arguments.length === 0 ){ return _modules; }
@@ -38,9 +37,4 @@ function mixins( definition ){
 function plugins( definition ){
   if( arguments.length === 0 ){ return _plugins; }
   _plugins.push(definition);
-}
-
-function partials( name, definition ){
-  if( arguments.length === 0 ){ return _partials; }
-  _partials[name] = definition;
 }

@@ -4,7 +4,7 @@ export NODE_ENV ?= development
 
 SHELL = /bin/bash
 
-run: setup
+dev: setup
 	@docker-compose -f _docker/docker-compose.yml up -d
 	@docker-compose -f _docker/docker-compose.yml logs -f; true && \
 	make halt

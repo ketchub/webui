@@ -3,5 +3,5 @@
   from the CLI.
   */
 
-export {default as appNav} from './appNav.js';
-export {default as map} from './map.js';
+export {default as mapView} from './mapView.js';
+export {default as placeSearch} from './placeSearch.js';

@@ -3,6 +3,9 @@ import { loadScript } from '@/helpers';
 export default {
   install( vue, options = {} ) {
     vue.prototype.$loadGoogleSDK = loadGoogleSDK;
+    vue.myGlobalMethod = () => {
+
+    };
   }
 };
 
