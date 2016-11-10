@@ -1,4 +1,4 @@
 <div style="height:100%;position:relative;">
   <div class="map-instance"></div>
-  <place-search :map-obj="mapObj"></place-search>
+  <place-search v-if="mapLoaded" :map-obj="$mapObj"></place-search>
 </div>

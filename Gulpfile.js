@@ -96,8 +96,11 @@ function _sass() {
 function _webpack( callback ) {
   webpack.run((err, stats) => {
     if( err ){
-      throw new gulpUtil.PluginError('webpack:error', err);
-      return callback(err);
+      return callback(
+        new gulpUtil.PluginError('webpack:error', err, {showStack:true})
+      );
+      // throw new gulpUtil.PluginError('webpack:error', err, {showStack:true});
+      // return callback(err);
     }
     gulpUtil.log(stats.toString({colors:true, chunks:false}));
     gulpLiveReload.reload();
