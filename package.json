@@ -21,7 +21,7 @@
     "gulp-livereload": "3.8.1",
     "gulp-sass": "2.3.2",
     "gulp-sourcemaps": "2.1.1",
-    "gulp-template": "^4.0.0",
+    "gulp-template": "4.0.0",
     "gulp-util": "3.0.7",
     "jshint": "2.9.3",
     "jshint-loader": "0.8.3",
@@ -31,5 +31,8 @@
     "vue": "2.0.3",
     "vuex": "2.0.0",
     "webpack": "1.13.2"
+  },
+  "devDependencies": {
+    "express": "4.14.0"
   }
 }
