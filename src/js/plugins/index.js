@@ -3,6 +3,5 @@
   from the CLI.
   */
 
-export {default as google} from './google.js';
 export {default as vueRouter} from './vueRouter.js';
 export {default as vuex} from './vuex.js';

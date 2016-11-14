@@ -3,4 +3,5 @@
   from the CLI.
   */
 
+export {default as google} from './google.js';
 export {default as toggleClass} from './toggleClass.js';

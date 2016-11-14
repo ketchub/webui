@@ -17,5 +17,13 @@
     "globals": {
       "THREE": true
     },
-    "predef": ["define", "require", "module", "exports", "global", "console", "process"]
+    "predef": [
+      "define",
+      "require",
+      "module",
+      "exports",
+      "global",
+      "console",
+      "process"
+    ]
 }

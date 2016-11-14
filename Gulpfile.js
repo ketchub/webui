@@ -46,11 +46,11 @@ gulp.task('startLiveReload', _startLiveReload);
 gulp.task('express', _express);
 
 gulp.task('default', [
-  'webpack',
-  'sass',
-  'html',
-  'assets',
-  'startLiveReload',
+  // 'webpack',
+  // 'sass',
+  // 'html',
+  // 'assets',
+  // 'startLiveReload',
   'express'
 ], () => {
   gulp.watch('src/**/*.scss', ['sass']);
@@ -110,14 +110,16 @@ function _express( callback ) {
   if (!expressApp) {
     expressApp = express();
     expressApp.use(express.static(dirPath('./_dist')));
-    expressApp.use(express.static(dirPath('./node_modules/mocha')));
-    expressApp.get('/test', (req, res) => {
-      res.sendFile(dirPath('./test/index.html'));
-    });
+    // expressApp.use(express.static(dirPath('./node_modules/mocha')));
+    // expressApp.get('/test', (req, res) => {
+    //   res.sendFile(dirPath('./test/index.html'));
+    // });
     expressApp.get('/*', (req, res) => {
-      res.sendFile(dirPath('./_dist/index.html'));
+      console.log('REQUEST CAME THROUGH');
+      res.send('Hey World');
+      // res.sendFile(dirPath('./_dist/index.html'));
     });
-    expressApp.listen(8080, () => {
+    expressApp.listen(8080, '0.0.0.0', () => {
       gulpUtil.log('-- EXPRESS LISTENING ON PORT 8080 --');
       callback();
     });

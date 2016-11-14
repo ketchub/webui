@@ -43,7 +43,14 @@
 
     <main>
       <router-view></router-view>
-      <div style="height:1000px;"></div>
+      <div style="height:1000px;">
+        <p>Account Balance: {{ $store.state }}</p>
+        <p>Balance getter: {{ $store.getters.accountBalance }}</p>
+        <p>Increment Action: <button v-on:click="$store.dispatch('incrementBalance')">&plus;</button></p>
+        <p>
+          and more stuff wtf mate
+        </p>
+      </div>
     </main>
 
   </div>

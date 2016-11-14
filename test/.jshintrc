@@ -27,6 +27,8 @@
       "process",
       "describe",
       "it",
-      "before"
+      "before",
+      "after",
+      "context"
     ]
 }
