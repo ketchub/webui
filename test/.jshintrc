@@ -1,0 +1,32 @@
+{
+    "esversion": 6,
+    "curly": true,
+    "eqeqeq": true,
+    "immed": true,
+    "latedef": false,
+    "newcap": true,
+    "noarg": true,
+    "sub": true,
+    "undef": true,
+    "unused": false,
+    "boss": true,
+    "eqnull": true,
+    "browser": true,
+    "devel": true,
+    "laxcomma": true,
+    "globals": {
+      "THREE": true
+    },
+    "predef": [
+      "define",
+      "require",
+      "module",
+      "exports",
+      "global",
+      "console",
+      "process",
+      "describe",
+      "it",
+      "before"
+    ]
+}

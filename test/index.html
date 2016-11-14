@@ -1,0 +1,21 @@
+<!-- http://x-team.com/2016/05/setting-up-javascript-testing-tools-for-es6/ -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mocha Tests</title>
+    <link rel="stylesheet" href="/mocha.css">
+    <script src="/mocha.js"></script>
+    <script>
+      // initialize
+      mocha.setup('bdd');
+      // execute once all scripts are loaded
+      document.addEventListener('DOMContentLoaded', function (event) {
+        mocha.run();
+      });
+    </script>
+  </head>
+  <body>
+    <div id="mocha"></div>
+    <script src="_test-bundle.js"></script>
+  </body>
+</html>

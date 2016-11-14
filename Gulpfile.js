@@ -1,5 +1,7 @@
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
+console.log(`Running with NODE_ENV: ${process.env.NODE_ENV}`);
+
 const _               = require('lodash');
 const gulp            = require('gulp');
 const path            = require('path');
@@ -10,7 +12,9 @@ const gulpInception   = require('gulp-inception');
 const gulpLiveReload  = require('gulp-livereload');
 const gulpTemplate    = require('gulp-template');
 const express         = require('express');
-const webpack         = require('webpack')(require('./webpack.config'));
+const webpackConfigs  = require('./webpack.config');
+const webpack         = require('webpack')(webpackConfigs[process.env.NODE_ENV]);
+const webpackTests    = require('webpack')(webpackConfigs["test"]);
 const spawn           = require('child_process').spawn;
 const config          = {
   package: require(dirPath('./package.json')),
@@ -34,6 +38,7 @@ function handleError(err) {
 // webpack gets invoked
 gulp.task('autoBuildIndexJsFiles', _autoBuildIndexJsFiles);
 gulp.task('webpack', ['autoBuildIndexJsFiles'], _webpack);
+gulp.task('webpack-tests', _webpackTests);
 gulp.task('sass', _sass);
 gulp.task('html', _html);
 gulp.task('assets', _assets);
@@ -56,6 +61,7 @@ gulp.task('default', [
       if (ev.type === 'changed') { return; }
       autoBuildIndexQueue.push(ev);
     });
+  gulp.watch('test/**/*.js', ['webpack-tests']);
 });
 
 /**
@@ -104,6 +110,10 @@ function _express( callback ) {
   if (!expressApp) {
     expressApp = express();
     expressApp.use(express.static(dirPath('./_dist')));
+    expressApp.use(express.static(dirPath('./node_modules/mocha')));
+    expressApp.get('/test', (req, res) => {
+      res.sendFile(dirPath('./test/index.html'));
+    });
     expressApp.get('/*', (req, res) => {
       res.sendFile(dirPath('./_dist/index.html'));
     });
@@ -148,11 +158,24 @@ function _webpack( callback ) {
       return callback(
         new gulpUtil.PluginError('webpack:error', err, {showStack:true})
       );
-      // throw new gulpUtil.PluginError('webpack:error', err, {showStack:true});
-      // return callback(err);
     }
     gulpUtil.log(stats.toString({colors:true, chunks:false}));
     gulpLiveReload.reload();
+    callback();
+  });
+}
+
+/**
+ * Build tests with webpack.
+ */
+function _webpackTests( callback ) {
+  webpackTests.run((err, stats) => {
+    if (err) {
+      return callback(
+        new gulpUtil.PluginError('webpack:error', err, {showStack:true})
+      );
+    }
+    gulpUtil.log(stats.toString({colors:true, chunks:false}));
     callback();
   });
 }

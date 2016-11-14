@@ -6,7 +6,8 @@ const babelRc   = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'));
 const context   = path.join(__dirname);
 const output    = {
   path: path.join(__dirname, '_dist'),
-  filename: '[name].js'
+  filename: '[name].js',
+  pathinfo: true
 };
 const excludes  = /node_modules/;
 const includes  = [
@@ -46,44 +47,28 @@ const jshint = {
   failOnHint: true
 };
 
-console.log(`Running with NODE_ENV: ${process.env.NODE_ENV}`);
-
-function walkDirSync(dir, fileList) {
-  const files = fs.readdirSync(dir);
-  fileList = fileList || [];
-  files.forEach((file) => {
-    if (fs.statSync(`${dir}/${file}`).isDirectory()) {
-      fileList = walkDirSync(`${dir}/${file}`, fileList);
-    } else {
-      fileList.push(`${dir}/${file}`);
-    }
-  });
-  return fileList;
-}
-
-function templatePartials() {
-  const dir = path.join(__dirname, './src/views');
-  const filePaths = walkDirSync(dir);
-  return filePaths.map((fullPath) => {
-    return {
-      fullPath,
-      relativePath: fullPath.substring(dir.length),
-      contents: fs.readFileSync(fullPath).toString()
-    }
-  });
-}
-
 const configs = {
   development: {
     name: 'js',
     entry: {
       app: path.join(__dirname, 'src/js/_entry.js')
     },
-    templatePartials,
     resolve,
     context,
-    devtool: 'source-map',
+    devtool: 'eval',
     output,
+    module: modules,
+    jshint
+  },
+
+  test: {
+    entry: path.join(__dirname, 'test/_entry.js'),
+    resolve,
+    context,
+    output: {
+      path: path.join(__dirname, '_dist'),
+      filename: '_test-bundle.js'
+    },
     module: modules,
     jshint
   },
@@ -92,9 +77,9 @@ const configs = {
     entry: {
       'app.min': path.join(__dirname, 'src/js/_entry.js')
     },
-    templatePartials,
     resolve,
     context,
+    devtool: 'source-map',
     output,
     // @todo: figure out a way to output both minified/unminified versions
     plugins: [ minifyPlugin ],
@@ -103,4 +88,4 @@ const configs = {
   }
 };
 
-module.exports = configs[process.env.NODE_ENV || "development"];
+module.exports = configs;

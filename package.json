@@ -4,7 +4,8 @@
   "description": "catchalong.com webui",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha --compilers js:babel-core/register",
+    "test": "NODE_ENV=test mocha --compilers js:babel-core/register 'test/**/*.test.js'",
+    "test-browser": "NODE_ENV=test ./node_modules/.bin/webpack",
     "start": "./node_modules/.bin/gulp",
     "build": "env"
   },

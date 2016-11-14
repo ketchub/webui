@@ -58,8 +58,9 @@ build-prod:
 .PHONY: test
 test: NODE_ENV = test
 test: RUN_COMMAND = npm test
-test:
-	make dockerize; true && make halt
+test: # set env TERM=xterm for colored output
+	docker exec -it cawebui_box_1 env TERM=xterm $(RUN_COMMAND)
+# 	make dockerize; true && make halt
 
 ####################################################
 # Utilities and debugging

@@ -1,10 +1,10 @@
 import mapStyles from '@/config/mapStyles';
 const componentName = 'mapView';
 
-export default function ( Vue ){
+export default function ( Vue, templateFrom = '#components_map' ) {
   Vue.component(componentName, {
     name: componentName,
-    template: '#components_map',
+    template: templateFrom,
     data: function() {
       return {
         $mapObj: null,
@@ -14,6 +14,7 @@ export default function ( Vue ){
     mounted() {
       const node = this.$el.querySelector('.map-instance');
       const self = this;
+      console.log('yolo');
 
       this.$loadGoogleSDK((google) => {
         const styledMapType = new google.maps.StyledMapType(mapStyles, {
