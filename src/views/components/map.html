@@ -1,4 +1,5 @@
-<div style="height:100%;position:relative;">
+<div class="map-container">
   <div class="map-instance"></div>
-  <place-search v-if="mapLoaded" :map-obj="$mapObj"></place-search>
+  <place-search class="place-search-start" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_START'" :initial-value="$store.getters.latestStartSearchFormatted"></place-search>
+  <place-search class="place-search-end" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_END'" :initial-value="$store.getters.latestEndSearchFormatted"></place-search>
 </div>

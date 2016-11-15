@@ -1,3 +1,27 @@
-<div style="height:100%;position:relative;">
+<div class="page-home">
   <map-view></map-view>
+  <div style="height:1000px;">
+    <p>Account Balance: {{ $store.state.account }}</p>
+    <p>Balance getter: {{ $store.getters.accountBalance }}</p>
+    <p>Increment Action: <button v-on:click="$store.dispatch('incrementBalance')">&plus;</button></p>
+    <p>and more stuff wtf mate and updated yo</p>
+    <div>
+      <hr />
+      Start Searches: <br/>
+      <ul>
+        <li v-for="item in $store.state.trip.searchStart">
+          {{ item.formatted_address }}
+        </li>
+      </ul>
+    </div>
+    <div>
+      <hr />
+      End Searches: <br/>
+      <ul>
+        <li v-for="item in $store.state.trip.searchEnd">
+          {{ item.formatted_address }}
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>

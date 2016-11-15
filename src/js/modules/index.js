@@ -4,3 +4,4 @@
   */
 
 export {default as account} from './account.js';
+export {default as trip} from './trip.js';

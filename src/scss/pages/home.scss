@@ -1,0 +1,10 @@
+.page-home {height:100%;
+  .map-container {height:100%;position:relative;
+    .map-instance {width:100%;height:100%;min-height:500px;}
+    .place-search {position:absolute;left:5rem;z-index:99;
+      &.place-search-start {top:1rem;}
+      &.place-search-end {top:3rem;}
+      input {width:240px;}
+    }
+  }
+}
