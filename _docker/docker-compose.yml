@@ -18,7 +18,5 @@ services:
     volumes:
       - ./../:/app
     command: "${RUN_COMMAND}"
-    environment:
-      NODE_ENV: "${NODE_ENV}"
     env_file:
-      - "$PWD/.env.${NODE_ENV}"
+      - "$PWD/.env"

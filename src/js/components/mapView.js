@@ -12,6 +12,7 @@ export default {
     const node = this.$el.querySelector('.map-instance');
     const self = this;
     console.log('yolo from mapView mounted()');
+    console.log('initing: ', process.env);
 
     this.loadGoogleSDK((google) => {
       const styledMapType = new google.maps.StyledMapType(mapStyles, {

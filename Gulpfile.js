@@ -1,10 +1,8 @@
-process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-
-console.log(`Running with NODE_ENV: ${process.env.NODE_ENV}`);
-
 const _               = require('lodash');
 const gulp            = require('gulp');
 const path            = require('path');
+const fs              = require('fs');
+const glob            = require('glob');
 const gulpSass        = require('gulp-sass');
 const gulpUtil        = require('gulp-util');
 const gulpSourceMaps  = require('gulp-sourcemaps');
@@ -22,6 +20,7 @@ const config          = {
   getEnvVar(_env) { return process.env[_env]; }
 }
 const autoBuildIndexQueue = [];
+const DEST_PATH = dirPath(`./_dist/${process.env.NODE_ENV}`);
 
 function dirPath(_path) {
   return `/${path.join(path.basename(__dirname), _path || '')}`;
@@ -44,13 +43,20 @@ gulp.task('html', _html);
 gulp.task('assets', _assets);
 gulp.task('startLiveReload', _startLiveReload);
 gulp.task('express', _express);
+gulp.task('build-production', ['webpack', 'sass', 'html', 'assets'], () => {
+  gulpUtil.log('Release Complete');
+});
+gulp.task('serve-production', ['build-production', 'express'], (cb) => {
+  // to keep gulp from "completing", we pass a callback but never invoke it
+  gulpUtil.log('Serving Production');
+});
 
 gulp.task('default', [
-  // 'webpack',
-  // 'sass',
-  // 'html',
-  // 'assets',
-  // 'startLiveReload',
+  'webpack',
+  'sass',
+  'html',
+  'assets',
+  'startLiveReload',
   'express'
 ], () => {
   gulp.watch('src/**/*.scss', ['sass']);
@@ -61,8 +67,31 @@ gulp.task('default', [
       if (ev.type === 'changed') { return; }
       autoBuildIndexQueue.push(ev);
     });
-  gulp.watch('test/**/*.js', ['webpack-tests']);
+  gulp.watch('test/**/*.test.js', ['webpack-tests'])
+    .on('change', (ev) => {
+      if (ev.type === 'changed') { return; }
+      _createTestManifest();
+    });
 });
+
+/**
+ * Generate the manifest file for tests directory.
+ */
+function _createTestManifest() {
+  const manifestFilePath = dirPath('./test/manifest.js');
+  glob('./**/*.test.js', {
+    cwd: dirPath('./test')
+  }).on('end', (filePaths) => {
+    let writeStream = fs.createWriteStream(manifestFilePath);
+    writeStream.write(`/* WARNING: do not edit this manually; run '$: make dev' and let the task runner create. */\n\n`);
+    filePaths.forEach(( filePath ) => {
+      writeStream.write(`require('${filePath}');\n`);
+    });
+    writeStream.on('close', () => {
+      gulpUtil.log('\nTest Directory manifest.js updated.\n');
+    }).end();
+  });
+}
 
 /**
  * Handler for invoking the gen-indexes bin script to automatically
@@ -109,18 +138,21 @@ let expressApp;
 function _express( callback ) {
   if (!expressApp) {
     expressApp = express();
-    expressApp.use(express.static(dirPath('./_dist')));
-    // expressApp.use(express.static(dirPath('./node_modules/mocha')));
-    // expressApp.get('/test', (req, res) => {
-    //   res.sendFile(dirPath('./test/index.html'));
-    // });
+    expressApp.use(express.static(DEST_PATH));
+    expressApp.use(express.static(dirPath('./node_modules/mocha')));
+    expressApp.get('/test', (req, res) => {
+      res.sendFile(dirPath('./test/index.html'));
+    });
+    expressApp.get('/test-bundle.js', (req, res) => {
+      res.sendFile(dirPath('./_dist/test-bundle.js'));
+    });
     expressApp.get('/*', (req, res) => {
-      console.log('REQUEST CAME THROUGH');
-      res.send('Hey World');
-      // res.sendFile(dirPath('./_dist/index.html'));
+      gulpUtil.log('__ serving index.html __');
+      res.sendFile(`${DEST_PATH}/index.html`);
     });
     expressApp.listen(8080, '0.0.0.0', () => {
-      gulpUtil.log('-- EXPRESS LISTENING ON PORT 8080 --');
+      gulpUtil.log(`-- EXPRESS LISTENING ON PORT 8080 --`);
+      gulpUtil.log(`-- SERVING ROOT: ${DEST_PATH} --`);
       callback();
     });
   }
@@ -131,7 +163,7 @@ function _express( callback ) {
  */
 function _assets() {
   return gulp.src(dirPath('./src/assets/**/*'))
-    .pipe(gulp.dest(dirPath('./_dist')));
+    .pipe(gulp.dest(DEST_PATH));
 }
 
 /**
@@ -147,7 +179,7 @@ function _sass() {
       ]
     }).on('error', gulpSass.logError))
     .pipe(gulpSourceMaps.write('./'))
-    .pipe(gulp.dest(dirPath('./_dist')))
+    .pipe(gulp.dest(DEST_PATH))
     .pipe(gulpLiveReload());
 }
 
@@ -186,9 +218,13 @@ function _webpackTests( callback ) {
  * Build static HTML with templates compiled in.
  */
 function _html() {
-  const scripts = ['/app.js'];
+  const scripts = [];
   if (config.envIs('development')) {
+    scripts.push('/app.js');
     scripts.push('//localhost:35729/livereload.js?snipver=1');
+  }
+  if (config.envIs('production')) {
+    scripts.push('/app.min.js');
   }
 
   return gulp.src(dirPath('./src/index.html'))
@@ -206,6 +242,6 @@ function _html() {
     }))
     .pipe(gulpTemplate(_.extend({}, config, { scripts })))
     .on('error', handleError)
-    .pipe(gulp.dest('./_dist'))
+    .pipe(gulp.dest(DEST_PATH))
     .pipe(gulpLiveReload());
 }

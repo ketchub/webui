@@ -1,6 +1,5 @@
 export COMPOSE_PROJECT_NAME = ca-web-ui
 export RUN_COMMAND ?= npm start
-export NODE_ENV ?= development
 
 SHELL = /bin/bash
 
@@ -46,19 +45,24 @@ gen-indexes:
 ####################################################
 # Production build
 ####################################################
-.PHONY: build-prod
-build-prod: NODE_ENV = production
-build-prod: RUN_COMMAND = npm run-script build
-build-prod:
+.PHONY: build-production
+build-production: RUN_COMMAND = npm run-script build-production
+build-production:
 	make dockerize; true && make halt
+
+.PHONY: serve-production
+serve-production: RUN_COMMAND = npm run-script serve-production
+serve-production: setup
+	@docker-compose -f _docker/docker-compose.yml up -d
+	@docker-compose -f _docker/docker-compose.yml logs -f; true && \
+	make halt
 
 ####################################################
 # Test
 ####################################################
-.PHONY: test
-test: NODE_ENV = test
-test: RUN_COMMAND = npm test
-test: # set env TERM=xterm for colored output
+.PHONY: test-node
+test-node: RUN_COMMAND = npm run-script test-node
+test-node: # set env TERM=xterm for colored output
 	docker exec -it cawebui_box_1 env TERM=xterm $(RUN_COMMAND)
 # 	make dockerize; true && make halt
 

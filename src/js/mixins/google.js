@@ -1,5 +1,5 @@
 import { loadScript } from '@/helpers';
-const apiKey = document.documentElement.getAttribute('gmaps-apikey');
+const apiKey = 'test'; //document.documentElement.getAttribute('gmaps-apikey');
 const scriptUrl = `//maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
 
 export default {

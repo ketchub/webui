@@ -26,9 +26,12 @@
       "console",
       "process",
       "describe",
+      "describeBrowser",
       "it",
+      "itBrowser",
+      "context",
+      "contextBrowser",
       "before",
-      "after",
-      "context"
+      "after"
     ]
 }

@@ -4,11 +4,6 @@ const path      = require('path');
 const webpack   = require('webpack');
 const babelRc   = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'));
 const context   = path.join(__dirname);
-const output    = {
-  path: path.join(__dirname, '_dist'),
-  filename: '[name].js',
-  pathinfo: true
-};
 const excludes  = /node_modules/;
 const includes  = [
   path.join(__dirname, './src/js'),
@@ -36,56 +31,76 @@ const modules = {
     }, babelRc)
   }]
 };
-const minifyPlugin = new webpack.optimize.UglifyJsPlugin({
-  minimize: true,
-  compress: {
-    warnings: false
-  }
-});
 const jshint = {
   emitErrors: false,
   failOnHint: true
 };
 
-const configs = {
+module.exports = {
   development: {
-    name: 'js',
-    entry: {
-      app: path.join(__dirname, 'src/js/_entry.js')
-    },
+    jshint,
     resolve,
     context,
     devtool: 'eval',
-    output,
     module: modules,
-    jshint
+    entry: path.join(__dirname, 'src/js/_entry.js'),
+    output: {
+      path: path.join(__dirname, '_dist', process.env.NODE_ENV),
+      filename: 'app.js',
+      pathinfo: true
+    },
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: JSON.stringify('development')
+        }
+      })
+    ]
   },
 
   test: {
-    entry: path.join(__dirname, 'test/_entry.js'),
+    jshint,
     resolve,
     context,
+    module: modules,
+    entry: path.join(__dirname, 'test/_entry.js'),
     output: {
       path: path.join(__dirname, '_dist'),
-      filename: '_test-bundle.js'
+      filename: 'test-bundle.js'
     },
-    module: modules,
-    jshint
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: JSON.stringify('test')
+        }
+      })
+    ]
   },
 
   production: {
-    entry: {
-      'app.min': path.join(__dirname, 'src/js/_entry.js')
-    },
+    jshint,
     resolve,
     context,
     devtool: 'source-map',
-    output,
-    // @todo: figure out a way to output both minified/unminified versions
-    plugins: [ minifyPlugin ],
     module: modules,
-    jshint
+    entry: path.join(__dirname, 'src/js/_entry.js'),
+    output: {
+      path: path.join(__dirname, '_dist', process.env.NODE_ENV),
+      filename: 'app.min.js'
+    },
+    // @todo: figure out a way to output both minified/unminified versions
+    plugins: [
+      new webpack.DefinePlugin({
+        'process.env': {
+          NODE_ENV: JSON.stringify('production')
+        }
+      }),
+      new webpack.optimize.UglifyJsPlugin({
+        minimize: true,
+        compress: {
+          warnings: false
+        }
+      })
+    ]
   }
 };
-
-module.exports = configs;
