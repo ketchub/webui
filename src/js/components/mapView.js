@@ -4,6 +4,7 @@ export default {
   template: '#components_map',
   data: function() {
     return {
+      $google: null,
       $mapObj: null,
       $startMarker: null,
       $endMarker: null,
@@ -12,12 +13,22 @@ export default {
   },
   methods: {
     resolveTrip: _resolveTrip,
-    initializeMap: _initializeMap
+    initializeMap: _initializeMap,
+    makeMarker: _makeMarker
   },
   mounted() {
-    this.$watch('$store.state.trip.searchStart', this.resolveTrip);
-    this.$watch('$store.state.trip.searchEnd', this.resolveTrip);
-    this.initializeMap();
+    const self = this;
+    const { loadGoogleSDK, resolveTrip, initializeMap } = this;
+
+    loadGoogleSDK((google) => {
+      self.$google = google;
+      self.$watch('$store.state.trip.searchStart', resolveTrip);
+      self.$watch('$store.state.trip.searchEnd', resolveTrip);
+      initializeMap(() => {
+        self.mapLoaded = true;
+        resolveTrip();
+      });
+    });
   }
 };
 
@@ -25,63 +36,46 @@ export default {
  * Initialize the map to $mapObj, and creates $startMarker and $endMarker
  * objects but doesn't add them to the map yet.
  */
-function _initializeMap() {
+function _initializeMap(done) {
   let self = this;
-  let { $store, loadGoogleSDK, resolveTrip, reverseGeocodeSearch } = this;
+  let { $store, makeMarker, $google } = this;
 
-  loadGoogleSDK((google) => {
-    const styledMapType = new google.maps.StyledMapType(mapStyles, {
-      name: 'HighViz'
-    });
-
-    self.$mapObj = new google.maps.Map(self.$el.querySelector('.map-instance'), {
-      center: {lat:39.09024, lng:-95.712891},
-      zoom: 4,
-      mapTypeId: 'HighViz',
-      // mapTypeControl: false,
-      scrollwheel: false,
-      mapTypeControlOptions: {
-        mapTypeIds: ['roadmap', 'HighViz'],
-        // style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-        position: google.maps.ControlPosition.LEFT_BOTTOM
-      }
-    });
-
-    self.$mapObj.mapTypes.set('HighViz', styledMapType);
-
-    // Start location marker
-    self.$startMarker = _makeMarker(google, {
-      title: 'Start Location',
-      icon: {
-        url: '/img/custom-target-icon.svg'
-      }
-    });
-
-    self.$startMarker.addListener('dragend', (data) => {
-      reverseGeocodeSearch(data.latLng.toJSON(), (bestGuess) => {
-        bestGuess.MARKER_DROP_ESTIMATE = true;
-        $store.dispatch('TRIP.ADD_SEARCH_START', bestGuess);
-      });
-    });
-
-    // End location marker
-    self.$endMarker = _makeMarker(google, {
-      title: 'End Location',
-      icon: {
-        url: '/img/custom-target-icon-red.svg'
-      }
-    });
-
-    self.$endMarker.addListener('dragend', (data) => {
-      reverseGeocodeSearch(data.latLng.toJSON(), (bestGuess) => {
-        bestGuess.MARKER_DROP_ESTIMATE = true;
-        $store.dispatch('TRIP.ADD_SEARCH_END', bestGuess);
-      });
-    });
-
-    self.mapLoaded = true;
-    resolveTrip();
+  const styledMapType = new $google.maps.StyledMapType(mapStyles, {
+    name: 'HighViz'
   });
+
+  self.$mapObj = new $google.maps.Map(self.$el.querySelector('.map-instance'), {
+    center: {lat:39.09024, lng:-95.712891},
+    zoom: 4,
+    mapTypeId: 'HighViz',
+    // mapTypeControl: false,
+    scrollwheel: false,
+    mapTypeControlOptions: {
+      mapTypeIds: ['roadmap', 'HighViz'],
+      // style: $google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+      position: $google.maps.ControlPosition.LEFT_BOTTOM
+    }
+  });
+
+  self.$mapObj.mapTypes.set('HighViz', styledMapType);
+
+  // Start location marker
+  self.$startMarker = makeMarker('TRIP.ADD_SEARCH_START', {
+    title: 'Start Location',
+    icon: {
+      url: '/img/custom-target-icon.svg'
+    }
+  });
+
+  // End location marker
+  self.$endMarker = makeMarker('TRIP.ADD_SEARCH_END', {
+    title: 'End Location',
+    icon: {
+      url: '/img/custom-target-icon-red.svg'
+    }
+  });
+
+  done();
 }
 
 /**
@@ -90,7 +84,7 @@ function _initializeMap() {
  */
 function _resolveTrip() {
   const { latestStartSearch, latestEndSearch } = this.$store.getters;
-  const { $startMarker, $endMarker, $mapObj } = this;
+  const { $startMarker, $endMarker, $mapObj, $google } = this;
 
   if( latestStartSearch ) {
     $startMarker.setPosition(latestStartSearch.geometry.location);
@@ -101,14 +95,34 @@ function _resolveTrip() {
     $endMarker.setPosition(latestEndSearch.geometry.location);
     $endMarker.setMap($mapObj);
   }
+
+  if ( latestStartSearch && latestEndSearch ) {
+    const bounds = new $google.maps.LatLngBounds();
+    bounds.extend($startMarker.getPosition());
+    bounds.extend($endMarker.getPosition());
+    $mapObj.fitBounds(bounds);
+  }
 }
 
 /**
  * Create a marker on the map with default properties.
  */
-function _makeMarker(google, properties) {
-  return new google.maps.Marker(Object.assign({
+function _makeMarker(dispatchOnDragEndAction, properties) {
+  const { $google, $store, reverseGeocodeSearch } = this;
+
+  const marker = new $google.maps.Marker(Object.assign({
     draggable: true,
-    animation: google.maps.Animation.DROP
+    animation: $google.maps.Animation.DROP
   }, properties));
+
+  // Add listener for on drag end that initiates a reverseGeocodeSearch
+  // and emits an action
+  marker.addListener('dragend', (data) => {
+    reverseGeocodeSearch(data.latLng.toJSON(), (bestGuess) => {
+      bestGuess.MARKER_DROP_ESTIMATE = true;
+      $store.dispatch(dispatchOnDragEndAction, bestGuess);
+    });
+  });
+
+  return marker;
 }
