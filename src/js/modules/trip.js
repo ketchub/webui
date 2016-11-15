@@ -17,10 +17,10 @@ const moduleTrip = {
   },
 
   actions: {
-    [`TRIP.ADD_SEARCH_START`]( { state, commit }, payload ) {
+    [`TRIP.ADD_SEARCH_START`]( {state, commit}, payload ) {
       commit(ADD_SEARCH_START, payload);
     },
-    [`TRIP.ADD_SEARCH_END`]( { state, commit }, payload ) {
+    [`TRIP.ADD_SEARCH_END`]( {state, commit}, payload ) {
       commit(ADD_SEARCH_END, payload);
     }
   },

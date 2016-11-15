@@ -3,8 +3,12 @@
     .map-instance {width:100%;height:100%;min-height:500px;}
     .place-search {position:absolute;left:5rem;z-index:99;
       &.place-search-start {top:1rem;}
-      &.place-search-end {top:3rem;}
-      input {width:240px;}
+      &.place-search-end {top:4rem;}
+      input {width:220px;border:0;outline:none;padding:0.5rem 0.75rem;font-size:1.2rem;}
     }
   }
+}
+
+// temporary
+.address-display {background:#ccc;padding:0.5rem;display:inline-block;line-height:1;
 }

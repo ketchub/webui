@@ -1,3 +1,4 @@
 <div class="place-search">
-  <input type="text" placeholder="Enter a location" v-model="value" />
+  <input type="text" v-bind:placeholder="placeholder" v-model="value" />
+  <slot></slot>
 </div>

@@ -3,5 +3,6 @@
   from the CLI.
   */
 
+export {default as addressDisplay} from './addressDisplay.js';
 export {default as mapView} from './mapView.js';
 export {default as placeSearch} from './placeSearch.js';

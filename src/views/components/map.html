@@ -1,5 +1,15 @@
 <div class="map-container">
   <div class="map-instance"></div>
-  <place-search class="place-search-start" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_START'" :initial-value="$store.getters.latestStartSearchFormatted"></place-search>
-  <place-search class="place-search-end" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_END'" :initial-value="$store.getters.latestEndSearchFormatted"></place-search>
+
+  <place-search class="place-search-start" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_START'" :pass-value="$store.getters.latestStartSearchFormatted" :placeholder="'From'">
+    <!-- transclusion -->
+    <span class="btn btn-success btn-sm" v-on:click="resolveCurrentLocation">Use Current Location</span>
+  </place-search>
+
+  <place-search class="place-search-end" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_END'" :pass-value="$store.getters.latestEndSearchFormatted" :placeholder="'To'"></place-search>
+
+  <div style="position:absolute;top:50%;left:1rem;z-index:2;">
+    <address-display :address-obj="$store.getters.latestStartSearch"></address-display>
+    <address-display :address-obj="$store.getters.latestEndSearch"></address-display>
+  </div>
 </div>
