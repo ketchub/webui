@@ -9,6 +9,7 @@ const gulpSourceMaps  = require('gulp-sourcemaps');
 const gulpInception   = require('gulp-inception');
 const gulpLiveReload  = require('gulp-livereload');
 const gulpTemplate    = require('gulp-template');
+const gulpHtmlMin     = require('gulp-htmlmin');
 const express         = require('express');
 const webpackConfigs  = require('./webpack.config');
 const webpack         = require('webpack')(webpackConfigs[process.env.NODE_ENV]);
@@ -242,9 +243,11 @@ function _html() {
             fileInfo.name
           ).replace('/', '').replace(/\//g, "_");
         }
-      }
+      },
+      pipeThrough: gulpHtmlMin({collapseWhitespace:true, removeComments:true})
     }))
     .pipe(gulpTemplate(_.extend({}, config, { scripts })))
+    .pipe(gulpHtmlMin({collapseWhitespace:true, removeComments:true}))
     .on('error', handleError)
     .pipe(gulp.dest(DEST_PATH))
     .pipe(gulpLiveReload());
