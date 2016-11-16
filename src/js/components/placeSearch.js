@@ -17,7 +17,6 @@ export default {
     loadGoogleSDK((google) => {
       const autoCompleteApi = new google.maps.places.Autocomplete($input);
       autoCompleteApi.bindTo('bounds', mapObj);
-
       autoCompleteApi.addListener('place_changed', () => {
         const place = autoCompleteApi.getPlace();
         if (!place.address_components) { return; }

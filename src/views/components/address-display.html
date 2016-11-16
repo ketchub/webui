@@ -1,6 +1,0 @@
-<div class="address-display">
-  <div><span class="tag tag-default">Street</span> {{ addressObj | pluckBy('street_number') }} {{ addressObj | pluckBy('route') }}</div>
-  <div><span class="tag tag-default">City</span> {{ addressObj | pluckBy('locality') }}</div>
-  <div><span class="tag tag-default">State</span> {{ addressObj | pluckBy('administrative_area_level_1') }}</div>
-  <div><span class="tag tag-default">Zip</span> {{ addressObj | pluckBy('postal_code') }}</div>
-</div>

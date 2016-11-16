@@ -6,6 +6,8 @@ import * as components from '@/components';
 import * as mixins from '@/mixins';
 import * as plugins from '@/plugins';
 import * as modules from '@/modules';
+import * as filters from '@/filters';
+import * as directives from '@/directives';
 
 export default getApp;
 
@@ -13,9 +15,11 @@ console.log(
   `ENVIRONMENT=%s; RUNTIME=%s`, process.env.NODE_ENV, process.title
 );
 
-each(components, ( definition, name ) => { Vue.component(name, definition); });
-each(plugins, ( plugin ) => { Vue.use(plugin); });
-each(mixins, ( mixin ) => { Vue.mixin(mixin); });
+each(components, (definition, name) => { Vue.component(name, definition); });
+each(filters, (definition, name) => { Vue.filter(name, definition); });
+each(directives, (definition, name) => { Vue.directive(name, definition); });
+each(plugins, (plugin) => { Vue.use(plugin); });
+each(mixins, (mixin) => { Vue.mixin(mixin); });
 
 function getApp() {
   return new Vue({

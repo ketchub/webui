@@ -5,6 +5,8 @@ export default {
   data: function() {
     return {
       $google: null,
+      $directionsRenderer: null,
+      $directionsService: null,
       $mapObj: null,
       $startMarker: null,
       $endMarker: null,
@@ -14,7 +16,11 @@ export default {
   methods: {
     resolveTrip: _resolveTrip,
     initializeMap: _initializeMap,
-    makeMarker: _makeMarker
+    makeMarker: _makeMarker,
+    fetchDirections: _fetchDirections,
+    clearSearch(action) {
+      this.$store.dispatch(action, null);
+    }
   },
   mounted() {
     const self = this;
@@ -22,6 +28,10 @@ export default {
 
     loadGoogleSDK((google) => {
       self.$google = google;
+      self.$directionsRenderer = new google.maps.DirectionsRenderer({
+        suppressMarkers: true
+      });
+      self.$directionsService = new google.maps.DirectionsService();
       self.$watch('$store.state.trip.searchStart', resolveTrip);
       self.$watch('$store.state.trip.searchEnd', resolveTrip);
       initializeMap(() => {
@@ -53,7 +63,7 @@ function _initializeMap(done) {
     mapTypeControlOptions: {
       mapTypeIds: ['roadmap', 'HighViz'],
       // style: $google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-      position: $google.maps.ControlPosition.LEFT_BOTTOM
+      position: $google.maps.ControlPosition.TOP_RIGHT
     }
   });
 
@@ -62,18 +72,17 @@ function _initializeMap(done) {
   // Start location marker
   self.$startMarker = makeMarker('TRIP.ADD_SEARCH_START', {
     title: 'Start Location',
-    icon: {
-      url: '/img/custom-target-icon.svg'
-    }
+    icon: '/img/custom-target-icon.svg'
   });
 
   // End location marker
   self.$endMarker = makeMarker('TRIP.ADD_SEARCH_END', {
     title: 'End Location',
-    icon: {
-      url: '/img/custom-target-icon-red.svg'
-    }
+    icon: '/img/custom-target-icon-red.svg'
   });
+
+  // Bind the directionsRenderer
+  self.$directionsRenderer.setMap(self.$mapObj);
 
   done();
 }
@@ -84,11 +93,15 @@ function _initializeMap(done) {
  */
 function _resolveTrip() {
   const { latestStartSearch, latestEndSearch } = this.$store.getters;
-  const { $startMarker, $endMarker, $mapObj, $google } = this;
+  const { fetchDirections, $startMarker, $endMarker, $mapObj, $google } = this;
 
   if( latestStartSearch ) {
     $startMarker.setPosition(latestStartSearch.geometry.location);
     $startMarker.setMap($mapObj);
+    if ( ! latestEndSearch ){
+      $mapObj.setZoom(13);
+      return $mapObj.panTo($startMarker.position);
+    }
   }
 
   if( latestEndSearch ) {
@@ -101,7 +114,30 @@ function _resolveTrip() {
     bounds.extend($startMarker.getPosition());
     bounds.extend($endMarker.getPosition());
     $mapObj.fitBounds(bounds);
+    fetchDirections();
   }
+}
+
+/**
+ * Gets directions between two points and renders to the display.
+ */
+function _fetchDirections() {
+  let {
+    $google,
+    $directionsService,
+    $directionsRenderer,
+    $startMarker,
+    $endMarker
+  } = this;
+
+  $directionsService.route({
+    origin: $startMarker.position.toJSON(),
+    destination: $endMarker.position.toJSON(),
+    travelMode: $google.maps.TravelMode['DRIVING']
+  }, (response, status) => {
+    console.log('directions', response);
+    $directionsRenderer.setDirections(response);
+  });
 }
 
 /**

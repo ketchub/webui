@@ -16,7 +16,12 @@
   <div id="application">
 
     <header class="clearfix">
-      <div class="header-content">
+      <a class="icon-navicon"></a>
+      <router-link to="/">
+        <img class="logo" src="/img/catchalong-logo.svg" />
+      </router-link>
+
+      <!-- <div class="header-content">
         <a class="icon-close toggle-nav" v-on:click="toggleDocumentClass('nav-open')"></a>
         <div class="tabular">
           <div class="cellular">
@@ -37,13 +42,13 @@
         <a class="icon-navicon toggle-nav" v-on:click="toggleDocumentClass('nav-open')"></a>
       </div>
       <div class="page-overlay page-overlay-right">
-        <span>CatchAlong</span>
-      </div>
+        <span>Catch<br />Along</span>
+      </div> -->
     </header>
 
-    <main>
+    <!-- <main> -->
       <router-view></router-view>
-    </main>
+    <!-- </main> -->
 
   </div>
 

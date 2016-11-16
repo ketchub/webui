@@ -72,6 +72,10 @@ gulp.task('default', [
       if (ev.type === 'changed') { return; }
       _createTestManifest();
     });
+  // reload css files without refreshing entire page
+  gulp.watch('_dist/development/*.css', (file) => {
+    gulpLiveReload.changed(file);
+  });
 });
 
 /**
@@ -179,8 +183,8 @@ function _sass() {
       ]
     }).on('error', gulpSass.logError))
     .pipe(gulpSourceMaps.write('./'))
-    .pipe(gulp.dest(DEST_PATH))
-    .pipe(gulpLiveReload());
+    .pipe(gulp.dest(DEST_PATH));
+    // .pipe(gulpLiveReload());
 }
 
 /**

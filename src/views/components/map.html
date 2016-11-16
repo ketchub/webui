@@ -1,15 +1,50 @@
 <div class="map-container">
   <div class="map-instance"></div>
 
-  <place-search class="place-search-start" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_START'" :pass-value="$store.getters.latestStartSearchFormatted" :placeholder="'From'">
-    <!-- transclusion -->
-    <span class="btn btn-success btn-sm" v-on:click="resolveCurrentLocation">Use Current Location</span>
-  </place-search>
+  <div class="start-end-info">
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+          <th>Street</th>
+          <th>City</th>
+          <th>State</th>
+          <th>Zip</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="row-start">
+          <td class="paddingless" colspan="4" v-if="!$store.state.trip.currentStart">
+            <place-search class="place-search-start" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_START'" :pass-value="$store.getters.latestStartSearchFormatted" :placeholder="'From'">
+              <a class="icon-map-2 current-geo" v-on:click="resolveCurrentLocation"></a>
+              <!-- <span class="btn btn-info btn-sm current-geo" v-on:click="resolveCurrentLocation"></span> -->
+            </place-search>
+          </td>
+          <template v-if="$store.state.trip.currentStart">
+            <td>{{ $store.getters.latestStartSearch | pluckAddressComponent('street_number') }} {{ $store.getters.latestStartSearch | pluckAddressComponent('route') }}</td>
+            <td>{{ $store.getters.latestStartSearch | pluckAddressComponent('locality') }}</td>
+            <td>{{ $store.getters.latestStartSearch | pluckAddressComponent('administrative_area_level_1') }}</td>
+            <td>{{ $store.getters.latestStartSearch | pluckAddressComponent('postal_code') }}<span class="btn btn-danger btn-sm clear-search" v-on:click="clearSearch('TRIP.SET_CURRENT_START')">Clear</span></td>
+          </template>
+        </tr>
+        <tr class="row-end">
+          <td class="paddingless" colspan="4" v-if="!$store.state.trip.currentEnd">
+            <place-search class="place-search-end" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_END'" :pass-value="$store.getters.latestEndSearchFormatted" :placeholder="'To'"></place-search>
+          </td>
+          <template v-if="$store.state.trip.currentEnd">
+            <td>{{ $store.getters.latestEndSearch | pluckAddressComponent('street_number') }} {{ $store.getters.latestEndSearch | pluckAddressComponent('route') }}</td>
+            <td>{{ $store.getters.latestEndSearch | pluckAddressComponent('locality') }}</td>
+            <td>{{ $store.getters.latestEndSearch | pluckAddressComponent('administrative_area_level_1') }}</td>
+            <td>{{ $store.getters.latestEndSearch | pluckAddressComponent('postal_code') }}<span class="btn btn-danger btn-sm clear-search" v-on:click="clearSearch('TRIP.SET_CURRENT_END')">Clear</span></td>
+          </template>
+        </tr>
 
-  <place-search class="place-search-end" v-if="mapLoaded" :map-obj="$mapObj" :action="'TRIP.ADD_SEARCH_END'" :pass-value="$store.getters.latestEndSearchFormatted" :placeholder="'To'"></place-search>
-
-  <div style="position:absolute;top:50%;left:1rem;z-index:2;">
-    <address-display :address-obj="$store.getters.latestStartSearch"></address-display>
-    <address-display :address-obj="$store.getters.latestEndSearch"></address-display>
+        <tr v-if="$store.state.trip.currentStart && $store.state.trip.currentEnd">
+          <td colspan="4" style="background:#28ab8e;color:#fff;font-weight:bold;">
+            <img src="/img/loading-ring.svg" />
+            Finding rides going this way...
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
