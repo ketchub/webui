@@ -11,6 +11,7 @@ const gulpLiveReload  = require('gulp-livereload');
 const gulpTemplate    = require('gulp-template');
 const gulpHtmlMin     = require('gulp-htmlmin');
 const express         = require('express');
+const compression     = require('compression');
 const webpackConfigs  = require('./webpack.config');
 const webpack         = require('webpack')(webpackConfigs[process.env.NODE_ENV]);
 const webpackTests    = require('webpack')(webpackConfigs["test"]);
@@ -143,6 +144,7 @@ let expressApp;
 function _express( callback ) {
   if (!expressApp) {
     expressApp = express();
+    expressApp.use(compression()); // we want to see how big files will actually be when gzipped
     expressApp.use(express.static(DEST_PATH));
     expressApp.use(express.static(dirPath('./node_modules/mocha')));
     expressApp.get('/test', (req, res) => {

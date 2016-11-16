@@ -3,10 +3,18 @@
  */
 export default {
   template: '#components_place-search',
-  props: ['map-obj', 'action', 'pass-value', 'placeholder'],
-  computed: {
-    value() {
-      return this.passValue;
+  props: {
+    mapObj: {
+      type: Object,
+      required: true
+    },
+    action: {
+      type: String,
+      required: true
+    },
+    placeholder: {
+      type: String,
+      required: false
     }
   },
   mounted() {

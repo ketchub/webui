@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import { each } from 'lodash';
 import Vue from 'vue';
 import { Store } from 'vuex';
@@ -12,7 +13,10 @@ import * as directives from '@/directives';
 export default getApp;
 
 console.log(
-  `ENVIRONMENT=%s; RUNTIME=%s`, process.env.NODE_ENV, process.title
+  `VERSION=%s; ENVIRONMENT=%s; RUNTIME=%s`,
+  process.env.VERSION,
+  process.env.NODE_ENV,
+  process.title
 );
 
 each(components, (definition, name) => { Vue.component(name, definition); });

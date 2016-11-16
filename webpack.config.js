@@ -3,6 +3,7 @@ const fs        = require('fs');
 const path      = require('path');
 const webpack   = require('webpack');
 const babelRc   = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'));
+const package   = require('./package.json');
 const context   = path.join(__dirname);
 const excludes  = /node_modules/;
 const includes  = [
@@ -52,7 +53,8 @@ module.exports = {
     plugins: [
       new webpack.DefinePlugin({
         'process.env': {
-          NODE_ENV: JSON.stringify('development')
+          NODE_ENV: JSON.stringify('development'),
+          VERSION: JSON.stringify(package.version)
         }
       })
     ]
@@ -71,7 +73,8 @@ module.exports = {
     plugins: [
       new webpack.DefinePlugin({
         'process.env': {
-          NODE_ENV: JSON.stringify('test')
+          NODE_ENV: JSON.stringify('test'),
+          VERSION: JSON.stringify(package.version)
         }
       })
     ]
@@ -92,7 +95,8 @@ module.exports = {
     plugins: [
       new webpack.DefinePlugin({
         'process.env': {
-          NODE_ENV: JSON.stringify('production')
+          NODE_ENV: JSON.stringify('production'),
+          VERSION: JSON.stringify(package.version)
         }
       }),
       new webpack.optimize.UglifyJsPlugin({

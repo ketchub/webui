@@ -1,4 +1,4 @@
-import mapStyles from '@/config/mapStyles';
+let mapStyles = require('json!../config/mapStyle.json');
 
 export default {
   template: '#components_map',
@@ -12,6 +12,10 @@ export default {
       $endMarker: null,
       mapLoaded: false
     };
+  },
+  computed: {
+    $currentStart({ $store }) { return $store.getters.$currentStart; },
+    $currentEnd({ $store }) { return $store.getters.$currentEnd; }
   },
   methods: {
     resolveTrip: _resolveTrip,
@@ -92,29 +96,37 @@ function _initializeMap(done) {
  * the list of searched items; this will update the relevant marker positions.
  */
 function _resolveTrip() {
-  const { latestStartSearch, latestEndSearch } = this.$store.getters;
-  const { fetchDirections, $startMarker, $endMarker, $mapObj, $google } = this;
+  const {
+    fetchDirections,
+    $currentStart,
+    $currentEnd,
+    $startMarker,
+    $endMarker,
+    $mapObj,
+    $google
+  } = this;
 
-  if( latestStartSearch ) {
-    $startMarker.setPosition(latestStartSearch.geometry.location);
+  if( $currentStart ) {
+    $startMarker.setPosition($currentStart.geometry.location);
     $startMarker.setMap($mapObj);
-    if ( ! latestEndSearch ){
+    if ( ! $currentEnd ){
       $mapObj.setZoom(13);
       return $mapObj.panTo($startMarker.position);
     }
   }
 
-  if( latestEndSearch ) {
-    $endMarker.setPosition(latestEndSearch.geometry.location);
+  if( $currentEnd ) {
+    $endMarker.setPosition($currentEnd.geometry.location);
     $endMarker.setMap($mapObj);
   }
 
-  if ( latestStartSearch && latestEndSearch ) {
+  if ( $currentStart && $currentEnd ) {
     const bounds = new $google.maps.LatLngBounds();
     bounds.extend($startMarker.getPosition());
     bounds.extend($endMarker.getPosition());
     $mapObj.fitBounds(bounds);
-    fetchDirections();
+    // make this be triggered by a user action...
+    // fetchDirections();
   }
 }
 
@@ -122,7 +134,8 @@ function _resolveTrip() {
  * Gets directions between two points and renders to the display.
  */
 function _fetchDirections() {
-  let {
+  const {
+    $store,
     $google,
     $directionsService,
     $directionsRenderer,
@@ -135,7 +148,7 @@ function _fetchDirections() {
     destination: $endMarker.position.toJSON(),
     travelMode: $google.maps.TravelMode['DRIVING']
   }, (response, status) => {
-    console.log('directions', response);
+    $store.dispatch('TRIP.SET_DIRECTIONS', response);
     $directionsRenderer.setDirections(response);
   });
 }

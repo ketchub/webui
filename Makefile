@@ -69,8 +69,8 @@ test-node: # set env TERM=xterm for colored output
 ####################################################
 # Utilities and debugging
 ####################################################
-.PHONY: login-container
-login-container:
+.PHONY: ssh
+ssh:
 	docker exec -it cawebui_box_1 /bin/sh
 
 .PHONY: inspect-docker-compose-config

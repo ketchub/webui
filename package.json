@@ -2,7 +2,6 @@
   "name": "catchalong-webui",
   "version": "0.0.1",
   "description": "catchalong.com webui",
-  "main": "index.js",
   "scripts": {
     "test-node": "NODE_ENV=test mocha --compilers js:babel-core/register test/_entry.js",
     "test-browser": "NODE_ENV=test ./node_modules/.bin/gulp webpack-tests",
@@ -15,6 +14,7 @@
   "dependencies": {
     "babel-core": "6.17.0",
     "babel-loader": "6.2.5",
+    "babel-polyfill": "^6.16.0",
     "babel-preset-es2015": "6.16.0",
     "babel-root-import": "4.1.3",
     "bootstrap": "4.0.0-alpha.4",
@@ -29,6 +29,7 @@
     "jshint": "2.9.3",
     "jshint-loader": "0.8.3",
     "jshint-stylish": "2.2.1",
+    "json-loader": "^0.5.4",
     "lodash": "4.16.4",
     "vue": "2.0.3",
     "vue-router": "2.0.1",
@@ -37,6 +38,7 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
+    "compression": "^1.6.2",
     "express": "4.14.0",
     "mocha": "3.1.2"
   }
