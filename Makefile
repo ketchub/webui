@@ -73,21 +73,21 @@ test-node:
 release-patch: RUN_COMMAND = npm run-script bump-patch
 release-patch:
 	@make dockerize
-	git push && git push --tags
+	git push origin master && git push --tags
 	@echo '-- PATCH VERSION TAGGED AND PUSHED --'
 
 .PHONY: release-minor
 release-minor: RUN_COMMAND = npm run-script bump-minor
 release-minor:
 	@make dockerize
-	git push && git push --tags
+	git push origin master && git push --tags
 	@echo '-- MINOR VERSION TAGGED AND PUSHED --'
 
 .PHONY: release-major
 release-major: RUN_COMMAND = npm run-script bump-major
 release-major:
 	@make dockerize
-	git push && git push --tags
+	git push origin master && git push --tags
 	@echo '-- MAJOR VERSION TAGGED AND PUSHED --'
 
 ####################################################
