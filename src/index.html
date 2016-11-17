@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" app-version="<%= package.version %>" gmaps-apikey="<%= getEnvVar('GOOGLE_MAPS_API_KEY') %>">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>CatchAlong :: Share Seats On The Same Route</title>
@@ -55,6 +55,7 @@
 <!-- BEGIN: TEMPLATE PARTIALS -->
 <!-- PARTIALS -->
 <!-- END: TEMPLATE PARTIALS -->
+
 <% _.forEach(scripts, function (scriptPath) { %>
 <script type="text/javascript" src="<%= scriptPath %>"></script>
 <% }) %>

@@ -16,13 +16,12 @@ const webpackConfigs  = require('./webpack.config');
 const webpack         = require('webpack')(webpackConfigs[process.env.NODE_ENV]);
 const webpackTests    = require('webpack')(webpackConfigs["test"]);
 const spawn           = require('child_process').spawn;
-const config          = {
-  package: require(dirPath('./package.json')),
-  envIs(_env) { return process.env.NODE_ENV === _env; },
-  getEnvVar(_env) { return process.env[_env]; }
-}
 const autoBuildIndexQueue = [];
 const DEST_PATH = dirPath(`./_dist/${process.env.NODE_ENV}`);
+
+function envIs(_env) {
+  return process.env.NODE_ENV === _env;
+}
 
 function dirPath(_path) {
   return `/${path.join(path.basename(__dirname), _path || '')}`;
@@ -111,19 +110,21 @@ function _autoBuildIndexJsFiles( callback ) {
       while(i = autoBuildIndexQueue.shift()) {
         gulpUtil.log(`Processing gen-indexes queue: `, i);
       }
-      const proc = spawn('node', [dirPath('./bin/gen-indexes')]);
-      proc.stdout.on('data', (data) => { gulpUtil.log(`${data}`); });
-      proc.stderr.on('data', (data) => {
-        gulpUtil.log(`\n\n Index AutoGeneration Error: \n\n`, data);
-      });
-      proc.on('error', function(err) {
-        console.log(`Error regenerating indexes: ${e.message}\n`);
-      });
-      proc.on('close', (code) => {
-        console.log(`Generate Indexes exited with code: ${code}.\n`);
-        callback();
-      });
+      makeIndexFiles('./src/js/**/*.autogen-index', callback);
       return;
+      // const proc = spawn('node', [dirPath('./bin/gen-indexes')]);
+      // proc.stdout.on('data', (data) => { gulpUtil.log(`${data}`); });
+      // proc.stderr.on('data', (data) => {
+      //   gulpUtil.log(`\n\n Index AutoGeneration Error: \n\n`, data);
+      // });
+      // proc.on('error', function(err) {
+      //   console.log(`Error regenerating indexes: ${e.message}\n`);
+      // });
+      // proc.on('close', (code) => {
+      //   console.log(`Generate Indexes exited with code: ${code}.\n`);
+      //   callback();
+      // });
+      // return;
     }
     callback();
   });
@@ -180,7 +181,7 @@ function _sass() {
   return gulp.src(dirPath('./src/scss/app.scss'))
     .pipe(gulpSourceMaps.init())
     .pipe(gulpSass({
-      outputStyle: config.envIs('production') ? 'compressed' : 'nested',
+      outputStyle: envIs('production') ? 'compressed' : 'nested',
       includePaths: [
         './node_modules'
       ]
@@ -226,11 +227,11 @@ function _webpackTests( callback ) {
  */
 function _html() {
   const scripts = [];
-  if (config.envIs('development')) {
+  if (envIs('development')) {
     scripts.push('/app.js');
     scripts.push('//localhost:35729/livereload.js?snipver=1');
   }
-  if (config.envIs('production')) {
+  if (envIs('production')) {
     scripts.push('/app.min.js');
   }
 
@@ -253,4 +254,82 @@ function _html() {
     .on('error', handleError)
     .pipe(gulp.dest(DEST_PATH))
     .pipe(gulpLiveReload());
+}
+
+/**
+ * Generate index.js files for directories matching the query.
+ * @return {void}
+ */
+function makeIndexFiles(query, callback) {
+  const globQuery = path.join(__dirname, query);
+
+  try {
+    glob(globQuery, {dot:true}).on('end', function( fileList ){
+      fileList.forEach(makeIndexForFilesInDirectory);
+    });
+    callback();
+  } catch(err) {
+    callback(err);
+  }
+
+  /**
+   * Given a directory that contains .autogenerate-index, inspect the directory
+   * for what should be exported and create an index.js file.
+   * @param  {string} fileName Full path to .autogenerate-index file
+   * @return {void}
+   */
+  function makeIndexForFilesInDirectory( fileName ){
+    let dirBasePath   = path.parse(fileName).dir,
+        dirGlobQuery  = path.join(dirBasePath, '/**/*.js'),
+        indexFilePath = path.join(dirBasePath, 'index.js');
+
+    glob(dirGlobQuery, {ignore: indexFilePath}).on('end', function( filesInDir ){
+      var writeStream = fs.createWriteStream(indexFilePath);
+      writeHeader(writeStream);
+
+      filesInDir.forEach(function( memberFilePath ){
+        var fileInfo    = path.parse(memberFilePath),
+            relPath     = memberFilePath.replace(`${dirBasePath}/`, ''),
+            exportName  = getExportAsName(relPath.split('/'), fileInfo.name);
+        writeStream.write(`export {default as ${exportName}} from './${relPath}';\n`);
+      });
+
+      writeStream.on('close', function(){
+        console.log(`OK: index.js file auto-generated for ${dirBasePath}`);
+      }).end();
+    });
+  }
+
+
+  /**
+   * Given pathSplitBySlash (eg. '/yolo.js' -> ['yolo.js'], or '/one/two.js' ->
+   * ['one', 'two.js']), this will return a camel-cased name for the module
+   * export.
+   * @param  {array} pathSplitBySlash   Created by string.split('/')
+   * @param  {Object} baseName          Given "myFile.js" -> "myFile" is baseName
+   * @return {string}
+   */
+  function getExportAsName( pathSplitBySlash, baseName ){
+    // remove (and discard) the last element from the array
+    pathSplitBySlash.pop();
+    // now check the array length; if its zero, we can just return the basename
+    if( pathSplitBySlash.length === 0 ){ return baseName; }
+    // if we're here, we need to do camel-casing; first thing, add baseName
+    pathSplitBySlash.push(baseName);
+    // camelcase things in the array and return joined string
+    return pathSplitBySlash.map(function(string, index){
+      return index === 0 ? string :
+        (string.charAt(0).toUpperCase() + string.slice(1));
+    }).join('');
+  }
+
+
+  /**
+   * Write header text to the file.
+   * @param  {stream} stream Writable stream for the file.
+   * @return {void}
+   */
+  function writeHeader( stream ){
+    stream.write(`/* WARNING: AUTO GENERATED BY GULP: do not edit this file manually. */\n\n`);
+  }
 }

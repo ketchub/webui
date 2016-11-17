@@ -12,13 +12,6 @@ import * as directives from '@/directives';
 
 export default getApp;
 
-console.log(
-  `VERSION=%s; ENVIRONMENT=%s; RUNTIME=%s`,
-  process.env.VERSION,
-  process.env.NODE_ENV,
-  process.title
-);
-
 each(components, (definition, name) => { Vue.component(name, definition); });
 each(filters, (definition, name) => { Vue.filter(name, definition); });
 each(directives, (definition, name) => { Vue.directive(name, definition); });
@@ -39,3 +32,11 @@ function getApp() {
 if (process.env.NODE_ENV !== 'test' && document.querySelector('#application')) {
   getApp().$mount('#application');
 }
+
+// Log build information to the console
+console.log(
+  `VERSION=%s; ENVIRONMENT=%s; RUNTIME=%s`,
+  process.env.VERSION,
+  process.env.NODE_ENV,
+  process.title
+);
