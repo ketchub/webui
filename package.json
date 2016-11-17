@@ -3,6 +3,10 @@
   "version": "0.0.1",
   "description": "catchalong.com webui",
   "scripts": {
+    "preversion": "npm run-script test-node",
+    "version": "git add package.json",
+    "postversion": "git push && git push --tags",
+
     "test-node": "NODE_ENV=test mocha --compilers js:babel-core/register test/_entry.js",
     "test-browser": "NODE_ENV=test ./node_modules/.bin/gulp webpack-tests",
     "start": "NODE_ENV=development ./node_modules/.bin/gulp",
