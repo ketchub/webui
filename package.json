@@ -1,12 +1,11 @@
 {
   "name": "catchalong-webui",
-  "version": "0.0.1",
-  "description": "catchalong.com webui",
+  "version": "0.0.2",
+  "description": "catchalong:webui",
   "scripts": {
-    "preversion": "npm run-script test-node",
-    "version": "git add package.json",
-    "postversion": "git push && git push --tags",
-
+    "bump-patch": "npm run-script test-node && npm version patch",
+    "bump-minor": "npm run-script test-node && npm version minor",
+    "bump-major": "npm run-script test-node && npm version major",
     "test-node": "NODE_ENV=test mocha --compilers js:babel-core/register test/_entry.js",
     "test-browser": "NODE_ENV=test ./node_modules/.bin/gulp webpack-tests",
     "start": "NODE_ENV=development ./node_modules/.bin/gulp",
@@ -18,12 +17,12 @@
   "dependencies": {
     "babel-core": "6.17.0",
     "babel-loader": "6.2.5",
-    "babel-polyfill": "^6.16.0",
+    "babel-polyfill": "6.16.0",
     "babel-preset-es2015": "6.16.0",
     "babel-root-import": "4.1.3",
     "bootstrap": "4.0.0-alpha.4",
     "gulp": "3.9.1",
-    "gulp-htmlmin": "^3.0.0",
+    "gulp-htmlmin": "3.0.0",
     "gulp-inception": "0.1.0",
     "gulp-livereload": "3.8.1",
     "gulp-sass": "2.3.2",
@@ -33,7 +32,7 @@
     "jshint": "2.9.3",
     "jshint-loader": "0.8.3",
     "jshint-stylish": "2.2.1",
-    "json-loader": "^0.5.4",
+    "json-loader": "0.5.4",
     "lodash": "4.16.4",
     "vue": "2.0.3",
     "vue-router": "2.0.1",
@@ -42,7 +41,7 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "compression": "^1.6.2",
+    "compression": "1.6.2",
     "express": "4.14.0",
     "mocha": "3.1.2"
   }

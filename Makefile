@@ -62,9 +62,33 @@ serve-production: setup
 ####################################################
 .PHONY: test-node
 test-node: RUN_COMMAND = npm run-script test-node
-test-node: # set env TERM=xterm for colored output
+test-node:
 	docker exec -it cawebui_box_1 env TERM=xterm $(RUN_COMMAND)
-# 	make dockerize; true && make halt
+	# make dockerize; true && make halt
+
+####################################################
+# Release
+####################################################
+.PHONY: release-patch
+release-patch: RUN_COMMAND = npm run-script bump-patch
+release-patch:
+	@make dockerize
+	git push && git push --tags
+	@echo '-- PATCH VERSION TAGGED AND PUSHED --'
+
+.PHONY: release-minor
+release-minor: RUN_COMMAND = npm run-script bump-minor
+release-minor:
+	@make dockerize
+	git push && git push --tags
+	@echo '-- MINOR VERSION TAGGED AND PUSHED --'
+
+.PHONY: release-major
+release-major: RUN_COMMAND = npm run-script bump-major
+release-major:
+	@make dockerize
+	git push && git push --tags
+	@echo '-- MAJOR VERSION TAGGED AND PUSHED --'
 
 ####################################################
 # Utilities and debugging
