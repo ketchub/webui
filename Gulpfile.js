@@ -15,7 +15,6 @@ const compression     = require('compression');
 const webpackConfigs  = require('./webpack.config');
 const webpack         = require('webpack')(webpackConfigs[process.env.NODE_ENV]);
 const webpackTests    = require('webpack')(webpackConfigs["test"]);
-const https           = require('https');
 const os              = require('os');
 
 const autoBuildIndexQueue = [];
@@ -137,6 +136,8 @@ function _startLiveReload() {
 let expressApp;
 function _express( callback ) {
   if (!expressApp) {
+    const http = require('http');
+    const https = require('https');
     expressApp = express();
     expressApp.use(compression()); // we want to see how big files will actually be when gzipped
     expressApp.use(express.static(DEST_PATH));
@@ -154,6 +155,12 @@ function _express( callback ) {
 
     https.createServer(httpsOptions, expressApp).listen(httpsPort, () => {
       gulpUtil.log(`-- EXPRESS LISTENING ON PORT ${httpsPort} --`);
+      gulpUtil.log(`-- SERVING ROOT: ${DEST_PATH} --`);
+
+    });
+
+    http.createServer(expressApp).listen(8080, () => {
+      gulpUtil.log(`-- EXPRESS LISTENING ON PORT 8080 --`);
       gulpUtil.log(`-- SERVING ROOT: ${DEST_PATH} --`);
       callback();
     });

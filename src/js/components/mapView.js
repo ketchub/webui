@@ -2,7 +2,7 @@ let mapStyles = require('json!../config/mapStyle.json');
 
 export default {
   template: '#components_map',
-  data: function() {
+  data() {
     return {
       $google: null,
       $directionsRenderer: null,
