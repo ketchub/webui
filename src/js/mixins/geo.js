@@ -1,34 +1,32 @@
 export default {
   methods: {
-    resolveCurrentLocation() {
-    	const { $store, reverseGeocodeSearch } = this;
-
-    	if (!navigator.geolocation) {
-    		return;
-    	}
+    /**
+     * This gets the position coordinates from geolocation api (if supported)
+     * AND reverse-geocodes via Google... THEN returns the address info.
+     */
+    resolveCurrentLocation(done) {
+      if (!this.checkSupport('geolocation')) {
+        return done(new Error('Geolocation API unavailable.'));
+      }
 
     	navigator.geolocation.getCurrentPosition((position) => {
-    		if (!position) { return; }
-    		reverseGeocodeSearch({
-    			lat: position.coords.latitude,
-    			lng: position.coords.longitude
-    		}, ( bestGuess ) => {
-    			bestGuess.CURRENT_POSITION_ESTIMATE = true;
-    			$store.dispatch('TRIP.ADD_SEARCH_START', bestGuess);
-    		});
-    	});
-
-      // console.log('watching geolocation');
-      // navigator.geolocation.watchPosition((position) => {
-      //   console.log('LOCATION_UPDATE: ', position);
-      //   // alert(`Lat: ${position.coords.latitude}, Lon: ${position.coords.longitude}`);
-      // });
+    		let { coords } = position;
+        if (!coords.latitude || !coords.longitude) {
+          return done(new Error('Location acquired but innacurrate.'));
+        }
+        done(null, {
+          lat: coords.latitude,
+          lng: coords.longitude
+        });
+      }, done); // second callback is an error handler with arg Error
     },
 
+    /**
+     * Issue a query to Google's reverse geolocation service (query is just
+     * an object with {lat:x,lng:y}), and invoke callback with results.
+     */
     reverseGeocodeSearch(query, callback) {
-    	const { loadGoogleSDK } = this;
-
-    	loadGoogleSDK((google) => {
+    	this.loadGoogleSDK((google) => {
     		const geocoder = new google.maps.Geocoder();
     		geocoder.geocode({location: query}, (results, status) => {
     			// @todo: error handling via status

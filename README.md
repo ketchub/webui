@@ -38,6 +38,11 @@ or better yet, make the self-signed cert trusted on your system:
 
 - [OSX](http://www.robpeck.com/2010/10/google-chrome-mac-os-x-and-self-signed-ssl-certificates/#.WC5cQaIrLdT)
 
+---
+
+For testing on mobile devices, its a little more complicated using HTTPS. See
+[Charles Proxy Configuration](#charles-proxy-configuration) section below.
+
 #### Deployment
 
 - Merge into branch `master`
@@ -77,3 +82,18 @@ targets:
 \# __ssh__ - ssh into the dev container when running
 
 \# __inspect-docker-compose-config__ - inspect docker compose settings
+
+#### Charles Proxy Configuration
+
+In order to access your dev environment via HTTPS, you'll need to setup a
+proxy from your host system that supports HTTPS. For OSX,
+[Charles Proxy](https://www.charlesproxy.com/) is *highly* recommended.
+
+![Alt text](./_docs/charles-config.png?raw=true "Charles Screenshot")
+
+- "SSL Proxy Settings" and "DNS Spoofing" HAVE to match the entry/alias as
+configured in your host file (`local.dev`).
+- You'll likely have to disable your Firewall (OSX: Security & Privacy > Firewall) -
+REMEMBER TO TURN IT BACK ON WHEN YOU'RE DONE.
+- For iOS devices, set your proxy configuration to point to your current host IP, and use port 8888.
+- Hit `https://local.dev:4433` in Mobile Safari.

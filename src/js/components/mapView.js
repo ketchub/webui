@@ -22,9 +22,8 @@ export default {
     initializeMap: _initializeMap,
     makeMarker: _makeMarker,
     fetchDirections: _fetchDirections,
-    clearSearch(action) {
-      this.$store.dispatch(action, null);
-    }
+    clearSearch: _clearSearch,
+    geoTraceLocationStart: _geoTraceLocationStart
   },
   mounted() {
     const self = this;
@@ -45,6 +44,27 @@ export default {
     });
   }
 };
+
+function _geoTraceLocationStart() {
+  const { $store, resolveCurrentLocation, reverseGeocodeSearch } = this;
+  resolveCurrentLocation((err, latLng) => {
+    if (err) { throw err; }
+    reverseGeocodeSearch(latLng, ( bestGuess ) => {
+      bestGuess.CURRENT_POSITION_ESTIMATE = true;
+      $store.dispatch('TRIP.ADD_SEARCH_START', bestGuess);
+    });
+  });
+}
+
+/**
+ * Clear current 'start' or 'end' search (action is the vuex action to
+ * dispatch).
+ * @param  {string} action Action to be dispatched
+ * @return void
+ */
+function _clearSearch(action) {
+  this.$store.dispatch(action, null);
+}
 
 /**
  * Initialize the map to $mapObj, and creates $startMarker and $endMarker

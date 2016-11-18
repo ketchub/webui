@@ -17,8 +17,14 @@ const webpack         = require('webpack')(webpackConfigs[process.env.NODE_ENV])
 const webpackTests    = require('webpack')(webpackConfigs["test"]);
 const https           = require('https');
 const os              = require('os');
+
 const autoBuildIndexQueue = [];
 const DEST_PATH = dirPath(`./_dist/${process.env.NODE_ENV}`);
+const httpsPort = +(process.env.HTTPS_PORT || 4433);
+const httpsOptions = {
+  key: fs.readFileSync(path.join(os.homedir(), `self-signed.dev.key`), 'utf-8'),
+  cert: fs.readFileSync(path.join(os.homedir(), `self-signed.dev.cert`), 'utf-8')
+};
 
 function envIs(_env) {
   return process.env.NODE_ENV === _env;
@@ -29,7 +35,7 @@ function dirPath(_path) {
 }
 
 function handleError(err) {
-  gulpUtil.log(err.message);
+  gulpUtil.log(`\n\n ERROR CAUGHT WITH HANDLER IN GULP: \n\n`, err);
   this.emit('end');
 }
 
@@ -121,7 +127,7 @@ function _autoBuildIndexJsFiles( callback ) {
  * Initialize live reload.
  */
 function _startLiveReload() {
-  gulpLiveReload.listen();
+  gulpLiveReload.listen(httpsOptions);
   gulpUtil.log(gulpUtil.colors.green.bold('-- LIVERELOAD STARTED --'));
 }
 
@@ -131,8 +137,6 @@ function _startLiveReload() {
 let expressApp;
 function _express( callback ) {
   if (!expressApp) {
-    const httpsPort = +(process.env.HTTPS_PORT || 4433);
-
     expressApp = express();
     expressApp.use(compression()); // we want to see how big files will actually be when gzipped
     expressApp.use(express.static(DEST_PATH));
@@ -148,10 +152,7 @@ function _express( callback ) {
       res.sendFile(`${DEST_PATH}/index.html`);
     });
 
-    https.createServer({
-      key: fs.readFileSync(path.join(os.homedir(), `self-signed.dev.key`)),
-      cert: fs.readFileSync(path.join(os.homedir(), `self-signed.dev.cert`))
-    }, expressApp).listen(httpsPort, () => {
+    https.createServer(httpsOptions, expressApp).listen(httpsPort, () => {
       gulpUtil.log(`-- EXPRESS LISTENING ON PORT ${httpsPort} --`);
       gulpUtil.log(`-- SERVING ROOT: ${DEST_PATH} --`);
       callback();
@@ -222,7 +223,6 @@ function _html() {
   const scripts = [];
   if (envIs('development')) {
     scripts.push('/app.js');
-    scripts.push('//localhost:35729/livereload.js?snipver=1');
   }
   if (envIs('production')) {
     scripts.push('/app.min.js');
@@ -242,8 +242,14 @@ function _html() {
       },
       pipeThrough: gulpHtmlMin({collapseWhitespace:true, removeComments:true})
     }))
-    .pipe(gulpTemplate(_.extend({}, { scripts })))
-    .pipe(gulpHtmlMin({collapseWhitespace:true, removeComments:true}))
+    .pipe(
+      gulpTemplate({ envIs, scripts })
+        .on('error', handleError)
+    )
+    .pipe(
+      gulpHtmlMin({collapseWhitespace:true, removeComments:true})
+        .on('error', handleError)
+    )
     .on('error', handleError)
     .pipe(gulp.dest(DEST_PATH))
     .pipe(gulpLiveReload());
