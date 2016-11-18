@@ -15,7 +15,8 @@ const compression     = require('compression');
 const webpackConfigs  = require('./webpack.config');
 const webpack         = require('webpack')(webpackConfigs[process.env.NODE_ENV]);
 const webpackTests    = require('webpack')(webpackConfigs["test"]);
-const spawn           = require('child_process').spawn;
+const https           = require('https');
+const os              = require('os');
 const autoBuildIndexQueue = [];
 const DEST_PATH = dirPath(`./_dist/${process.env.NODE_ENV}`);
 
@@ -110,21 +111,7 @@ function _autoBuildIndexJsFiles( callback ) {
       while(i = autoBuildIndexQueue.shift()) {
         gulpUtil.log(`Processing gen-indexes queue: `, i);
       }
-      makeIndexFiles('./src/js/**/*.autogen-index', callback);
-      return;
-      // const proc = spawn('node', [dirPath('./bin/gen-indexes')]);
-      // proc.stdout.on('data', (data) => { gulpUtil.log(`${data}`); });
-      // proc.stderr.on('data', (data) => {
-      //   gulpUtil.log(`\n\n Index AutoGeneration Error: \n\n`, data);
-      // });
-      // proc.on('error', function(err) {
-      //   console.log(`Error regenerating indexes: ${e.message}\n`);
-      // });
-      // proc.on('close', (code) => {
-      //   console.log(`Generate Indexes exited with code: ${code}.\n`);
-      //   callback();
-      // });
-      // return;
+      return makeIndexFiles('./src/js/**/*.autogen-index', callback);
     }
     callback();
   });
@@ -144,6 +131,8 @@ function _startLiveReload() {
 let expressApp;
 function _express( callback ) {
   if (!expressApp) {
+    const httpsPort = +(process.env.HTTPS_PORT || 4433);
+
     expressApp = express();
     expressApp.use(compression()); // we want to see how big files will actually be when gzipped
     expressApp.use(express.static(DEST_PATH));
@@ -158,8 +147,12 @@ function _express( callback ) {
       gulpUtil.log('__ serving index.html __');
       res.sendFile(`${DEST_PATH}/index.html`);
     });
-    expressApp.listen(8080, '0.0.0.0', () => {
-      gulpUtil.log(`-- EXPRESS LISTENING ON PORT 8080 --`);
+
+    https.createServer({
+      key: fs.readFileSync(path.join(os.homedir(), `self-signed.dev.key`)),
+      cert: fs.readFileSync(path.join(os.homedir(), `self-signed.dev.cert`))
+    }, expressApp).listen(httpsPort, () => {
+      gulpUtil.log(`-- EXPRESS LISTENING ON PORT ${httpsPort} --`);
       gulpUtil.log(`-- SERVING ROOT: ${DEST_PATH} --`);
       callback();
     });
@@ -249,7 +242,7 @@ function _html() {
       },
       pipeThrough: gulpHtmlMin({collapseWhitespace:true, removeComments:true})
     }))
-    .pipe(gulpTemplate(_.extend({}, config, { scripts })))
+    .pipe(gulpTemplate(_.extend({}, { scripts })))
     .pipe(gulpHtmlMin({collapseWhitespace:true, removeComments:true}))
     .on('error', handleError)
     .pipe(gulp.dest(DEST_PATH))

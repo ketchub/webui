@@ -15,7 +15,8 @@
         <tr class="row-start">
           <td class="paddingless" colspan="4" v-if="!$currentStart">
             <place-search class="place-search-start" v-if="mapLoaded" :map-obj="$mapObj" action="TRIP.ADD_SEARCH_START" placeholder="Start Location">
-              <a v-tooltip="'Use Current Location'" class="icon-map-2 current-geo" v-on:click="resolveCurrentLocation"></a>
+              <button class="icon-map-2 current-geo" v-on:click="resolveCurrentLocation"></button>
+              <!-- <a v-tooltip="'Use Current Location'" class="icon-map-2 current-geo" v-on:click="resolveCurrentLocation"></a> -->
             </place-search>
           </td>
           <template v-if="$currentStart">

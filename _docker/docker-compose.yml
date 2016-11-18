@@ -6,10 +6,12 @@ services:
       dockerfile: _docker/Dockerfile
     ports:
       - "35729:35729"
-      - "8080:8080"
+      - "${HTTPS_PORT}:${HTTPS_PORT}"
     volumes:
       - ./../:/app
       - "./.gitconfig-container:/root/.gitconfig"
+      - "./self-signed.dev.cert:/root/self-signed.dev.cert"
+      - "./self-signed.dev.key:/root/self-signed.dev.key"
     command: "${RUN_COMMAND}"
-    env_file:
-      - "$PWD/.env"
+    environment:
+      - "HTTPS_PORT=${HTTPS_PORT}"

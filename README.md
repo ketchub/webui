@@ -6,14 +6,37 @@ Dependencies for development environment:
 
 #### Developer Setup
 
+Clone the repo and `make dev`. This will build the dev environment, completely
+isolated in a Docker container, with the repo code base mounted as a volume.
+
 ```
 git clone git@github.com:jhartman86/catchalong-webui.git
 cd catchalong-webui && make dev
 ```
 
-In a browser, hit http://localhost:8080.
+When finished working, `Ctrl+C` in the terminal to shut down the Docker container
+and it'll be cleaned up automatically. The *image* will remain on your system for
+quicker startup next time, but the *container* will be cleaned up.
 
-When finished working, `Ctrl+C` in the terminal to shut down the dev environment (a Docker container) and it'll be cleaned up automatically. The *image* will remain on your system for quicker startup next time, but the *container* will be removed.
+**SSL & Local Development:** Since everything is run via https, it only makes sense
+to develop locally strictly with SSL. Self-signed certificates are bundled in
+the repo. Most browsers don't let you access https via
+`localhost`, so setup an entry in your `hosts` file (normally `/etc/hosts`). This
+step is optional if you already have an alias in your hosts file that you want to
+reuse.
+
+```
+# /etc/hosts
+127.0.0.1   local.dev
+```
+
+Navigate to: **https://local.dev:4433**
+
+*Fix Certificate HTTPS Warning:* You'll predictably see a message like
+"This site is unsafe, will steal your wife, and kill your dog." Go around it,
+or better yet, make the self-signed cert trusted on your system:
+
+- [OSX](http://www.robpeck.com/2010/10/google-chrome-mac-os-x-and-self-signed-ssl-certificates/#.WC5cQaIrLdT)
 
 #### Deployment
 
@@ -25,7 +48,9 @@ When finished working, `Ctrl+C` in the terminal to shut down the dev environment
 
 #### Under the Hood
 
-Aside from Docker (and Compose), nothing else needs to be on your system. The dev environment will be provisioned into a container and executed entirely isolated, while mounting your local directory for development. All tasks you may need to run should be available via Make targets:
+You should never need to run any commands manually (eg. rm'ing Docker containers
+daily). Everything should be handled automatically, or via preconfigured Make
+targets:
 
 \# __dev__ - launch dev environment via Docker
 

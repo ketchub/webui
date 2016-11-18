@@ -17,6 +17,12 @@ export default {
     			$store.dispatch('TRIP.ADD_SEARCH_START', bestGuess);
     		});
     	});
+
+      // console.log('watching geolocation');
+      // navigator.geolocation.watchPosition((position) => {
+      //   console.log('LOCATION_UPDATE: ', position);
+      //   // alert(`Lat: ${position.coords.latitude}, Lon: ${position.coords.longitude}`);
+      // });
     },
 
     reverseGeocodeSearch(query, callback) {
@@ -32,4 +38,3 @@ export default {
     }
   }
 };
-

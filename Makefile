@@ -1,5 +1,6 @@
 export COMPOSE_PROJECT_NAME = ca-web-ui
 export RUN_COMMAND ?= npm start
+export HTTPS_PORT ?= 4433
 
 SHELL = /bin/bash
 
