@@ -1,24 +1,64 @@
 <div class="page-home">
-  <map-view></map-view>
-  <div style="height:1000px;">
-    <p>and more stuff wtf mate and updated yo</p>
-    <div>
-      <hr />
-      Start Searches: <br/>
-      <ul>
-        <li v-for="item in $store.state.trip.searchStart">
-          {{ item.formatted_address }}
-        </li>
-      </ul>
-    </div>
-    <div>
-      <hr />
-      End Searches: <br/>
-      <ul>
-        <li v-for="item in $store.state.trip.searchEnd">
-          {{ item.formatted_address }}
-        </li>
-      </ul>
-    </div>
+  <map-view map-name="primary"></map-view>
+
+  <div class="start-end-info">
+    <table class="table table-bordered table-sm">
+      <thead>
+        <tr>
+          <th>Street</th>
+          <th>City</th>
+          <th>State</th>
+          <th colspan="2">Zip</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- start search -->
+        <tr class="row-start">
+          <td class="paddingless" colspan="5" v-if="!$store.getters.$currentStart">
+            <map-place-search class="place-search-start" map-name="primary" add-action="TRIP.ADD_SEARCH_START" placeholder="Start Location"></map-place-search>
+            <use-current-location inline-template action="TRIP.ADD_SEARCH_START">
+              <button class="btn btn-default icon-map-2 current-geo" @click="fetchCurrent"></button>
+            </use-current-location>
+          </td>
+          <template v-if="$store.getters.$currentStart">
+            <td>{{ $store.getters.$currentStart | pluckAddressComponent('street_number') }} {{ $store.getters.$currentStart | pluckAddressComponent('route') }}</td>
+            <td>{{ $store.getters.$currentStart | pluckAddressComponent('locality') }}</td>
+            <td>{{ $store.getters.$currentStart | pluckAddressComponent('administrative_area_level_1') }}</td>
+            <td>{{ $store.getters.$currentStart | pluckAddressComponent('postal_code') }}</td>
+            <td class="paddingless clear-search"><span class="icon-close" v-on:click="$store.dispatch('TRIP.CLEAR_CURRENT_START')"></span></td>
+          </template>
+        </tr>
+
+        <!-- end search -->
+        <tr class="row-end">
+          <td class="paddingless" colspan="5" v-if="!$store.getters.$currentEnd">
+            <map-place-search class="place-search-end" map-name="primary" add-action="TRIP.ADD_SEARCH_END" placeholder="End Location"></map-place-search>
+          </td>
+          <template v-if="$store.getters.$currentEnd">
+            <td>{{ $store.getters.$currentEnd | pluckAddressComponent('street_number') }} {{ $store.getters.$currentEnd | pluckAddressComponent('route') }}</td>
+            <td>{{ $store.getters.$currentEnd | pluckAddressComponent('locality') }}</td>
+            <td>{{ $store.getters.$currentEnd | pluckAddressComponent('administrative_area_level_1') }}</td>
+            <td>{{ $store.getters.$currentEnd | pluckAddressComponent('postal_code') }}</td>
+            <td class="paddingless clear-search"><span class="icon-close" v-on:click="$store.dispatch('TRIP.CLEAR_CURRENT_END')"></span></td>
+          </template>
+        </tr>
+
+        <!-- report -->
+        <template v-if="$store.getters.$currentStart && $store.getters.$currentEnd">
+          <tr class="trip-overview">
+            <td colspan="5">
+              <span class="icon-info"></span>
+              <label><strong>Distance</strong> {{ $store.getters.tripDistance }}</label>
+              <label><strong>Max Fee</strong> Around {{ $store.getters.tripMaxCharge | currency('usd') }}</label>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="5">
+              <search-matches></search-matches>
+            </td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
   </div>
 </div>

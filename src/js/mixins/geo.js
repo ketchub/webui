@@ -5,7 +5,9 @@ export default {
      * AND reverse-geocodes via Google... THEN returns the address info.
      */
     resolveCurrentLocation(done) {
-      if (!this.checkSupport('geolocation')) {
+      const { $__checkSupportHelper } = this;
+
+      if (!$__checkSupportHelper('geolocation')) {
         return done(new Error('Geolocation API unavailable.'));
       }
 
@@ -26,7 +28,9 @@ export default {
      * an object with {lat:x,lng:y}), and invoke callback with results.
      */
     reverseGeocodeSearch(query, callback) {
-    	this.loadGoogleSDK((google) => {
+      const { $__loadGoogleSDKHelper } = this;
+
+    	$__loadGoogleSDKHelper((google) => {
     		const geocoder = new google.maps.Geocoder();
     		geocoder.geocode({location: query}, (results, status) => {
     			// @todo: error handling via status

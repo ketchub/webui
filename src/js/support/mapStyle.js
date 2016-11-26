@@ -1,4 +1,4 @@
-[{
+export default [{
   "featureType": "administrative",
   "elementType": "all",
   "stylers": [{
@@ -200,4 +200,4 @@
   }, {
     "saturation": -100
   }]
-}]
+}];

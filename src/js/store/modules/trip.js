@@ -22,11 +22,11 @@ const moduleTrip = {
       state.searchEnd.push(payload);
       state.currentEnd = state.searchEnd.length - 1;
     },
-    [CLEAR_CURRENT_START]( state, payload ) {
-      state.currentStart = payload;
+    [CLEAR_CURRENT_START]( state ) {
+      state.currentStart = null;
     },
-    [CLEAR_CURRENT_END]( state, payload ) {
-      state.currentEnd = payload;
+    [CLEAR_CURRENT_END]( state ) {
+      state.currentEnd = null;
     },
     [SET_DIRECTIONS]( state, payload ) {
       state.directions = payload;
@@ -40,11 +40,13 @@ const moduleTrip = {
     [`TRIP.ADD_SEARCH_END`]( {state, commit}, payload ) {
       commit(ADD_SEARCH_END, payload);
     },
-    [`TRIP.CLEAR_CURRENT_START`]( {state, commit}, payload ) {
-      commit(CLEAR_CURRENT_START, payload);
+    [`TRIP.CLEAR_CURRENT_START`]( {commit} ) {
+      commit(CLEAR_CURRENT_START);
+      commit(SET_DIRECTIONS, null);
     },
-    [`TRIP.CLEAR_CURRENT_END`]( {state, commit}, payload ) {
-      commit(CLEAR_CURRENT_END, payload);
+    [`TRIP.CLEAR_CURRENT_END`]( {commit} ) {
+      commit(CLEAR_CURRENT_END);
+      commit(SET_DIRECTIONS, null);
     },
     [`TRIP.SET_DIRECTIONS`]( {state, commit}, payload ) {
       commit(SET_DIRECTIONS, payload);
@@ -58,9 +60,19 @@ const moduleTrip = {
     $currentEnd( state ) {
       return state.searchEnd[state.currentEnd];
     },
-    directionsDistance( state ) {
+    _directionsDistance( state ) { // _ denotes do not use except internally here
       if (state.directions && state.directions.routes) {
         return state.directions.routes[0].legs[0].distance;
+      }
+    },
+    tripDistance( state, getters ) {
+      if (getters._directionsDistance) {
+        return getters._directionsDistance.text;
+      }
+    },
+    tripMaxCharge( state, getters ) {
+      if (getters._directionsDistance) {
+        return ((getters._directionsDistance.value / 1609.344) * 0.54);
       }
     }
   }

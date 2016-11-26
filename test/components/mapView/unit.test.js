@@ -9,25 +9,27 @@
 // 		let $vm;
 //
 // 		before((done) => {
-// 			let mapView = Object.assign({}, components.mapView);
-// 			mapView.template = '<div><div class="map-instance"></div></div>';
 //
-// 			const Instance = Vue.extend(mapView);
-// 			$vm = new Instance({
-// 				mixins: [mixins.google]
-// 			});
-//
-// 			$vm
-// 				.$mount()
-// 				.$watch('mapLoaded', () => { done(); });
+//       done();
+// 			// let mapView = Object.assign({}, components.mapView);
+// 			// mapView.template = '<div><div class="map-instance"></div></div>';
+//       //
+// 			// const Instance = Vue.extend(mapView);
+// 			// $vm = new Instance({
+// 			// 	mixins: [mixins.google]
+// 			// });
+//       //
+// 			// $vm
+// 			// 	.$mount()
+// 			// 	.$watch('mapLoaded', () => { done(); });
 // 		});
 //
 // 		after(() => {
-// 			$vm.$destroy(); $vm = null;
+// 			// $vm.$destroy(); $vm = null;
 // 		});
 //
 // 		it('initializes ok', () => {
-// 			console.log('loaded and: ', $vm.$data);
+// 			console.log('loaded and: ', $vm);
 // 		});
 //
 // 	});

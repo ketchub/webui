@@ -1,0 +1,37 @@
+<div class="search-matches">
+  <form v-on:submit.prevent="onSubmit">
+    <select name="month" v-model="query.when.month">
+      <option>Jan</option>
+      <option>Feb</option>
+    </select>
+    <select name="day" v-model="query.when.day">
+      <option v-for="n in 31">{{ n }}</option>
+    </select>
+    <select name="year" v-model="query.when.year">
+      <option>2016</option>
+      <option>2017</option>
+    </select>
+    <select name="time" v-model="query.when.time">
+      <template v-for="dd in ['am', 'pm']">
+        <template v-for="n in 12">
+          <option :value="((n - 1) + ((dd == 'pm') && 12 || 0)) + '00'">{{ n }}:00 {{ dd }}</option>
+          <option :value="((n - 1) + ((dd == 'pm') && 12 || 0)) + '30'">{{ n }}:30 {{ dd }}</option>
+        </template>
+      </template>
+    </select>
+    <label><input type="checkbox" v-model="query.flexible" /> Flexible</label>
+
+    <div>
+      <p style="margin:0;">I'd consider driving and scooping others</p>
+      <label>Yes <input type="radio" name="wouldDrive" v-model="query.wouldDrive" :value="true" /></label>
+      <label>No <input type="radio" name="wouldDrive" v-model="query.wouldDrive" :value="false" /></label>
+    </div>
+
+    <button type="submit" class="btn btn-success btn-block">Find</button>
+  </form>
+
+  <div v-if="inProgress" class="searching" style="background:#28ab8e;color:#fff;font-weight:bold;">
+    <img src="/img/loading-ring.svg" />
+    Finding others headed this way...
+  </div>
+</div>

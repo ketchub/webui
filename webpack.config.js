@@ -12,7 +12,8 @@ const includes  = [
 ];
 const resolve = {
   alias: {
-    'vue$': 'vue/dist/vue.js'
+    'vue$': 'vue/dist/vue.js',
+    'modernizr$': path.join(__dirname, './.modernizrrc')
   }
 };
 const modules = {
@@ -22,15 +23,21 @@ const modules = {
     exclude: excludes,
     include: includes
   }],
-  loaders: [{
-    test: /\.js$/,
-    loader: 'babel-loader',
-    exclude: excludes,
-    include: includes,
-    query: _.merge({
-      cacheDirectory: false
-    }, babelRc)
-  }]
+  loaders: [
+    {
+      test: /\.js$/,
+      loader: 'babel-loader',
+      exclude: excludes,
+      include: includes,
+      query: _.merge({
+        cacheDirectory: false
+      }, babelRc)
+    },
+    {
+      test: /\.modernizrrc$/,
+      loader: 'modernizr'
+    }
+  ]
 };
 const jshint = {
   emitErrors: false,
@@ -44,7 +51,7 @@ module.exports = {
     context,
     devtool: 'eval',
     module: modules,
-    entry: path.join(__dirname, 'src/js/_entry.js'),
+    entry: path.join(__dirname, 'src/js/app.js'),
     output: {
       path: path.join(__dirname, '_dist', process.env.NODE_ENV),
       filename: 'app.js',
@@ -67,7 +74,7 @@ module.exports = {
     module: modules,
     entry: path.join(__dirname, 'test/_entry.js'),
     output: {
-      path: path.join(__dirname, '_dist'),
+      path: path.join(__dirname, '_dist', 'test'),
       filename: 'test-bundle.js'
     },
     plugins: [
@@ -86,7 +93,7 @@ module.exports = {
     context,
     devtool: 'source-map',
     module: modules,
-    entry: path.join(__dirname, 'src/js/_entry.js'),
+    entry: path.join(__dirname, 'src/js/app.js'),
     output: {
       path: path.join(__dirname, '_dist', process.env.NODE_ENV),
       filename: 'app.min.js'

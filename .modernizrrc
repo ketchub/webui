@@ -1,0 +1,36 @@
+{
+  "minify": true,
+  "classPrefix": "ca-",
+  "options": [
+    "setClasses"
+  ],
+  "feature-detects": [
+    "audio",
+    "dom/classlist",
+    "cors",
+    "css/animations",
+    "css/calc",
+    "css/transforms3d",
+    "css/mediaqueries",
+    "customevent",
+    "geolocation",
+    "hashchange",
+    "history",
+    "intl",
+    "json",
+    "storage/localstorage",
+    "storage/sessionstorage",
+    "notification",
+    "pagevisibility-api",
+    "performance",
+    "proximity",
+    "requestanimationframe",
+    "serviceworker",
+    "svg",
+    "touchevents",
+    "vibration",
+    "webgl",
+    "websockets",
+    "workers/webworkers"
+  ]
+}

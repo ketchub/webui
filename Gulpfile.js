@@ -45,6 +45,7 @@ function handleError(err) {
 gulp.task('autoBuildIndexJsFiles', _autoBuildIndexJsFiles);
 gulp.task('webpack', ['autoBuildIndexJsFiles'], _webpack);
 gulp.task('webpack-tests', _webpackTests);
+gulp.task('html-tests', _testHtml);
 gulp.task('sass', _sass);
 gulp.task('html', _html);
 gulp.task('assets', _assets);
@@ -67,7 +68,7 @@ gulp.task('default', [
   'express'
 ], () => {
   gulp.watch('src/**/*.scss', ['sass']);
-  gulp.watch('src/**/*.html', ['html']);
+  gulp.watch('src/**/*.html', ['html', 'html-tests']);
   gulp.watch('src/assets/**', ['assets']);
   gulp.watch('src/**/*.js', ['webpack'])
     .on('change', (ev) => {
@@ -142,12 +143,7 @@ function _express( callback ) {
     expressApp.use(compression()); // we want to see how big files will actually be when gzipped
     expressApp.use(express.static(DEST_PATH));
     expressApp.use(express.static(dirPath('./node_modules/mocha')));
-    expressApp.get('/test', (req, res) => {
-      res.sendFile(dirPath('./test/index.html'));
-    });
-    expressApp.get('/test-bundle.js', (req, res) => {
-      res.sendFile(dirPath('./_dist/test-bundle.js'));
-    });
+    expressApp.use('/test', express.static(dirPath('./_dist/test')));
     expressApp.get('/*', (req, res) => {
       gulpUtil.log('__ serving index.html __');
       res.sendFile(`${DEST_PATH}/index.html`);
@@ -263,6 +259,28 @@ function _html() {
 }
 
 /**
+ * Build the index.html file for executing tests.
+ */
+function _testHtml() {
+  return gulp.src(dirPath('./test/index.html'))
+    .pipe(gulpInception({
+      files: ['./src/views/**/*.html'],
+      attributes: {
+        type: 'text/x-template',
+        id( fileInfo ) {
+          return path.join(
+            fileInfo.dir.replace(dirPath('./src/views'), '/'),
+            fileInfo.name
+          ).replace('/', '').replace(/\//g, "_");
+        }
+      },
+      // YES, we want to minify for testing purposes
+      pipeThrough: gulpHtmlMin({collapseWhitespace:true, removeComments:true})
+    }))
+    .pipe(gulp.dest(dirPath('./_dist/test')));
+}
+
+/**
  * Generate index.js files for directories matching the query.
  * @return {void}
  */
@@ -287,9 +305,13 @@ function makeIndexFiles(query, callback) {
   function makeIndexForFilesInDirectory( fileName ){
     let dirBasePath   = path.parse(fileName).dir,
         dirGlobQuery  = path.join(dirBasePath, '/**/*.js'),
-        indexFilePath = path.join(dirBasePath, 'index.js');
+        indexFilePath = path.join(dirBasePath, 'index.js'),
+        ignore        = [
+          indexFilePath,
+          path.join(dirBasePath, '/**/_*.js')
+        ];
 
-    glob(dirGlobQuery, {ignore: indexFilePath}).on('end', function( filesInDir ){
+    glob(dirGlobQuery, {ignore}).on('end', function( filesInDir ){
       var writeStream = fs.createWriteStream(indexFilePath);
       writeHeader(writeStream);
 
