@@ -1,0 +1,15 @@
+<div class="calendry">
+  <input ref="input" :bind="value" readonly="readonly" type="hidden" />
+  <div calendry-header>
+    {{ header() }}
+  </div>
+  <div display>
+    <button type="button" @click="prev" prev><span class="icon-angle-left"></span></button>
+    <button type="button" @click="next" next><span class="icon-angle-right"></span></button>
+    <div cell-list>
+      <span cell v-for="m in monthMap()" :class="{'in-month':m._inMonth, 'selected': isSelected(m)}" @click="choose(m)">
+        {{ m.get('date') }}
+      </span>
+    </div>
+  </div>
+</div>

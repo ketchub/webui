@@ -16,10 +16,6 @@ export default {
       return get(config, query, defaultValue);
     },
 
-    $__checkSupportHelper(feature) {
-      return Modernizr[feature];
-    },
-
     $__toggleNavHelper(to) {
       this.$store.dispatch('UI.NAV_TOGGLE', to);
     },
@@ -41,7 +37,7 @@ export default {
       if (window['google']) { return done(window['google']); }
       const { $__configHelper, $__loadScriptHelper } = this;
       const apiKey = $__configHelper('GOOGLE_MAPS_API_KEY');
-			const scriptUrl = `//maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+			const scriptUrl = `//maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry,places`;
       $__loadScriptHelper(scriptUrl, () => { done(window['google']); });
     }
   }

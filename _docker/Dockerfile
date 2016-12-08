@@ -10,3 +10,4 @@ RUN apk add --no-cache \
 
 EXPOSE 35729
 EXPOSE 8080
+EXPOSE 4433

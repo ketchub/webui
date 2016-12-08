@@ -51,7 +51,7 @@ module.exports = {
     context,
     devtool: 'eval',
     module: modules,
-    entry: path.join(__dirname, 'src/js/app.js'),
+    entry: ['whatwg-fetch', path.join(__dirname, 'src/js/app.js')],
     output: {
       path: path.join(__dirname, '_dist', process.env.NODE_ENV),
       filename: 'app.js',
@@ -72,7 +72,7 @@ module.exports = {
     resolve,
     context,
     module: modules,
-    entry: path.join(__dirname, 'test/_entry.js'),
+    entry: ['whatwg-fetch', path.join(__dirname, 'test/_entry.js')],
     output: {
       path: path.join(__dirname, '_dist', 'test'),
       filename: 'test-bundle.js'
@@ -93,7 +93,7 @@ module.exports = {
     context,
     devtool: 'source-map',
     module: modules,
-    entry: path.join(__dirname, 'src/js/app.js'),
+    entry: ['whatwg-fetch', path.join(__dirname, 'src/js/app.js')],
     output: {
       path: path.join(__dirname, '_dist', process.env.NODE_ENV),
       filename: 'app.min.js'

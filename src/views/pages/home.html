@@ -1,8 +1,39 @@
 <div class="page-home">
   <map-view map-name="primary"></map-view>
 
-  <div class="start-end-info">
-    <table class="table table-bordered table-sm">
+  <div class="trip-criteria">
+    <label class="search-origin">
+      <div class="unselected" v-if="!$store.getters.tripOrigin">
+        <span class="label-text">Start</span>
+        <map-place-search class="place-search-start" map-name="primary" add-action="TRIP.SET_ORIGIN" placeholder="Pickup Location"></map-place-search>
+      </div>
+      <div class="selected" v-if="$store.getters.tripOrigin">
+        <span>{{ $store.getters.tripOrigin.formatted_address }}</span>
+        <span class="icon-close unset" v-on:click="$store.dispatch('TRIP.UNSET_ORIGIN')"></span>
+      </div>
+    </label>
+
+    <label class="search-destination">
+      <div class="unselected" v-if="!$store.getters.tripDestination">
+        <span class="label-text">End</span>
+        <map-place-search class="place-search-end" map-name="primary" add-action="TRIP.SET_DESTINATION" placeholder="Where to?"></map-place-search>
+      </div>
+      <div class="selected" v-if="$store.getters.tripDestination">
+        <span>{{ $store.getters.tripDestination.formatted_address }}</span>
+        <span class="icon-close unset" v-on:click="$store.dispatch('TRIP.UNSET_DESTINATION')"></span>
+      </div>
+    </label>
+
+    <template v-if="$store.getters.tripOrigin && $store.getters.tripDestination">
+      <div class="trip-overview">
+        <span class="icon-info"></span>
+        <span><strong>Distance</strong> {{ $store.getters.tripDistance }}</span>
+        <span><strong>Max Fee</strong> Around {{ $store.getters.tripMaxCharge | currency('usd') }}</span>
+      </div>
+      <search-matches></search-matches>
+    </template>
+
+    <!-- <table class="table table-bordered table-sm">
       <thead>
         <tr>
           <th>Street</th>
@@ -12,39 +43,43 @@
         </tr>
       </thead>
       <tbody>
-        <!-- start search -->
         <tr class="row-start">
-          <td class="paddingless" colspan="5" v-if="!$store.getters.$currentStart">
-            <map-place-search class="place-search-start" map-name="primary" add-action="TRIP.ADD_SEARCH_START" placeholder="Start Location"></map-place-search>
-            <use-current-location inline-template action="TRIP.ADD_SEARCH_START">
-              <button class="btn btn-default icon-map-2 current-geo" @click="fetchCurrent"></button>
+          <td class="paddingless" colspan="5" v-if="!$store.getters.tripOrigin">
+            <map-place-search class="place-search-start" map-name="primary" add-action="TRIP.SET_ORIGIN" placeholder="Start Location"></map-place-search>
+            <use-current-location inline-template action="TRIP.SET_ORIGIN">
+              <button class="btn btn-default icon-map-2 current-geo" @click="useCurrentLocation"></button>
             </use-current-location>
           </td>
-          <template v-if="$store.getters.$currentStart">
-            <td>{{ $store.getters.$currentStart | pluckAddressComponent('street_number') }} {{ $store.getters.$currentStart | pluckAddressComponent('route') }}</td>
-            <td>{{ $store.getters.$currentStart | pluckAddressComponent('locality') }}</td>
-            <td>{{ $store.getters.$currentStart | pluckAddressComponent('administrative_area_level_1') }}</td>
-            <td>{{ $store.getters.$currentStart | pluckAddressComponent('postal_code') }}</td>
-            <td class="paddingless clear-search"><span class="icon-close" v-on:click="$store.dispatch('TRIP.CLEAR_CURRENT_START')"></span></td>
+          <template v-if="$store.getters.tripOrigin">
+            <td>{{ $store.getters.tripOrigin | pluckAddressComponent('street_number') }} {{ $store.getters.tripOrigin | pluckAddressComponent('route') }}</td>
+            <td>{{ $store.getters.tripOrigin | pluckAddressComponent('locality') }}</td>
+            <td>{{ $store.getters.tripOrigin | pluckAddressComponent('administrative_area_level_1') }}</td>
+            <td>{{ $store.getters.tripOrigin | pluckAddressComponent('postal_code') }}</td>
+            <td class="paddingless clear-search"><span class="icon-close" v-on:click="$store.dispatch('TRIP.UNSET_ORIGIN')"></span></td>
           </template>
         </tr>
 
-        <!-- end search -->
         <tr class="row-end">
-          <td class="paddingless" colspan="5" v-if="!$store.getters.$currentEnd">
-            <map-place-search class="place-search-end" map-name="primary" add-action="TRIP.ADD_SEARCH_END" placeholder="End Location"></map-place-search>
+          <td class="paddingless" colspan="5" v-if="!$store.getters.tripDestination">
+            <map-place-search class="place-search-end" map-name="primary" add-action="TRIP.SET_DESTINATION" placeholder="Where to?"></map-place-search>
           </td>
-          <template v-if="$store.getters.$currentEnd">
-            <td>{{ $store.getters.$currentEnd | pluckAddressComponent('street_number') }} {{ $store.getters.$currentEnd | pluckAddressComponent('route') }}</td>
-            <td>{{ $store.getters.$currentEnd | pluckAddressComponent('locality') }}</td>
-            <td>{{ $store.getters.$currentEnd | pluckAddressComponent('administrative_area_level_1') }}</td>
-            <td>{{ $store.getters.$currentEnd | pluckAddressComponent('postal_code') }}</td>
-            <td class="paddingless clear-search"><span class="icon-close" v-on:click="$store.dispatch('TRIP.CLEAR_CURRENT_END')"></span></td>
+          <template v-if="$store.getters.tripDestination">
+            <td>{{ $store.getters.tripDestination | pluckAddressComponent('street_number') }} {{ $store.getters.tripDestination | pluckAddressComponent('route') }}</td>
+            <td>{{ $store.getters.tripDestination | pluckAddressComponent('locality') }}</td>
+            <td>{{ $store.getters.tripDestination | pluckAddressComponent('administrative_area_level_1') }}</td>
+            <td>{{ $store.getters.tripDestination | pluckAddressComponent('postal_code') }}</td>
+            <td class="paddingless clear-search"><span class="icon-close" v-on:click="$store.dispatch('TRIP.UNSET_DESTINATION')"></span></td>
           </template>
         </tr>
 
-        <!-- report -->
-        <template v-if="$store.getters.$currentStart && $store.getters.$currentEnd">
+        <tr>
+          <td colspan="5">
+            <strong>{{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles of origin</strong> &amp;
+            <strong>{{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles of destination</strong>
+          </td>
+        </tr>
+
+        <template v-if="$store.getters.tripOrigin && $store.getters.tripDestination">
           <tr class="trip-overview">
             <td colspan="5">
               <span class="icon-info"></span>
@@ -59,6 +94,6 @@
           </tr>
         </template>
       </tbody>
-    </table>
+    </table> -->
   </div>
 </div>

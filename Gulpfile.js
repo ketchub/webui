@@ -137,6 +137,7 @@ function _startLiveReload() {
 let expressApp;
 function _express( callback ) {
   if (!expressApp) {
+    const bindAddress = '0.0.0.0';
     const http = require('http');
     const https = require('https');
     expressApp = express();
@@ -149,13 +150,13 @@ function _express( callback ) {
       res.sendFile(`${DEST_PATH}/index.html`);
     });
 
-    https.createServer(httpsOptions, expressApp).listen(httpsPort, () => {
+    https.createServer(httpsOptions, expressApp).listen(httpsPort, bindAddress, () => {
       gulpUtil.log(`-- EXPRESS LISTENING ON PORT ${httpsPort} --`);
       gulpUtil.log(`-- SERVING ROOT: ${DEST_PATH} --`);
 
     });
 
-    http.createServer(expressApp).listen(8080, () => {
+    http.createServer(expressApp).listen(8080, bindAddress, () => {
       gulpUtil.log(`-- EXPRESS LISTENING ON PORT 8080 --`);
       gulpUtil.log(`-- SERVING ROOT: ${DEST_PATH} --`);
       callback();

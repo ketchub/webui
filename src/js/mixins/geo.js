@@ -1,3 +1,5 @@
+import modernizr from 'modernizr';
+
 export default {
   methods: {
     /**
@@ -5,9 +7,7 @@ export default {
      * AND reverse-geocodes via Google... THEN returns the address info.
      */
     resolveCurrentLocation(done) {
-      const { $__checkSupportHelper } = this;
-
-      if (!$__checkSupportHelper('geolocation')) {
+      if (!modernizr.geolocation) {
         return done(new Error('Geolocation API unavailable.'));
       }
 

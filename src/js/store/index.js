@@ -11,15 +11,15 @@ export default function( persistable = false ) {
     strict: process.env.NODE_ENV !== 'production'
   });
 
-  if (localStorage.getItem('trip')) {
-    store.replaceState(Object.assign({}, store.state, {
-      trip: JSON.parse(localStorage.getItem('trip'))
-    }));
-  }
-
   if (persistable) {
+    if (localStorage.getItem('ketch.trip')) {
+      store.replaceState(Object.assign({}, store.state, {
+        trip: JSON.parse(localStorage.getItem('ketch.trip'))
+      }));
+    }
+
     store.subscribe((mutation, state) => {
-      localStorage.setItem('trip', JSON.stringify(state.trip));
+      localStorage.setItem('ketch.trip', JSON.stringify(state.trip));
     });
   }
 

@@ -9,7 +9,7 @@ export default {
     }
   },
   methods: {
-    fetchCurrent() {
+    useCurrentLocation() {
       const {
         $store,
         action,

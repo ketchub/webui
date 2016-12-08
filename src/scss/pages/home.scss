@@ -1,37 +1,58 @@
 .page-home {height:100%;
-  .map-container {width:100%;height:100%;position:relative;
-    .map-instance {width:100%;height:100%;min-height:500px;}
+  .map-container {width:100%;height:65%;position:relative;
+    .map-instance {width:100%;height:100%;}
   }
 }
 
-.start-end-info {background:#fff;font-size:75%;max-width:300px;width:90%;position:absolute;top:1rem;right:1rem;z-index:2;//box-shadow:0 0 10px;
-  table.table {margin:0;vertical-align:middle;
-    tbody {
-      tr {
-        td {vertical-align:middle;position:relative;
-          &.paddingless {padding:0;}
-          &.clear-search {text-align:center;width:1%;
-            span {vertical-align:middle;color:#fff;display:inline-block;width:100%;line-height:1.1;font-size:200%;background:#A30532;cursor:pointer;}
-          }
-          &:nth-child(1) {position:relative;
-            &::before {content:'';display:block;width:8px;position:absolute;top:0;left:-8px;bottom:0;}
-          }
-        }
-        &.row-start td:nth-child(1)::before {background:#00D0A3;}
-        &.row-end td:nth-child(1)::before {background:#A30532;}
-
-        // trip overview
-        &.trip-overview {
-          .icon-info {font-size:200%;line-height:1;vertical-align:middle;}
-          label {margin:0;padding-left:0.5rem;display:inline-block;vertical-align:middle;}
-          strong {text-decoration:underline;}
-        }
-      }
+.trip-criteria {background:#fff;height:35%;width:100%;position:absolute;bottom:0;left:0;right:0;z-index:2;overflow-x:hidden;overflow-y:scroll;-webkit-overflow-scrolling:touch;
+  label {display:block;width:100%;margin:0;position:relative;border-bottom:1px solid #ccc;
+    .unselected {
+      .label-text {font-size:11px;padding:3px 5px;position:absolute;top:50%;left:0.5rem;display:inline-block;text-transform:uppercase;transform:translateY(-50%);}
+      .form-control {border:0;padding:0.75rem 1rem 0.75rem 3.6rem;}
+    }
+    .selected {color:#fff;
+      span {display:block;padding:0.5rem;}
+      .unset {line-height:1.6;color:inherit;border:0;font-size:150%;padding:0 0.25rem;position:absolute;top:0;right:0;bottom:0;cursor:pointer;}
+    }
+    &.search-origin {
+      .label-text, .selected {background:$theme-green;color:#fff;}
+      .selected .unset {background:darken($theme-green, 5%);}
+    }
+    &.search-destination {
+      .label-text, .selected {background:$theme-magenta;color:#fff;}
+      .selected .unset {background:darken($theme-magenta, 5%);}
     }
   }
-  .place-search {
-    input.form-control {border:0;padding:0.75rem 1rem;}
-  }
+
+  .trip-overview {}
+
+  // table.table {display:none;margin:0;vertical-align:middle;
+  //   tbody {
+  //     tr {
+  //       td {vertical-align:middle;position:relative;
+  //         &.paddingless {padding:0;}
+  //         &.clear-search {text-align:center;width:1%;
+  //           span {vertical-align:middle;color:#fff;display:inline-block;width:100%;line-height:1.1;font-size:200%;background:#A30532;cursor:pointer;}
+  //         }
+  //         &:nth-child(1) {position:relative;
+  //           &::before {content:'';display:block;width:8px;position:absolute;top:0;left:-8px;bottom:0;}
+  //         }
+  //       }
+  //       &.row-start td:nth-child(1)::before {background:#00D0A3;}
+  //       &.row-end td:nth-child(1)::before {background:#A30532;}
+  //
+  //       // trip overview
+  //       &.trip-overview {
+  //         .icon-info {font-size:200%;line-height:1;vertical-align:middle;}
+  //         label {margin:0;padding-left:0.5rem;display:inline-block;vertical-align:middle;}
+  //         strong {text-decoration:underline;}
+  //       }
+  //     }
+  //   }
+  // }
+  // .place-search {
+  //   input.form-control {border:0;padding:0.75rem 1rem;}
+  // }
   .current-geo {padding:0.5rem 0.65rem;font-size:25px;line-height:1;color:#000;position:absolute;top:0;right:0;bottom:0;background:#e1e1e1;}
 
   // search matches
@@ -41,3 +62,11 @@
     }
   }
 }
+
+// @media screen and (min-width:768px) {
+//   .page-home {height:100%;
+//     .map-container {width:100%;height:100%;position:relative;
+//     }
+//   }
+//   .trip-criteria {background:#fff;font-size:75%;max-width:300px;width:90%;position:absolute;top:1rem;right:1rem;z-index:2;}
+// }

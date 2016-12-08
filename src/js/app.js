@@ -1,12 +1,10 @@
 import { each } from 'lodash';
+import { consoleHelper } from '@/support/util';
 import getApp from '@/support/bootstrap';
 
 // Log build information to the console
-console.log(
-  `VERSION=%s; ENVIRONMENT=%s; RUNTIME=%s`,
-  process.env.VERSION,
-  process.env.NODE_ENV,
-  process.title
+consoleHelper.blue(
+  `VERSION=${process.env.VERSION}; ENVIRONMENT=${process.env.NODE_ENV}; RUNTIME=${process.title}`
 );
 
 // Initialize application, if not in test mode

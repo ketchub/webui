@@ -40,6 +40,19 @@ export default [
     name: 'Contact',
     component: noKeepAlive({template:'#pages_contact'})
   }
+  // ,{
+  //   beforeEnter,
+  //   path: '/*',
+  //   name: 'Anonz',
+  //   component: (resolve, reject) => {
+  //     console.log('dynamic route matched');
+  //     setTimeout(() => {
+  //       resolve(noKeepAlive({
+  //         template: '<div>resolved each time</div>'
+  //       }));
+  //     }, 1000);
+  //   }
+  // }
 ];
 
 /**

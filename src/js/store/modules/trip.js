@@ -1,79 +1,97 @@
-const ADD_SEARCH_START = 'ADD_SEARCH_START';
-const CLEAR_CURRENT_START = 'CLEAR_CURRENT_START';
-const ADD_SEARCH_END = 'ADD_SEARCH_END';
-const CLEAR_CURRENT_END = 'CLEAR_CURRENT_END';
+import { milesToMeters } from '@/filters';
+const SET_ORIGIN = 'SET_ORIGIN';
+const SET_ORIGIN_SEARCH_RADIUS = 'SET_ORIGIN_SEARCH_RADIUS';
+const SET_DESTINATION = 'SET_DESTINATION';
+const SET_DESTINATION_SEARCH_RADIUS = 'SET_DESTINATION_SEARCH_RADIUS';
 const SET_DIRECTIONS = 'SET_DIRECTIONS';
 
 const moduleTrip = {
   state: {
-    searchStart: [],
-    currentStart: null,
-    searchEnd: [],
-    currentEnd: null,
-    directions: null
+    _origin: null,
+    _originSearchRadius: milesToMeters(0.5),
+    _destination: null,
+    _destinationSearchRadius: milesToMeters(0.5),
+    _directions: null,
   },
 
   mutations: {
-    [ADD_SEARCH_START]( state, payload ) {
-      state.searchStart.push(payload);
-      state.currentStart = state.searchStart.length - 1;
+    [SET_ORIGIN]( state, payload ) {
+      state._origin = payload;
     },
-    [ADD_SEARCH_END]( state, payload ) {
-      state.searchEnd.push(payload);
-      state.currentEnd = state.searchEnd.length - 1;
-    },
-    [CLEAR_CURRENT_START]( state ) {
-      state.currentStart = null;
-    },
-    [CLEAR_CURRENT_END]( state ) {
-      state.currentEnd = null;
+    [SET_DESTINATION]( state, payload ) {
+      state._destination = payload;
     },
     [SET_DIRECTIONS]( state, payload ) {
-      state.directions = payload;
+      state._directions = payload;
+    },
+    [SET_ORIGIN_SEARCH_RADIUS]( state, payloadInMeters ) {
+      state._originSearchRadius = payloadInMeters;
+      // const rounded = +((payloadInMeters / METERS_MILES_CONVERSION).toFixed(2));
+      // state._originSearchRadius = rounded;
+    },
+    [SET_DESTINATION_SEARCH_RADIUS]( state, payloadInMeters ) {
+      state._destinationSearchRadius = payloadInMeters;
+      // const rounded = +((payloadInMeters / METERS_MILES_CONVERSION).toFixed(2));
+      // state._destinationSearchRadius = rounded;
     }
   },
 
   actions: {
-    [`TRIP.ADD_SEARCH_START`]( {state, commit}, payload ) {
-      commit(ADD_SEARCH_START, payload);
+    // origin actions
+    [`TRIP.SET_ORIGIN`]( {commit}, payload ) {
+      commit(SET_ORIGIN, payload);
     },
-    [`TRIP.ADD_SEARCH_END`]( {state, commit}, payload ) {
-      commit(ADD_SEARCH_END, payload);
-    },
-    [`TRIP.CLEAR_CURRENT_START`]( {commit} ) {
-      commit(CLEAR_CURRENT_START);
+    [`TRIP.UNSET_ORIGIN`]( {commit} ) {
+      commit(SET_ORIGIN, null);
       commit(SET_DIRECTIONS, null);
     },
-    [`TRIP.CLEAR_CURRENT_END`]( {commit} ) {
-      commit(CLEAR_CURRENT_END);
+    [`TRIP.SET_ORIGIN_SEARCH_RADIUS`]( {commit}, payloadInMeters ) {
+      commit(SET_ORIGIN_SEARCH_RADIUS, payloadInMeters);
+    },
+    // destination actions
+    [`TRIP.SET_DESTINATION`]( {commit}, payload ) {
+      commit(SET_DESTINATION, payload);
+    },
+    [`TRIP.UNSET_DESTINATION`]( {commit} ) {
+      commit(SET_DESTINATION, null);
       commit(SET_DIRECTIONS, null);
     },
+    [`TRIP.SET_DESTINATION_SEARCH_RADIUS`]( {commit}, payloadInMeters ) {
+      commit(SET_DESTINATION_SEARCH_RADIUS, payloadInMeters);
+    },
+    // directions actions
     [`TRIP.SET_DIRECTIONS`]( {state, commit}, payload ) {
       commit(SET_DIRECTIONS, payload);
     }
   },
 
   getters: {
-    $currentStart( state ) {
-      return state.searchStart[state.currentStart];
+    tripOrigin( state ) {
+      return state._origin;
     },
-    $currentEnd( state ) {
-      return state.searchEnd[state.currentEnd];
+    tripOriginSearchRadius( state ) {
+      return state._originSearchRadius;
     },
-    _directionsDistance( state ) { // _ denotes do not use except internally here
-      if (state.directions && state.directions.routes) {
-        return state.directions.routes[0].legs[0].distance;
+    tripDestination( state ) {
+      return state._destination;
+    },
+    tripDestinationSearchRadius( state ) {
+      return state._destinationSearchRadius;
+    },
+    tripDirections( state ) {
+      return state._directions;
+    },
+    tripDistance( state ) {
+      if (!state._directions || !state._directions.routes) {
+        return;
       }
+      return state._directions.routes[0].legs[0].distance.text;
     },
-    tripDistance( state, getters ) {
-      if (getters._directionsDistance) {
-        return getters._directionsDistance.text;
+    tripMaxCharge( state ) {
+      if (!state._directions || !state._directions.routes) {
+        return;
       }
-    },
-    tripMaxCharge( state, getters ) {
-      if (getters._directionsDistance) {
-        return ((getters._directionsDistance.value / 1609.344) * 0.54);
-      }
+      return ((state._directions.routes[0].legs[0].distance.value / 1609.344) * 0.54);
     }
   }
 };
