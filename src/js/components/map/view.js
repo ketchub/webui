@@ -2,6 +2,7 @@ import { each } from 'lodash';
 import { consoleHelper } from '@/support/util';
 import mapStyles from '@/support/mapStyle';
 import getInstance from '@/components/map/_instance';
+import getGoogleSdk from '@/support/getGoogleSdk';
 
 export default {
   render(createElement) {
@@ -18,65 +19,63 @@ export default {
     }
   },
   methods: {
-    resolveTrip: _resolveTrip,
+    init: _init,
+    updateTripMarkers: _updateTripMarkers,
+    updateDirectionsDisplay: _updateDirectionsDisplay,
+    updateContainmentPolygonCoords: _updateContainmentPolygonCoords,
+    updateContainmentPolygonDisplay: _updateContainmentPolygonDisplay,
     makeMarker: _makeMarker,
     queryDirections: _queryDirections,
-    visualHelpers: _visualHelpers
+    naiveGeometryHelpers: _naiveGeometryHelpers,
+    routeGeometryHelpers: _routeGeometryHelpers
   },
   mounted() {
     const self = this;
-    const {
-      $store,
-      makeMarker,
-      mapName,
-      $__loadGoogleSDKHelper,
-      resolveTrip,
-      visualHelpers
-    } = this;
+    const { $store, makeMarker, mapName, init } = this;
 
-    $__loadGoogleSDKHelper((google) => {
+    getGoogleSdk((err, google) => {
       self.$google = google;
-      $store.watch(state => state.trip._origin, resolveTrip);
-      $store.watch(state => state.trip._destination, resolveTrip);
-      $store.watch(state => state.trip._directions, visualHelpers);
 
-      getInstance(google, mapName, (instance) => {
-        // store the instance against the
-        self.$instance = instance;
-        // Start location marker
-        self.$startMarker = makeMarker({
-          marker: {
-            title: 'Start Location',
-            icon: {
-              url: '/img/custom-target-icon.svg',
-              size: new google.maps.Size(40, 40),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(20, 20)
-            }
-          },
+      getInstance(mapName, (err, map) => {
+        self.$map = map;
+        self.$el.appendChild(map.getDiv());
+
+        const iconDefaults = {
+          size: new google.maps.Size(40, 40),
+          origin: new google.maps.Point(0, 0),
+          anchor: new google.maps.Point(20, 20)
+        };
+
+        // Create markers (hidden by default)
+        self.$startMarker = makeMarker(map, {
+          title: 'Start Location',
+          icon: Object.assign({
+            url: '/img/custom-target-icon.svg'
+          }, iconDefaults),
           actionOnDragEnd: 'TRIP.SET_ORIGIN',
           actionOnSearchRadiusChange: 'TRIP.SET_ORIGIN_SEARCH_RADIUS',
           initialSearchRadius: $store.getters.tripOriginSearchRadius
         });
-        // End location marker
-        self.$endMarker = makeMarker({
-          marker: {
-            title: 'End Location',
-            icon: {
-              url: '/img/custom-target-icon-red.svg',
-              size: new google.maps.Size(40, 40),
-              origin: new google.maps.Point(0, 0),
-              anchor: new google.maps.Point(20, 20)
-            }
-          },
+
+        self.$endMarker = makeMarker(map, {
+          title: 'End Location',
+          icon: Object.assign({
+            url: '/img/custom-target-icon-red.svg'
+          }, iconDefaults),
           actionOnDragEnd: 'TRIP.SET_DESTINATION',
           actionOnSearchRadiusChange: 'TRIP.SET_DESTINATION_SEARCH_RADIUS',
           initialSearchRadius: $store.getters.tripDestinationSearchRadius
         });
 
-        // Append to the DOM and invoke first resolveTrip
-        self.$el.appendChild(self.$instance.node);
-        resolveTrip();
+        self.$directionsRenderer = new google.maps.DirectionsRenderer({
+          suppressMarkers: true,
+          preserveViewport: true,
+          map: map
+        });
+
+        self.$directionsService = new google.maps.DirectionsService();
+
+        init();
 
         // show recents
         // self.$apiService.get('/recent', {}, (err, resp) => {
@@ -95,7 +94,6 @@ export default {
         //     // });
         //   });
         // });
-
       });
     });
   },
@@ -116,80 +114,211 @@ export default {
 
 
 /**
- * Automatically executed whenever a start or end point gets appended to
- * the list of searched items; this will update the relevant marker positions.
+ * Initialize store watchers, and invoke any (idempotent) methods to update
+ * the display with data already in the trip store.
  */
-function _resolveTrip() {
-  const self = this;
+function _init() {
+  const {
+    $store,
+    updateTripMarkers,
+    updateContainmentPolygonCoords,
+    updateContainmentPolygonDisplay,
+    queryDirections,
+    naiveGeometryHelpers,
+    routeGeometryHelpers,
+    updateDirectionsDisplay
+  } = this;
+
+  $store.watch(state => state.trip._origin, () => {
+    updateTripMarkers();
+    queryDirections();
+    updateContainmentPolygonCoords();
+    naiveGeometryHelpers();
+  });
+  $store.watch(state => state.trip._destination, () => {
+    updateTripMarkers();
+    queryDirections();
+    updateContainmentPolygonCoords();
+    naiveGeometryHelpers();
+  });
+  $store.watch(state => state.trip._directions, () => {
+    updateDirectionsDisplay();
+    naiveGeometryHelpers();
+    routeGeometryHelpers();
+  });
+  $store.watch(state => state.trip._originSearchRadius, () => {
+    updateContainmentPolygonCoords();
+  });
+  $store.watch(state => state.trip._destinationSearchRadius, () => {
+    updateContainmentPolygonCoords();
+  });
+  $store.watch(state => state.trip._containmentPolygon, () => {
+    updateContainmentPolygonDisplay();
+  });
+
+  // Invoke all these methods on initialization to sync display to the store
+  updateTripMarkers();
+  updateContainmentPolygonCoords();
+  naiveGeometryHelpers();
+  routeGeometryHelpers();
+  updateDirectionsDisplay();
+}
+
+
+/**
+ * Update directions *display* when store data changes.
+ * @return {void}
+ */
+function _updateDirectionsDisplay() {
+  const { $map, $directionsRenderer } = this;
+  const { tripDirections } = this.$store.getters;
+
+  if (!tripDirections) {
+    return $directionsRenderer.setMap(null);
+  }
+
+  $directionsRenderer.setMap($map);
+  $directionsRenderer.setDirections(tripDirections);
+}
+
+
+/**
+ * Update trip markers, and map view/bounds.
+ */
+function _updateTripMarkers() {
   const { tripOrigin, tripDestination } = this.$store.getters;
-  const { map, directionsRenderer } = this.$instance;
-  const { queryDirections, $startMarker, $endMarker, $google, visualHelpers } = this;
+  const { $google, $map, $startMarker, $endMarker } = this;
 
   $startMarker.setVisible(tripOrigin ? true : false);
   $endMarker.setVisible(tripDestination ? true : false);
 
-  if (!tripOrigin || !tripDestination) {
-    directionsRenderer.setDirections({routes:[]});
-  }
-
   if( tripOrigin ) {
     $startMarker.setPosition(tripOrigin.geometry.location);
     if ( ! tripDestination ){
-      map.setZoom(12);
-      return map.panTo($startMarker.position);
+      $map.setZoom(12);
+      return $map.panTo($startMarker.position);
     }
   }
 
   if( tripDestination ) {
     $endMarker.setPosition(tripDestination.geometry.location);
     if ( ! tripOrigin ) {
-      map.setZoom(12);
-      return map.panTo($endMarker.position);
+      $map.setZoom(12);
+      return $map.panTo($endMarker.position);
     }
   }
 
   if ( tripOrigin && tripDestination ) {
     const bounds = new $google.maps.LatLngBounds();
-    // bounds.extend($startMarker.getPosition());
-    // bounds.extend($endMarker.getPosition());
     // make bounds account for radius circle query
     bounds.union($startMarker._circle.getBounds());
     bounds.union($endMarker._circle.getBounds());
-    map.setCenter(bounds.getCenter());
-    map.fitBounds(bounds);
-    queryDirections();
+    $map.setCenter(bounds.getCenter());
+    $map.fitBounds(bounds);
   }
 }
+
+
+/**
+ * Update the containment poly coordinates (set values in the store, but *do
+ * not* render anything). Another method will digest updates from the store
+ * and render appropriately (we need this information for sending bounded
+ * search queries, regardless of whether polygon is rendered on the map).
+ * @return {void}
+ */
+function _updateContainmentPolygonCoords() {
+  const { $store } = this;
+  const { tripOrigin, tripDestination } = $store.getters;
+
+  if (!tripOrigin || !tripDestination) {
+    return $store.dispatch('TRIP.SET_CONTAINMENT_POLYGON', null);
+  }
+
+  const { $startMarker, $endMarker, $google, $map } = this;
+  const { computeHeading, computeOffset } = $google.maps.geometry.spherical;
+  const startOffset = $startMarker._circle.getRadius();
+  const startPosition = $startMarker.getPosition();
+  const endOffset = $endMarker._circle.getRadius();
+  const endPosition = $endMarker.getPosition();
+  const heading = computeHeading(startPosition, endPosition);
+  const polyCoords = [
+    computeOffset(startPosition, startOffset, heading + 90).toJSON(),
+    computeOffset(startPosition, startOffset, heading - 90).toJSON(),
+    computeOffset(endPosition, endOffset, heading - 90).toJSON(),
+    computeOffset(endPosition, endOffset, heading + 90).toJSON()
+  ];
+  $store.dispatch('TRIP.SET_CONTAINMENT_POLYGON', polyCoords);
+}
+
+
+/**
+ * Digest updates to the tripContainmentPolygon in the store and render as
+ * appropriate.
+ * @return {void}
+ */
+function _updateContainmentPolygonDisplay() {
+  const { $map, $google } = this;
+  const { tripContainmentPolygon } = this.$store.getters;
+
+  if (!tripContainmentPolygon) {
+    if (this.$containmentPolygon) {
+      this.$containmentPolygon.setVisible(false);
+    }
+    return;
+  }
+
+  if ( ! this.$containmentPolygon ) {
+    this.$containmentPolygon = new $google.maps.Polygon({
+      paths: tripContainmentPolygon,
+      fillColor: '#00d0a3',
+      fillOpacity: 0.25,
+      strokeColor: '#ffffff',
+      strokeOpacity: 0.25,
+      strokeWeight: 1,
+      map: $map,
+      zIndex: 1
+    });
+    return;
+  }
+  this.$containmentPolygon.setPaths(tripContainmentPolygon);
+  this.$containmentPolygon.setVisible(true);
+}
+
 
 /**
  * Gets directions between two points and renders to the display.
  */
 function _queryDirections() {
-  const { directionsService, directionsRenderer } = this.$instance;
-  const {$store, $google, $startMarker, $endMarker} = this;
+  const { $store, $directionsService } = this;
+  const { tripOrigin, tripDestination } = $store.getters;
+
+  if (!tripOrigin || !tripDestination) {
+    return;
+  }
 
   consoleHelper.green('Google maps directions API queried.');
 
-  directionsService.route({
-    origin: $startMarker.position,
-    destination: $endMarker.position,
+  $directionsService.route({
+    origin: tripOrigin.geometry.location,
+    destination: tripDestination.geometry.location,
     travelMode: 'DRIVING',
   }, (response, status) => {
     $store.dispatch('TRIP.SET_DIRECTIONS', response);
-    directionsRenderer.setDirections(response);
   });
 }
+
 
 /**
  * Create a marker on the map and setup event listeners.
  */
-function _makeMarker(properties) {
-  const { $instance, $google, $store, reverseGeocodeSearch, visualHelpers } = this;
+function _makeMarker(map, params) {
+  const { $google, $store, reverseGeocodeSearch } = this;
+  const { actionOnDragEnd, actionOnSearchRadiusChange, initialSearchRadius } = params;
 
   const marker = new $google.maps.Marker(Object.assign({
     draggable: true,
     animation: $google.maps.Animation.DROP,
-    map: $instance.map,
+    map: map,
     zIndex: 2,
     // not a standard or documented way of doing this but does make it so
     // we always have access to the associated circle instance easily
@@ -199,29 +328,28 @@ function _makeMarker(properties) {
       editable: true,
       fillColor: '#ffffff',
       fillOpacity: 0.1,
-      radius: properties.initialSearchRadius,
+      radius: initialSearchRadius,
       strokeColor: '#A30532',
       strokeOpacity: 1,
       strokeWeight: 1,
       visible: false,
       zIndex: 1,
-      map: $instance.map
+      map: map
     })
-  }, properties.marker));
+  }, params));
 
   // Add listener for on drag end that initiates a reverseGeocodeSearch
   // and emits an action
   marker.addListener('dragend', (data) => {
     reverseGeocodeSearch(data.latLng.toJSON(), (bestGuess) => {
       bestGuess.MARKER_DROP_ESTIMATE = true;
-      $store.dispatch(properties.actionOnDragEnd, bestGuess);
+      $store.dispatch(actionOnDragEnd, bestGuess);
     });
   });
 
   // When marker position changes, update the circle position
   marker.addListener('position_changed', (data) => {
     marker._circle.setCenter(marker.position);
-    marker._circle.setVisible(true);
   });
 
   // when marker visibility changes, update marker._circle visibility
@@ -231,79 +359,81 @@ function _makeMarker(properties) {
 
   // when marker._circle search radius changes
   marker._circle.addListener('radius_changed', () => {
-    $store.dispatch(
-      properties.actionOnSearchRadiusChange,
-      marker._circle.getRadius()
-    );
-    visualHelpers();
+    $store.dispatch(actionOnSearchRadiusChange, marker._circle.getRadius());
   });
 
   return marker;
 }
 
+
 /**
  * Visualize polygon containment on the map, as well as direct as-the-crow-flies
  * path between origin and destination. The polygon bounding box is what we're
- * really after to conduct bounded "nearby" search.
+ * really after to conduct bounded nearby search.
  *
  * Note, this isn't a create once and forget thing, but will be invoked every
  * time the origin or destinations change.
  *
  * @return {void}
  */
-function _visualHelpers() {
-  const { tripOrigin, tripDestination, tripDirections } = this.$store.getters;
-  if (!tripOrigin || !tripDestination) { return; }
+function _naiveGeometryHelpers() {
+  const { $google, $map } = this;
+  const { tripOrigin, tripDestination } = this.$store.getters;
+  const visible = !!(tripOrigin && tripDestination);
 
-  const self = this;
-  const { $instance, $startMarker, $endMarker, $google } = this;
-  const { spherical } = $google.maps.geometry;
-
-  const startBoundOffset = $startMarker._circle.getRadius(),
-        startPosition = $startMarker.getPosition(),
-        endBoundOffset = $endMarker._circle.getRadius(),
-        endPosition = $endMarker.getPosition(),
-        heading = spherical.computeHeading(startPosition, endPosition);
-
-  const polyCoords = [
-    spherical.computeOffset(startPosition, startBoundOffset, heading + 90),
-    spherical.computeOffset(startPosition, startBoundOffset, heading - 90),
-    spherical.computeOffset(endPosition, endBoundOffset, heading - 90),
-    spherical.computeOffset(endPosition, endBoundOffset, heading + 90)
-  ];
-
-  // @todo: why would this ever evaluate to false?
-  if ( self.$boundedPolyline && self.$boundedPolygon && self.$directionsBoundingRect ) {
-    self.$boundedPolyline.setPath([startPosition, endPosition]);
-    self.$boundedPolygon.setPaths(polyCoords);
-    self.$directionsBoundingRect.setBounds(tripDirections.routes[0].bounds);
+  if (!visible) {
+    if (this.$directPolyline) {
+      this.$directPolyline.setVisible(visible);
+    }
     return;
   }
 
-  self.$boundedPolyline = new $google.maps.Polyline({
-    path: [startPosition, endPosition],
-    geodesic: true,
-    strokeColor: '#DDFF00',
-    strokeOpacity: 1.0,
-    strokeWeight: 1,
-    map: $instance.map
-  });
+  if (!this.$directPolyline) {
+    this.$directPolyline = new $google.maps.Polyline({
+      path: [tripOrigin.geometry.location, tripDestination.geometry.location],
+      strokeColor: '#DDFF00',
+      strokeOpacity: 1.0,
+      strokeWeight: 1,
+      map: $map,
+      zIndex: 2
+    });
+    return;
+  }
 
-  self.$boundedPolygon = new $google.maps.Polygon({
-    paths: polyCoords,
-    fillColor: '#00d0a3',
-    fillOpacity: 0.25,
-    strokeColor: '#ffffff',
-    strokeOpacity: 0.25,
-    strokeWeight: 1,
-    map: $instance.map
-  });
+  this.$directPolyline.setPath([tripOrigin.geometry.location, tripDestination.geometry.location]);
+  this.$directPolyline.setVisible(visible);
+}
 
-  self.$directionsBoundingRect = new $google.maps.Rectangle({
-    fillColor: '#8e0d89',
-    fillOpacity: 0.45,
-    strokeWeight: 0,
-    bounds: tripDirections.routes[0].bounds,
-    map: $instance.map
-  });
+
+/**
+ * Render bounding box around the determined map route (mainly for debugging
+ * and correctness validation).
+ * @return {void}
+ */
+function _routeGeometryHelpers() {
+  const { $google, $map } = this;
+  const { tripDirections } = this.$store.getters;
+  const visible = !!(tripDirections);
+
+  if (!visible) {
+    if (this.$directionsBoundingPoly) {
+      this.$directionsBoundingPoly.setVisible(visible);
+    }
+    return;
+  }
+
+  if (!this.$directionsBoundingPoly) {
+    this.$directionsBoundingPoly = new $google.maps.Rectangle({
+      bounds: tripDirections.routes[0].bounds,
+      fillColor: '#8e0d89',
+      fillOpacity: 0.25,
+      strokeWeight: 0,
+      zIndex: 0,
+      map: $map
+    });
+    return;
+  }
+
+  this.$directionsBoundingPoly.setBounds(tripDirections.routes[0].bounds);
+  this.$directionsBoundingPoly.setVisible(visible);
 }

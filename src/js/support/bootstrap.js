@@ -15,7 +15,7 @@ each(directives, (definition, name) => { Vue.directive(name, definition); });
 each(plugins, (plugin) => { Vue.use(plugin); });
 each(mixins, (mixin) => { Vue.mixin(mixin); });
 
-const store = getStore(true);
+const store = getStore();
 
 export default function getApp() {
   return new Vue({

@@ -2,7 +2,7 @@
   <map-view map-name="primary"></map-view>
 
   <div class="trip-criteria">
-    <label class="search-origin">
+    <div class="location-search search-origin">
       <div class="unselected" v-if="!$store.getters.tripOrigin">
         <span class="label-text">Start</span>
         <map-place-search class="place-search-start" map-name="primary" add-action="TRIP.SET_ORIGIN" placeholder="Pickup Location"></map-place-search>
@@ -11,9 +11,9 @@
         <span>{{ $store.getters.tripOrigin.formatted_address }}</span>
         <span class="icon-close unset" v-on:click="$store.dispatch('TRIP.UNSET_ORIGIN')"></span>
       </div>
-    </label>
+    </div>
 
-    <label class="search-destination">
+    <div class="location-search search-destination">
       <div class="unselected" v-if="!$store.getters.tripDestination">
         <span class="label-text">End</span>
         <map-place-search class="place-search-end" map-name="primary" add-action="TRIP.SET_DESTINATION" placeholder="Where to?"></map-place-search>
@@ -22,16 +22,21 @@
         <span>{{ $store.getters.tripDestination.formatted_address }}</span>
         <span class="icon-close unset" v-on:click="$store.dispatch('TRIP.UNSET_DESTINATION')"></span>
       </div>
-    </label>
+    </div>
 
-    <template v-if="$store.getters.tripOrigin && $store.getters.tripDestination">
+    <template v-if="$store.getters.tripDirections">
       <div class="trip-overview">
-        <span class="icon-info"></span>
+        <div class="summary">Summary</div>
         <span><strong>Distance</strong> {{ $store.getters.tripDistance }}</span>
         <span><strong>Max Fee</strong> Around {{ $store.getters.tripMaxCharge | currency('usd') }}</span>
       </div>
-      <search-matches></search-matches>
+      <search-form></search-form>
     </template>
+
+    <!-- <div v-if="inProgress" class="searching" style="background:#28ab8e;color:#fff;font-weight:bold;">
+      <img src="/img/loading-ring.svg" />
+      Finding others headed this way...
+    </div> -->
 
     <!-- <table class="table table-bordered table-sm">
       <thead>

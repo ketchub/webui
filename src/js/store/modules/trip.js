@@ -4,6 +4,7 @@ const SET_ORIGIN_SEARCH_RADIUS = 'SET_ORIGIN_SEARCH_RADIUS';
 const SET_DESTINATION = 'SET_DESTINATION';
 const SET_DESTINATION_SEARCH_RADIUS = 'SET_DESTINATION_SEARCH_RADIUS';
 const SET_DIRECTIONS = 'SET_DIRECTIONS';
+const SET_CONTAINMENT_POLYGON = 'SET_CONTAINMENT_POLYGON';
 
 const moduleTrip = {
   state: {
@@ -12,6 +13,7 @@ const moduleTrip = {
     _destination: null,
     _destinationSearchRadius: milesToMeters(0.5),
     _directions: null,
+    _containmentPolygon: null
   },
 
   mutations: {
@@ -26,13 +28,12 @@ const moduleTrip = {
     },
     [SET_ORIGIN_SEARCH_RADIUS]( state, payloadInMeters ) {
       state._originSearchRadius = payloadInMeters;
-      // const rounded = +((payloadInMeters / METERS_MILES_CONVERSION).toFixed(2));
-      // state._originSearchRadius = rounded;
     },
     [SET_DESTINATION_SEARCH_RADIUS]( state, payloadInMeters ) {
       state._destinationSearchRadius = payloadInMeters;
-      // const rounded = +((payloadInMeters / METERS_MILES_CONVERSION).toFixed(2));
-      // state._destinationSearchRadius = rounded;
+    },
+    [SET_CONTAINMENT_POLYGON]( state, payload ) {
+      state._containmentPolygon = payload;
     }
   },
 
@@ -44,6 +45,7 @@ const moduleTrip = {
     [`TRIP.UNSET_ORIGIN`]( {commit} ) {
       commit(SET_ORIGIN, null);
       commit(SET_DIRECTIONS, null);
+      commit(SET_ORIGIN_SEARCH_RADIUS, milesToMeters(0.5));
     },
     [`TRIP.SET_ORIGIN_SEARCH_RADIUS`]( {commit}, payloadInMeters ) {
       commit(SET_ORIGIN_SEARCH_RADIUS, payloadInMeters);
@@ -55,13 +57,17 @@ const moduleTrip = {
     [`TRIP.UNSET_DESTINATION`]( {commit} ) {
       commit(SET_DESTINATION, null);
       commit(SET_DIRECTIONS, null);
+      commit(SET_DESTINATION_SEARCH_RADIUS, milesToMeters(0.5));
     },
     [`TRIP.SET_DESTINATION_SEARCH_RADIUS`]( {commit}, payloadInMeters ) {
       commit(SET_DESTINATION_SEARCH_RADIUS, payloadInMeters);
     },
     // directions actions
-    [`TRIP.SET_DIRECTIONS`]( {state, commit}, payload ) {
+    [`TRIP.SET_DIRECTIONS`]( {commit}, payload ) {
       commit(SET_DIRECTIONS, payload);
+    },
+    [`TRIP.SET_CONTAINMENT_POLYGON`]( {commit}, payload ) {
+      commit(SET_CONTAINMENT_POLYGON, payload);
     }
   },
 
@@ -92,6 +98,9 @@ const moduleTrip = {
         return;
       }
       return ((state._directions.routes[0].legs[0].distance.value / 1609.344) * 0.54);
+    },
+    tripContainmentPolygon( state ) {
+      return state._containmentPolygon;
     }
   }
 };

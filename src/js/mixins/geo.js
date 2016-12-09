@@ -1,3 +1,4 @@
+import getGoogleSdk from '@/support/getGoogleSdk';
 import modernizr from 'modernizr';
 
 export default {
@@ -28,15 +29,25 @@ export default {
      * an object with {lat:x,lng:y}), and invoke callback with results.
      */
     reverseGeocodeSearch(query, callback) {
-      const { $__loadGoogleSDKHelper } = this;
-
-    	$__loadGoogleSDKHelper((google) => {
-    		const geocoder = new google.maps.Geocoder();
-    		geocoder.geocode({location: query}, (results, status) => {
-    			// @todo: error handling via status
-    			callback(results[0]);
-    		});
-    	});
+      getGeocoder((err, geocoder) => {
+        geocoder.geocode({location:query}, (results, status) => {
+          // @todo: error handling via status
+          callback(results[0]);
+        });
+      });
     }
   }
 };
+
+let _geocoder;
+function getGeocoder(done) {
+  if (!_geocoder) {
+    getGoogleSdk((err, google) => {
+      if (err) { return done(err); }
+      _geocoder = new google.maps.Geocoder();
+      done(null, _geocoder);
+    });
+    return;
+  }
+  return done(null, _geocoder);
+}

@@ -1,3 +1,4 @@
+import getGoogleSdk from '@/support/getGoogleSdk';
 import getInstance from '@/components/map/_instance';
 
 /**
@@ -20,17 +21,19 @@ export default {
     }
   },
   mounted() {
-    const { $store, mapName, addAction, $__loadGoogleSDKHelper } = this;
+    const { $store, mapName, addAction } = this;
     const $input = this.$refs.searchField;
 
-    // https://developers.google.com/places/supported_types#table3
-    $__loadGoogleSDKHelper((google) => {
-      const autoCompleteApi = new google.maps.places.Autocomplete($input);
-      getInstance(google, mapName, (instance) => {
-        autoCompleteApi.bindTo('bounds', instance.map);
-        autoCompleteApi.addListener('place_changed', () => {
-          const place = autoCompleteApi.getPlace();
-          if (!place.address_components) { return; }
+    getGoogleSdk((err, google) => {
+      if (err) { /* @todo */ }
+      const autoComplete = new google.maps.places.Autocomplete($input);
+
+      getInstance(mapName, (err, map) => {
+        if (err) { /* @todo */ }
+        autoComplete.bindTo('bounds', map);
+        autoComplete.addListener('place_changed', () => {
+          const place = autoComplete.getPlace();
+          // if (!place.address_components) { return; }
           $store.dispatch(addAction, place);
         });
       });
