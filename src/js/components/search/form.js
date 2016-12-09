@@ -17,6 +17,12 @@ export default {
       }
     };
   },
+  mounted() {
+    let self = this;
+    // this.$store.watch(state => state.trip._directions, () => {
+    //   console.log(JSON.stringify(self.getQuery()));
+    // });
+  },
 
   methods: {
     getQuery() {
@@ -25,13 +31,18 @@ export default {
         tripOrigin,
         tripDestination,
         tripDirections,
-        tripContainmentPolygon
+        tripContainmentPolygon,
+        tripOriginSearchRadius,
+        tripDestinationSearchRadius
       } = this.$store.getters;
+
       return Object.assign({}, {
         // flexible: this.$data.query.flexible,
         // wouldDrive: this.$data.query.wouldDrive,
         originPoint: tripDirections.request.origin,
+        originSearchRadius: tripOriginSearchRadius,
         destinationPoint: tripDirections.request.destination,
+        destinationSearchRadius: tripDestinationSearchRadius,
         encodedPolyline: tripDirections.routes[0].overview_polyline,
         originZip: +(pluckAddressComponent(tripOrigin, 'postal_code')),
         destinationZip: +(pluckAddressComponent(tripDestination, 'postal_code')),
@@ -42,8 +53,9 @@ export default {
     },
 
     submitSearch() {
-      this.$apiService.post('/search', this.getQuery(), (err, resp) => {
-        console.log('/search', err, resp);
+      const { $store, $apiService, getQuery } = this;
+      $apiService.post('/search', getQuery(), (err, resp) => {
+        $store.dispatch('SEARCH.SET_RESULTS', resp.results);
       });
     },
 

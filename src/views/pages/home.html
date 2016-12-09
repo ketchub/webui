@@ -33,6 +33,15 @@
       <search-form></search-form>
     </template>
 
+    <template v-if="$store.getters.searchResults">
+      <div class="match-results">
+        <div v-for="record in $store.getters.searchResults">
+          <strong>{{ record.dist }}</strong>
+          {{ record.doc.originCity }} to {{ record.doc.destinationCity }}
+        </div>
+      </div>
+    </template>
+
     <!-- <div v-if="inProgress" class="searching" style="background:#28ab8e;color:#fff;font-weight:bold;">
       <img src="/img/loading-ring.svg" />
       Finding others headed this way...

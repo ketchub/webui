@@ -27,7 +27,8 @@ export default {
     makeMarker: _makeMarker,
     queryDirections: _queryDirections,
     naiveGeometryHelpers: _naiveGeometryHelpers,
-    routeGeometryHelpers: _routeGeometryHelpers
+    routeGeometryHelpers: _routeGeometryHelpers,
+    searchResultsHandler: _searchResultsHandler
   },
   mounted() {
     const self = this;
@@ -126,7 +127,8 @@ function _init() {
     queryDirections,
     naiveGeometryHelpers,
     routeGeometryHelpers,
-    updateDirectionsDisplay
+    updateDirectionsDisplay,
+    searchResultsHandler
   } = this;
 
   $store.watch(state => state.trip._origin, () => {
@@ -155,6 +157,7 @@ function _init() {
   $store.watch(state => state.trip._containmentPolygon, () => {
     updateContainmentPolygonDisplay();
   });
+  $store.watch(state => state.search._results, searchResultsHandler);
 
   // Invoke all these methods on initialization to sync display to the store
   updateTripMarkers();
@@ -162,6 +165,32 @@ function _init() {
   naiveGeometryHelpers();
   routeGeometryHelpers();
   updateDirectionsDisplay();
+}
+
+
+/**
+ * Update map display with search results...
+ * @return {void}
+ */
+const _polyLinesCache = [];
+function _searchResultsHandler() {
+  const { $map, $google } = this;
+  const { searchResults } = this.$store.getters;
+
+  while(_polyLinesCache.length > 0) {
+    _polyLinesCache.pop().setMap(null);
+  }
+
+  each(searchResults, (record) => {
+    let plyln = record.encodedPolyline || record.doc.encodedPolyline;
+    _polyLinesCache.push(new $google.maps.Polyline({
+      map: $map,
+      path: $google.maps.geometry.encoding.decodePath(plyln),
+      strokeColor: '#FF0000',
+      strokeOpacity: 0.5,
+      strokeWeight: 2
+    }));
+  });
 }
 
 
