@@ -5,4 +5,5 @@ export {default as mapPlaceSearch} from './map/placeSearch.js';
 export {default as mapView} from './map/view.js';
 export {default as navigation} from './navigation.js';
 export {default as searchForm} from './search/form.js';
+export {default as searchResults} from './search/results.js';
 export {default as useCurrentLocation} from './useCurrentLocation.js';

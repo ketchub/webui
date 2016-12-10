@@ -29,16 +29,14 @@
         <div class="summary">Summary</div>
         <span><strong>Distance</strong> {{ $store.getters.tripDistance }}</span>
         <span><strong>Max Fee</strong> Around {{ $store.getters.tripMaxCharge | currency('usd') }}</span>
+        <span><strong>Within</strong> {{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles of start and {{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles of destination</span>
       </div>
       <search-form></search-form>
     </template>
 
     <template v-if="$store.getters.searchResults">
-      <div class="match-results">
-        <div v-for="record in $store.getters.searchResults">
-          <strong>{{ record.dist }}</strong>
-          {{ record.doc.originCity }} to {{ record.doc.destinationCity }}
-        </div>
+      <div class="search-results">
+        <search-results v-for="record in $store.getters.searchResults" :record="record"></search-results>
       </div>
     </template>
 

@@ -3,6 +3,7 @@ import { consoleHelper } from '@/support/util';
 import mapStyles from '@/support/mapStyle';
 import getInstance from '@/components/map/_instance';
 import getGoogleSdk from '@/support/getGoogleSdk';
+import eventBus from '@/support/eventBus';
 
 export default {
   render(createElement) {
@@ -172,25 +173,50 @@ function _init() {
  * Update map display with search results...
  * @return {void}
  */
-const _polyLinesCache = [];
+let _polyLinesCache = {};
 function _searchResultsHandler() {
   const { $map, $google } = this;
   const { searchResults } = this.$store.getters;
 
-  while(_polyLinesCache.length > 0) {
-    _polyLinesCache.pop().setMap(null);
-  }
+  each(_polyLinesCache, (poly, id) => {
+    poly.setMap(null);
+    delete poly[id];
+  });
+  _polyLinesCache = {};
 
   each(searchResults, (record) => {
     let plyln = record.encodedPolyline || record.doc.encodedPolyline;
-    _polyLinesCache.push(new $google.maps.Polyline({
+    _polyLinesCache[record.id || record.doc.id] = new $google.maps.Polyline({
       map: $map,
       path: $google.maps.geometry.encoding.decodePath(plyln),
       strokeColor: '#FF0000',
       strokeOpacity: 0.5,
-      strokeWeight: 2
-    }));
+      strokeWeight: 2,
+      zIndex: 99
+    });
   });
+
+  if (!this.$searchResultsEventBusListener) {
+    this.$searchResultsEventBusListener = true;
+    eventBus.$on('polyline:highlight', (recordId) => {
+      if (_polyLinesCache[recordId]) {
+        _polyLinesCache[recordId].setOptions({
+          strokeWeight: 7,
+          strokeColor: '#AA00DF',
+          strokeOpacity: 1
+        });
+      }
+    });
+    eventBus.$on('polyline:unhighlight', (recordId) => {
+      if (_polyLinesCache[recordId]) {
+        _polyLinesCache[recordId].setOptions({
+          strokeColor: '#FF0000',
+          strokeWeight: 2,
+          strokeOpacity: 0.5
+        });
+      }
+    });
+  }
 }
 
 
@@ -240,10 +266,10 @@ function _updateTripMarkers() {
   if ( tripOrigin && tripDestination ) {
     const bounds = new $google.maps.LatLngBounds();
     // make bounds account for radius circle query
-    bounds.union($startMarker._circle.getBounds());
-    bounds.union($endMarker._circle.getBounds());
-    $map.setCenter(bounds.getCenter());
-    $map.fitBounds(bounds);
+    // bounds.union($startMarker._circle.getBounds());
+    // bounds.union($endMarker._circle.getBounds());
+    // $map.setCenter(bounds.getCenter());
+    // $map.fitBounds(bounds);
   }
 }
 
@@ -265,6 +291,7 @@ function _updateContainmentPolygonCoords() {
 
   const { $startMarker, $endMarker, $google, $map } = this;
   const { computeHeading, computeOffset } = $google.maps.geometry.spherical;
+
   const startOffset = $startMarker._circle.getRadius();
   const startPosition = $startMarker.getPosition();
   const endOffset = $endMarker._circle.getRadius();

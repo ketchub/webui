@@ -19,6 +19,15 @@ export default {
   },
   mounted() {
     let self = this;
+    const { submitSearch } = this;
+    // this.$store.watch(state => state.trip._directions, submitSearch);
+    // this.$store.watch(state => state.trip._destination, submitSearch);
+    this.$store.watch(state => state.trip._containmentPolygon, () => {
+      if (!this.$store.getters.tripDirections) {
+        return;
+      }
+      submitSearch();
+    });
     // this.$store.watch(state => state.trip._directions, () => {
     //   console.log(JSON.stringify(self.getQuery()));
     // });
