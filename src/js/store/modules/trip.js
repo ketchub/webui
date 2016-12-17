@@ -45,6 +45,7 @@ const moduleTrip = {
     [`TRIP.UNSET_ORIGIN`]( {commit} ) {
       commit(SET_ORIGIN, null);
       commit(SET_DIRECTIONS, null);
+      commit(SET_CONTAINMENT_POLYGON, null);
       commit(SET_ORIGIN_SEARCH_RADIUS, milesToMeters(0.5));
     },
     [`TRIP.SET_ORIGIN_SEARCH_RADIUS`]( {commit}, payloadInMeters ) {
@@ -57,6 +58,7 @@ const moduleTrip = {
     [`TRIP.UNSET_DESTINATION`]( {commit} ) {
       commit(SET_DESTINATION, null);
       commit(SET_DIRECTIONS, null);
+      commit(SET_CONTAINMENT_POLYGON, null);
       commit(SET_DESTINATION_SEARCH_RADIUS, milesToMeters(0.5));
     },
     [`TRIP.SET_DESTINATION_SEARCH_RADIUS`]( {commit}, payloadInMeters ) {
@@ -65,9 +67,15 @@ const moduleTrip = {
     // directions actions
     [`TRIP.SET_DIRECTIONS`]( {commit}, payload ) {
       commit(SET_DIRECTIONS, payload);
-    },
-    [`TRIP.SET_CONTAINMENT_POLYGON`]( {commit}, payload ) {
-      commit(SET_CONTAINMENT_POLYGON, payload);
+      // payload received by this action should only ever be a valid set of
+      // directions; not null. This is also the only way to invoke committing
+      // SET_CONTAINMENT_POLYGON (there is no external action).
+      const bounds = payload.routes[0].bounds;
+      const boundsNE = bounds.getNorthEast().toJSON();
+      const boundsSW = bounds.getSouthWest().toJSON();
+      const boundsNW = {lat:boundsNE.lat, lng:boundsSW.lng};
+      const boundsSE = {lat:boundsSW.lat, lng:boundsNE.lng};
+      commit(SET_CONTAINMENT_POLYGON, [boundsNE, boundsSE, boundsSW, boundsNW]);
     }
   },
 

@@ -26,7 +26,7 @@ export default {
       if (!this.$store.getters.tripDirections) {
         return;
       }
-      submitSearch();
+      // submitSearch();
     });
     // this.$store.watch(state => state.trip._directions, () => {
     //   console.log(JSON.stringify(self.getQuery()));
@@ -48,6 +48,7 @@ export default {
       return Object.assign({}, {
         // flexible: this.$data.query.flexible,
         // wouldDrive: this.$data.query.wouldDrive,
+        tripDistance: tripDirections.routes[0].legs[0].distance.value,
         originPoint: tripDirections.request.origin,
         originSearchRadius: tripOriginSearchRadius,
         destinationPoint: tripDirections.request.destination,
@@ -57,7 +58,8 @@ export default {
         destinationZip: +(pluckAddressComponent(tripDestination, 'postal_code')),
         originCity: pluckAddressComponent(tripOrigin, 'locality'),
         destinationCity: pluckAddressComponent(tripDestination, 'locality'),
-        containmentPolygon: tripContainmentPolygon
+        containmentPolygon: tripContainmentPolygon,
+        routeLine: tripDirections.routes[0].overview_path
       });
     },
 
