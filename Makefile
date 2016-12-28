@@ -8,10 +8,10 @@ SHELL = /bin/bash
 dev: setup
 	@docker-compose -f _docker/docker-compose.yml up -d
 	@docker-compose -f _docker/docker-compose.yml logs -f; true && \
-	make halt
+	make dev-halt
 
-.PHONY: halt
-halt:
+.PHONY: dev-halt
+dev-halt:
 	@docker-compose -f _docker/docker-compose.yml down
 
 .PHONY: setup
@@ -49,14 +49,14 @@ gen-indexes:
 .PHONY: build-production
 build-production: RUN_COMMAND = npm run-script build-production
 build-production:
-	make dockerize; true && make halt
+	make dockerize; true && make dev-halt
 
 .PHONY: serve-production
 serve-production: RUN_COMMAND = npm run-script serve-production
 serve-production: setup
 	@docker-compose -f _docker/docker-compose.yml up -d
 	@docker-compose -f _docker/docker-compose.yml logs -f; true && \
-	make halt
+	make dev-halt
 
 ####################################################
 # Test
@@ -65,7 +65,7 @@ serve-production: setup
 test-node: RUN_COMMAND = npm run-script test-node
 test-node:
 	docker exec -it cawebui_box_1 env TERM=xterm $(RUN_COMMAND)
-	# make dockerize; true && make halt
+	# make dockerize; true && make dev-halt
 
 ####################################################
 # Release

@@ -1,11 +1,17 @@
 <div class="page-home">
   <map-view map-name="primary"></map-view>
 
-  <div class="trip-criteria">
-    <div class="location-search search-origin">
+  <div class="entry-action-bar">
+    <button type="button" class="btn btn-secondary">Search</button>
+    <button type="button" class="btn btn-secondary">My Trips</button>
+  </div>
+
+
+  <!-- <div class="trip-criteria"> -->
+    <!--<div class="location-search search-origin">
       <div class="unselected" v-if="!$store.getters.tripOrigin">
         <span class="label-text">Start</span>
-        <map-place-search class="place-search-start" map-name="primary" add-action="TRIP.SET_ORIGIN" placeholder="Pickup Location"></map-place-search>
+        <map-place-search class="place-search-start" map-name="primary" add-action="TRIP.SET_ORIGIN" placeholder="From Where?"></map-place-search>
       </div>
       <div class="selected" v-if="$store.getters.tripOrigin">
         <span>{{ $store.getters.tripOrigin.formatted_address }}</span>
@@ -16,7 +22,7 @@
     <div class="location-search search-destination">
       <div class="unselected" v-if="!$store.getters.tripDestination">
         <span class="label-text">End</span>
-        <map-place-search class="place-search-end" map-name="primary" add-action="TRIP.SET_DESTINATION" placeholder="Where to?"></map-place-search>
+        <map-place-search class="place-search-end" map-name="primary" add-action="TRIP.SET_DESTINATION" placeholder="To Where?"></map-place-search>
       </div>
       <div class="selected" v-if="$store.getters.tripDestination">
         <span>{{ $store.getters.tripDestination.formatted_address }}</span>
@@ -24,12 +30,31 @@
       </div>
     </div>
 
+    <div class="trip-details">
+      <strong>Criteria:</strong>
+    </div>
+
     <template v-if="$store.getters.tripDirections">
       <div class="trip-overview">
         <div class="summary">Summary</div>
-        <span><strong>Distance</strong> {{ $store.getters.tripDistance }}</span>
-        <span><strong>Max Fee</strong> Around {{ $store.getters.tripMaxCharge | currency('usd') }}</span>
-        <span><strong>Within</strong> {{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles of start and {{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles of destination</span>
+        <table class="table table-sm" style="font-size:12px;margin:0;">
+          <thead>
+            <tr>
+              <th>Distance</th>
+              <th>Max $</th>
+              <th>Meet Within</th>
+              <th>Dropoff Within</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ $store.getters.tripDistance }}</td>
+              <td>{{ $store.getters.tripMaxCharge | currency('usd') }}</td>
+              <td>{{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles</td>
+              <td>{{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <search-form></search-form>
     </template>
@@ -38,7 +63,7 @@
       <div class="search-results">
         <search-results v-for="record in $store.getters.searchResults" :record="record"></search-results>
       </div>
-    </template>
+    </template> -->
 
     <!-- <div v-if="inProgress" class="searching" style="background:#28ab8e;color:#fff;font-weight:bold;">
       <img src="/img/loading-ring.svg" />
@@ -107,5 +132,5 @@
         </template>
       </tbody>
     </table> -->
-  </div>
+  <!-- </div> -->
 </div>

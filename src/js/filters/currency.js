@@ -4,7 +4,7 @@ const FORMAT_USD = 'usd';
 
 const formatters = {
   [FORMAT_USD]( value, symbol = '$' ) {
-    return `${symbol}${+(value).toFixed(2)}`;
+    return `${symbol}${(+value).toFixed(2)}`;
   }
 };
 

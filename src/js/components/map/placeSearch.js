@@ -33,7 +33,9 @@ export default {
         autoComplete.bindTo('bounds', map);
         autoComplete.addListener('place_changed', () => {
           const place = autoComplete.getPlace();
-          // if (!place.address_components) { return; }
+          if (!place.address_components || !place.geometry) {
+            return alert('Details unavailable for this location!');
+          }
           $store.dispatch(addAction, place);
         });
       });

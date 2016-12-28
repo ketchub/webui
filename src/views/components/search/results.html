@@ -1,5 +1,12 @@
-<a>{{ record.id }} : {{ record.originCity }} to {{ record.destinationCity }}</a>
-<!-- <a @click="onClick" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
-  <strong>{{ record.dist | metersToMiles }}</strong>
-  {{ record.doc.originCity }} to {{ record.doc.destinationCity }}
-</a> -->
+<!-- <a>{{ record.id }} : {{ record.originCity }} to {{ record.destinationCity }}</a> -->
+
+<a @click="onClick" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
+  <span class="account-pic" :style="accountImageStyleObj"></span>
+  <span class="nombre">{{ record._account.firstName }} {{ record._account.lastName }}</span>
+  <span class="city2city-summary">({{ record.originCity }} to {{ record.destinationCity }})</span>
+  <!-- <strong>From Start:</strong> {{ record._fromOrigin | metersToMiles }}
+  <strong>From Dest:</strong> {{ record._fromDestination | metersToMiles }}
+  <strong>Total Diff:</strong> {{ record._discrep | metersToMiles }}
+  <strong>Total Distance:</strong> {{ record.tripDistance | metersToMiles }}
+  {{ record.originCity }} to {{ record.destinationCity }} -->
+</a>
