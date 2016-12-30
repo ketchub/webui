@@ -9,7 +9,8 @@
         <label><strong>When?</strong> ASAP</label>
       </div>
     </div>
-    <button type="button" class="btn btn-success execute-search-btn" v-if="$store.getters.tripDirections" onclick="document.querySelector('.page-home').classList.toggle('shrunk')">Find Matching Trips</button>
+    <search-button v-if="$store.getters.tripDirections"></search-button>
+    <!-- <button type="button" class="btn btn-success execute-search-btn" v-if="$store.getters.tripDirections" onclick="document.querySelector('.page-home').classList.toggle('shrunk')">Find Matching Trips</button> -->
   </section>
 
   <section class="results-overlay" v-if="$store.getters.tripDirections">
@@ -29,9 +30,9 @@
       </div>
     </div>
     <div class="results-list">
-      <template v-if="$store.getters.tripDirections">
+      <!-- <template v-if="$store.getters.tripDirections">
         <search-form></search-form>
-      </template>
+      </template> -->
       <template v-if="$store.getters.searchResults">
         <div class="search-results">
           <search-results v-for="record in $store.getters.searchResults" :record="record"></search-results>
@@ -45,5 +46,5 @@
     </div>
     <span class="back-to-map icon-angle-left" onclick="document.querySelector('.page-home').classList.toggle('shrunk')"></span>
   </section>
-  
+
 </div>
