@@ -263,10 +263,10 @@ function _updateTripMarkers() {
   if ( tripOrigin && tripDestination ) {
     const bounds = new $google.maps.LatLngBounds();
     // make bounds account for radius circle query
-    // bounds.union($startMarker._circle.getBounds());
-    // bounds.union($endMarker._circle.getBounds());
-    // $map.setCenter(bounds.getCenter());
-    // $map.fitBounds(bounds);
+    bounds.union($startMarker._circle.getBounds());
+    bounds.union($endMarker._circle.getBounds());
+    $map.setCenter(bounds.getCenter());
+    $map.fitBounds(bounds);
   }
 }
 

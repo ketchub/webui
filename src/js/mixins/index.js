@@ -2,3 +2,4 @@
 
 export {default as geo} from './geo.js';
 export {default as helpers} from './helpers.js';
+export {default as modal} from './modal.js';

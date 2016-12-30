@@ -1,136 +1,49 @@
 <div class="page-home">
-  <map-view map-name="primary"></map-view>
 
-  <div class="entry-action-bar">
-    <button type="button" class="btn btn-secondary">Search</button>
-    <button type="button" class="btn btn-secondary">My Trips</button>
-  </div>
-
-
-  <!-- <div class="trip-criteria"> -->
-    <!--<div class="location-search search-origin">
-      <div class="unselected" v-if="!$store.getters.tripOrigin">
-        <span class="label-text">Start</span>
-        <map-place-search class="place-search-start" map-name="primary" add-action="TRIP.SET_ORIGIN" placeholder="From Where?"></map-place-search>
-      </div>
-      <div class="selected" v-if="$store.getters.tripOrigin">
-        <span>{{ $store.getters.tripOrigin.formatted_address }}</span>
-        <span class="icon-close unset" v-on:click="$store.dispatch('TRIP.UNSET_ORIGIN')"></span>
+  <section class="mapping">
+    <map-view map-name="primary"></map-view>
+    <div class="location-searches">
+      <map-place-search class="map-place-search origin" map-name="primary" add-action="TRIP.SET_ORIGIN" unset-action="TRIP.UNSET_ORIGIN" value-getter="tripOrigin" placeholder="Where from?"></map-place-search>
+      <map-place-search class="map-place-search destination" map-name="primary" add-action="TRIP.SET_DESTINATION" unset-action="TRIP.UNSET_DESTINATION" value-getter="tripDestination" placeholder="Where to?"></map-place-search>
+      <div class="refinements" v-if="$store.getters.tripDirections">
+        <label><strong>When?</strong> ASAP</label>
       </div>
     </div>
+    <button type="button" class="btn btn-success execute-search-btn" v-if="$store.getters.tripDirections" onclick="document.querySelector('.page-home').classList.toggle('shrunk')">Find Matching Trips</button>
+  </section>
 
-    <div class="location-search search-destination">
-      <div class="unselected" v-if="!$store.getters.tripDestination">
-        <span class="label-text">End</span>
-        <map-place-search class="place-search-end" map-name="primary" add-action="TRIP.SET_DESTINATION" placeholder="To Where?"></map-place-search>
-      </div>
-      <div class="selected" v-if="$store.getters.tripDestination">
-        <span>{{ $store.getters.tripDestination.formatted_address }}</span>
-        <span class="icon-close unset" v-on:click="$store.dispatch('TRIP.UNSET_DESTINATION')"></span>
+  <section class="results-overlay" v-if="$store.getters.tripDirections">
+    <div class="textual-summary">
+      <h5>Summary</h5>
+      <div class="summary-items">
+        <div class="line-item"><strong>From</strong> {{ $store.getters.tripOrigin.formatted_address }}</div>
+        <div class="line-item"><strong>To</strong> {{ $store.getters.tripDestination.formatted_address }}</div>
+        <div class="line-item"><strong>Leaving</strong> ASAP</div>
+        <!-- temporary: clean this up -->
+        <div style="font-size:10px;">
+          <span style="font-weight:bold;">Distance: </span> {{ $store.getters.tripDistance }}
+          <span style="font-weight:bold;">Max $: </span> {{ $store.getters.tripMaxCharge | currency('usd') }}
+          <span style="font-weight:bold;">Origin search radius: </span> {{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles
+          <span style="font-weight:bold;">Dest search radius: </span> {{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles
+        </div>
       </div>
     </div>
-
-    <div class="trip-details">
-      <strong>Criteria:</strong>
+    <div class="results-list">
+      <template v-if="$store.getters.tripDirections">
+        <search-form></search-form>
+      </template>
+      <template v-if="$store.getters.searchResults">
+        <div class="search-results">
+          <search-results v-for="record in $store.getters.searchResults" :record="record"></search-results>
+        </div>
+      </template>
+      <!-- <p>results here</p> -->
     </div>
-
-    <template v-if="$store.getters.tripDirections">
-      <div class="trip-overview">
-        <div class="summary">Summary</div>
-        <table class="table table-sm" style="font-size:12px;margin:0;">
-          <thead>
-            <tr>
-              <th>Distance</th>
-              <th>Max $</th>
-              <th>Meet Within</th>
-              <th>Dropoff Within</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ $store.getters.tripDistance }}</td>
-              <td>{{ $store.getters.tripMaxCharge | currency('usd') }}</td>
-              <td>{{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles</td>
-              <td>{{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <search-form></search-form>
-    </template>
-
-    <template v-if="$store.getters.searchResults">
-      <div class="search-results">
-        <search-results v-for="record in $store.getters.searchResults" :record="record"></search-results>
-      </div>
-    </template> -->
-
-    <!-- <div v-if="inProgress" class="searching" style="background:#28ab8e;color:#fff;font-weight:bold;">
-      <img src="/img/loading-ring.svg" />
-      Finding others headed this way...
-    </div> -->
-
-    <!-- <table class="table table-bordered table-sm">
-      <thead>
-        <tr>
-          <th>Street</th>
-          <th>City</th>
-          <th>State</th>
-          <th colspan="2">Zip</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="row-start">
-          <td class="paddingless" colspan="5" v-if="!$store.getters.tripOrigin">
-            <map-place-search class="place-search-start" map-name="primary" add-action="TRIP.SET_ORIGIN" placeholder="Start Location"></map-place-search>
-            <use-current-location inline-template action="TRIP.SET_ORIGIN">
-              <button class="btn btn-default icon-map-2 current-geo" @click="useCurrentLocation"></button>
-            </use-current-location>
-          </td>
-          <template v-if="$store.getters.tripOrigin">
-            <td>{{ $store.getters.tripOrigin | pluckAddressComponent('street_number') }} {{ $store.getters.tripOrigin | pluckAddressComponent('route') }}</td>
-            <td>{{ $store.getters.tripOrigin | pluckAddressComponent('locality') }}</td>
-            <td>{{ $store.getters.tripOrigin | pluckAddressComponent('administrative_area_level_1') }}</td>
-            <td>{{ $store.getters.tripOrigin | pluckAddressComponent('postal_code') }}</td>
-            <td class="paddingless clear-search"><span class="icon-close" v-on:click="$store.dispatch('TRIP.UNSET_ORIGIN')"></span></td>
-          </template>
-        </tr>
-
-        <tr class="row-end">
-          <td class="paddingless" colspan="5" v-if="!$store.getters.tripDestination">
-            <map-place-search class="place-search-end" map-name="primary" add-action="TRIP.SET_DESTINATION" placeholder="Where to?"></map-place-search>
-          </td>
-          <template v-if="$store.getters.tripDestination">
-            <td>{{ $store.getters.tripDestination | pluckAddressComponent('street_number') }} {{ $store.getters.tripDestination | pluckAddressComponent('route') }}</td>
-            <td>{{ $store.getters.tripDestination | pluckAddressComponent('locality') }}</td>
-            <td>{{ $store.getters.tripDestination | pluckAddressComponent('administrative_area_level_1') }}</td>
-            <td>{{ $store.getters.tripDestination | pluckAddressComponent('postal_code') }}</td>
-            <td class="paddingless clear-search"><span class="icon-close" v-on:click="$store.dispatch('TRIP.UNSET_DESTINATION')"></span></td>
-          </template>
-        </tr>
-
-        <tr>
-          <td colspan="5">
-            <strong>{{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles of origin</strong> &amp;
-            <strong>{{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles of destination</strong>
-          </td>
-        </tr>
-
-        <template v-if="$store.getters.tripOrigin && $store.getters.tripDestination">
-          <tr class="trip-overview">
-            <td colspan="5">
-              <span class="icon-info"></span>
-              <label><strong>Distance</strong> {{ $store.getters.tripDistance }}</label>
-              <label><strong>Max Fee</strong> Around {{ $store.getters.tripMaxCharge | currency('usd') }}</label>
-            </td>
-          </tr>
-          <tr>
-            <td colspan="5">
-              <search-matches></search-matches>
-            </td>
-          </tr>
-        </template>
-      </tbody>
-    </table> -->
-  <!-- </div> -->
+    <div class="post-trip">
+      <p>Let others know you're looking for a ride, or would be willing to drive and pick others up!</p>
+      <button class="btn btn-success btn-block">Share My Trip</button>
+    </div>
+    <span class="back-to-map icon-angle-left" onclick="document.querySelector('.page-home').classList.toggle('shrunk')"></span>
+  </section>
+  
 </div>

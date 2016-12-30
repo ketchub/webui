@@ -16,10 +16,8 @@ each(plugins, (plugin) => { Vue.use(plugin); });
 each(mixins, (mixin) => { Vue.mixin(mixin); });
 
 const store = getStore();
+const Application = Vue.extend({store, router});
 
-export default function getApp() {
-  return new Vue({
-    store,
-    router
-  });
+export default function getApp(node) {
+  return new Application({el: node});
 }

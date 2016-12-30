@@ -1,5 +1,5 @@
 import { get, each } from 'lodash';
-const STAGGER_DELAY = 50;
+const STAGGER_DELAY = 25;
 const ANIMATED_IN_CLASS = 'entered';
 
 export default {

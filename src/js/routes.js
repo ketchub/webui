@@ -12,6 +12,18 @@ export default [
   },
   {
     beforeEnter,
+    path: '/trips',
+    name: 'My Trips',
+    component: noKeepAlive({template:'#pages_trips'})
+  },
+  {
+    beforeEnter,
+    path: '/account',
+    name: 'My Account',
+    component: noKeepAlive({template:'#pages_account'})
+  },
+  {
+    beforeEnter,
     path: '/get-started',
     name: 'Get Started',
     component: noKeepAlive({template:'#pages_get-started'})

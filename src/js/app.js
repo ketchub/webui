@@ -15,7 +15,7 @@ if (process.env.NODE_ENV !== 'test' && window && document) {
    * against the node.
    */
   each(document.querySelectorAll('[app-mount]'), (bindToNode) => {
-    getApp().$mount(bindToNode);
+    getApp(bindToNode);
   });
 
   /**

@@ -15,9 +15,31 @@ export default {
       type: String,
       required: true
     },
+    unsetAction: {
+      type: String,
+      required: true
+    },
+    valueGetter: {
+      type: String,
+      required: true
+    },
     placeholder: {
       type: String,
       required: false
+    }
+  },
+  computed: {
+    valueObj() {
+      return this.$store.getters[this.valueGetter];
+    },
+    formattedValue() {
+      return this.valueObj ? this.valueObj.formatted_address : null;
+    }
+  },
+  methods: {
+    unset(actionName) {
+      this.$store.dispatch(this.unsetAction);
+      this.$refs.searchField.value = null;
     }
   },
   mounted() {

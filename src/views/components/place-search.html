@@ -1,1 +1,7 @@
-<input class="form-control" type="text" ref="searchField" :placeholder="placeholder" />
+<div>
+  <span class="icon-circle"></span>
+  <input class="form-control" type="text" ref="searchField" :placeholder="placeholder" :value="formattedValue" />
+  <a class="unset" @click="unset" v-if="valueObj">
+    <span class="icon-close"></span>
+  </a>
+</div>
