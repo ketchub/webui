@@ -1,12 +1,23 @@
 <!-- <a>{{ record.id }} : {{ record.originCity }} to {{ record.destinationCity }}</a> -->
 
-<a @click="onClick" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
-  <span class="account-pic" :style="accountImageStyleObj"></span>
-  <span class="nombre">{{ record._account.firstName }} {{ record._account.lastName }}</span>
-  <span class="city2city-summary">({{ record.originCity }} to {{ record.destinationCity }})</span>
-  <!-- <strong>From Start:</strong> {{ record._fromOrigin | metersToMiles }}
-  <strong>From Dest:</strong> {{ record._fromDestination | metersToMiles }}
-  <strong>Total Diff:</strong> {{ record._discrep | metersToMiles }}
-  <strong>Total Distance:</strong> {{ record.tripDistance | metersToMiles }}
-  {{ record.originCity }} to {{ record.destinationCity }} -->
-</a>
+<div class="result" @click="onClick" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">
+  <div class="inner">
+    <span class="account-pic" :style="accountImageStyleObj"></span>
+    <div class="meat">
+      <div class="pseudo-row">
+        <span class="nombre">{{ record._account.firstName }} {{ record._account.lastName }}</span>
+      </div>
+      <div class="pseudo-row">
+        <span class="city2city-summary">({{ record.originCity }} to {{ record.destinationCity }})</span>
+      </div>
+      <div class="pseudo-row">
+        <span>Diff: ~{{ record._discrep | metersToMiles }} miles</span>
+      </div>
+    </div>
+    <!-- <strong>From Start:</strong> {{ record._fromOrigin | metersToMiles }}
+    <strong>From Dest:</strong> {{ record._fromDestination | metersToMiles }}
+    <strong>Total Diff:</strong> {{ record._discrep | metersToMiles }}
+    <strong>Total Distance:</strong> {{ record.tripDistance | metersToMiles }}
+    {{ record.originCity }} to {{ record.destinationCity }} -->
+  </div>
+</div>

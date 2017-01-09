@@ -5,6 +5,7 @@ const SET_DESTINATION = 'SET_DESTINATION';
 const SET_DESTINATION_SEARCH_RADIUS = 'SET_DESTINATION_SEARCH_RADIUS';
 const SET_DIRECTIONS = 'SET_DIRECTIONS';
 const SET_CONTAINMENT_POLYGON = 'SET_CONTAINMENT_POLYGON';
+const SET_WHEN = 'SET_WHEN';
 
 const moduleTrip = {
   state: {
@@ -13,7 +14,8 @@ const moduleTrip = {
     _destination: null,
     _destinationSearchRadius: milesToMeters(0.5),
     _directions: null,
-    _containmentPolygon: null
+    _containmentPolygon: null,
+    _when: null // null means "asap"
   },
 
   mutations: {
@@ -34,6 +36,9 @@ const moduleTrip = {
     },
     [SET_CONTAINMENT_POLYGON]( state, payload ) {
       state._containmentPolygon = payload;
+    },
+    [SET_WHEN]( state, payload ) {
+      state._when = payload;
     }
   },
 
@@ -76,6 +81,9 @@ const moduleTrip = {
       const boundsNW = {lat:boundsNE.lat, lng:boundsSW.lng};
       const boundsSE = {lat:boundsSW.lat, lng:boundsNE.lng};
       commit(SET_CONTAINMENT_POLYGON, [boundsNE, boundsSE, boundsSW, boundsNW]);
+    },
+    [`TRIP.SET_WHEN`]( {commit}, payload ) {
+      commit(SET_WHEN, payload);
     }
   },
 
@@ -109,6 +117,9 @@ const moduleTrip = {
     },
     tripContainmentPolygon( state ) {
       return state._containmentPolygon;
+    },
+    tripWhen( state ) {
+      return state._when;
     }
   }
 };

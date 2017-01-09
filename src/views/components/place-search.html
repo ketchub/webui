@@ -4,4 +4,5 @@
   <a class="unset" @click="unset" v-if="valueObj">
     <span class="icon-close"></span>
   </a>
+  <slot><!-- injected content (eg. "transcluded" in angular parlance) --></slot>
 </div>

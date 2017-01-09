@@ -10,6 +10,7 @@ $brand-danger:  $theme-magenta;
 
 @import './fonts';
 @import './variables';
+@import './mixins/_all';
 @import 'bootstrap/scss/bootstrap';
 
 html, body {height:100%;font-weight:200;letter-spacing:0.15;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
@@ -76,8 +77,8 @@ main {width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible;}
   #container-1 > div {padding:3rem 2rem;}
 }
 
-.calendry {width:100%;padding:0.5rem 0;
-  [calendry-header] {text-align:center;font-weight:bold;text-transform:uppercase;}
+.calendry {width:100%;padding:0;background:#fff;
+  [calendry-header] {padding:0.5rem 0;text-align:center;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #ddd;}
   [display] {position:relative;//border-top:1px dashed #ccc;border-bottom:1px dashed #ccc;
     button {font-size:1.8rem;padding:0;text-align:center;width:7%;position:absolute;top:0;bottom:0;border:0;background:$gray-lighter;}
     [prev] {left:0;
@@ -87,7 +88,7 @@ main {width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible;}
       .icon-angle-right {margin-right:-2px;display:inline-block;position:absolute;right:100%;transform:translateX(75%) translateY(-50%);}
     }
     [cell-list] {width:86%;position:relative;left:7%;
-      [cell] {opacity:0.5;text-align:center;padding:5px 0;display:inline-block;width:calc(100% / 7);
+      [cell] {opacity:0.5;text-align:center;padding:7px 0;display:inline-block;width:calc(100% / 7);
         &.in-month {opacity:1;}
         &:hover, &.selected {background:$theme-green;color:#fff;cursor:pointer;}
       }
@@ -95,10 +96,10 @@ main {width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible;}
   }
 }
 
-.modalizer[app-mount] {visibility:hidden;display:table;z-index:-99;position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);
+.modalizer[app-mount] {visibility:hidden;display:table;z-index:-99;position:fixed;top:0;right:0;bottom:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);
   .modalizer-close {position:absolute;top:0;right:0;z-index:999;font-size:300%;display:inline-block;color:#fff;}
   .modalizer-inner {padding:1rem;display:table-cell;width:100%;height:100%;vertical-align:middle;transform:translateY(-100px);transition:all 0.15s ease;}
-  &.open {visibility:visible;z-index:99;
+  &.open {visibility:visible;z-index:999;
     .modalizer-inner {transform:translateY(0);}
   }
 }

@@ -1,12 +1,16 @@
 import { isBoolean } from 'lodash';
 const NAV_TOGGLE = 'NAV_TOGGLE';
 const SET_MODAL_COMPONENT = 'SET_MODAL_COMPONENT';
+const SET_PAGE_HOME_SEARCH_OVERLAY = 'SET_PAGE_HOME_SEARCH_OVERLAY';
 
 const moduleUi = {
   state: {
     navOpen: false,
     modal: {
       componentName: null
+    },
+    pageHome: {
+      searchOverlay: false
     }
   },
 
@@ -16,6 +20,9 @@ const moduleUi = {
     },
     [SET_MODAL_COMPONENT]( state, value ) {
       state.modal.componentName = value;
+    },
+    [SET_PAGE_HOME_SEARCH_OVERLAY]( state, value ) {
+      state.pageHome.searchOverlay = value;
     }
   },
 
@@ -25,6 +32,9 @@ const moduleUi = {
     },
     [`UI.SET_MODAL_COMPONENT`]( {commit}, value ) {
       commit(SET_MODAL_COMPONENT, value);
+    },
+    [`UI.SET_PAGE_HOME_SEARCH_OVERLAY`]( {state, commit}, value ) {
+      commit(SET_PAGE_HOME_SEARCH_OVERLAY, isBoolean(value) ? value : !state.pageHome.searchOverlay);
     }
   },
 
@@ -37,6 +47,9 @@ const moduleUi = {
     },
     modalStatus( state ) { // derived from state data
       return !!state.modal.componentName;
+    },
+    pageHomeSearchOverlay( state ) {
+      return state.pageHome.searchOverlay;
     }
   }
 };

@@ -4,7 +4,6 @@ export default {
   template: '#components_calendry-view',
   props: {
     value: {
-      // this is not settable, yet (cannot pass in an initial value)
       required: true
     }
   },
@@ -47,7 +46,11 @@ export default {
     this.$monthMapMoment = moment();
   },
   mounted() {
-    this.choose(moment());
+    // Initialize w/ a passed in value (string, eg '2017-01-13')
+    // OR null (default to "now")
+    const m = this.value ? moment(this.value) : moment();
+    this.choose(m);
+    this.$monthMapMoment.month(m.month());
   }
 };
 

@@ -2,6 +2,7 @@
   .icon-circle {font-size:12px;position:absolute;left:0.5rem;top:50%;transform:translateY(-50%);}
   .form-control {font-size:inherit;border:0;padding:0.75rem 1rem 0.75rem 1.5rem;}
   .unset {line-height:0;border:0;font-size:200%;position:absolute;top:0;right:0;bottom:0;cursor:pointer;padding:1rem;
+    &::before {content:'';position:absolute;top:0;bottom:0;right:100%;width:100%;pointer-events:none;@include gradientWhiteHorizontal;}
     span {color:#fff;display:inline-block;line-height:1;position:absolute;top:50%;left:50%;transform:translateX(-50%) translateY(-50%);}
   }
   &.origin {border-bottom:1px solid #ddd;

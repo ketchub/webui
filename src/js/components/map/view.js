@@ -376,7 +376,9 @@ function _makeMarker(map, params) {
 
   // when marker._circle search radius changes
   marker._circle.addListener('radius_changed', () => {
-    $store.dispatch(actionOnSearchRadiusChange, marker._circle.getRadius());
+    $store.dispatch(actionOnSearchRadiusChange, Math.round(
+      marker._circle.getRadius()
+    ));
   });
 
   return marker;

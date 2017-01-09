@@ -1,0 +1,30 @@
+<div>
+  <div style="margin-bottom:1rem;">
+    <button class="btn btn-danger btn-block" @click="asap">As Soon As Possible</button>
+  </div>
+
+  <calendry-view v-model="query.date"></calendry-view>
+
+  <div style="background:#fff;margin-top:1rem;">
+    <span style="display:block;padding:0.5rem 0;text-align:center;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #ddd;">Time (Near Or After)</span>
+    <div style="padding:0.75rem;text-align:center;">
+      <select v-model="query.hour">
+        <option v-for="n in 12" :value="n">{{ n }}</option>
+      </select>
+      &nbsp;<select v-model="query.minute">
+        <option>00</option>
+        <option>15</option>
+        <option>30</option>
+        <option>45</option>
+      </select>
+      &nbsp;<select v-model="query.period">
+        <option>AM</option>
+        <option>PM</option>
+      </select>
+    </div>
+  </div>
+
+  <div style="margin-top:1rem;">
+    <button class="btn btn-success btn-block" @click="save">Save</button>
+  </div>
+</div>
