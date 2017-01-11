@@ -11,6 +11,7 @@ $brand-danger:  $theme-magenta;
 @import './fonts';
 @import './variables';
 @import './mixins/_all';
+@import './components/_all';
 @import 'bootstrap/scss/bootstrap';
 
 html, body {height:100%;font-weight:200;letter-spacing:0.15;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
@@ -105,4 +106,3 @@ main {width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible;}
 }
 
 @import './pages/home';
-@import './components/mapPlaceSearch';

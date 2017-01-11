@@ -27,9 +27,9 @@ export default {
         fetchPromise
           .then((resp) => { return resp.json(); })
           .then((resp) => {
-            if (resp.err) {
+            if (resp.error) {
               // push to store
-              return done(resp.err);
+              return done(resp.error);
             }
             done(null, resp);
           });

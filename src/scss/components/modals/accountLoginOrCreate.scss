@@ -1,0 +1,14 @@
+.modal-account-login-or-create {
+  form.login {background:#f1f1f1;box-shadow:0 0 15px rgba(0,0,0,0.45);
+    h1 {font-weight:200;font-style:italic;margin:0;color:$theme-green;background:$theme-dark;padding:1rem;text-transform:uppercase;}
+    .form-body {padding:1rem;
+      .form-group:last-child {margin-bottom:0;}
+    }
+  }
+  form.register {background:#f1f1f1;box-shadow:0 0 15px rgba(0,0,0,0.45);
+    h1 {font-weight:200;font-style:italic;margin:0;color:$theme-green;background:$theme-dark;padding:1rem;text-transform:uppercase;}
+    .form-body {padding:1rem;
+      .form-group:last-child {margin-bottom:0;}
+    }
+  }
+}

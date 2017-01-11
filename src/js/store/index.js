@@ -14,6 +14,7 @@ export default function() {
   });
 
   if ( getConfig('ENABLE_TRIP_LOCAL_STORAGE') && modernizr.localstorage ) {
+    // Persist the trip data to local storage on change
     if (localStorage.getItem('ketch.trip')) {
       store.replaceState(Object.assign({}, store.state, {
         trip: JSON.parse(localStorage.getItem('ketch.trip'))
@@ -23,6 +24,18 @@ export default function() {
       localStorage.setItem('ketch.trip', JSON.stringify(state.trip));
     });
   }
+
+  // Persist the login data to local storage on change
+  // Currently we're operating under the assumption localStorage is available
+  // no matter what; need a backup plan for this
+  if (localStorage.getItem('ketch.account')) {
+    store.replaceState(Object.assign({}, store.state, {
+      account: JSON.parse(localStorage.getItem('ketch.account'))
+    }));
+  }
+  store.subscribe((mutation, state) => {
+    localStorage.setItem('ketch.account', JSON.stringify(state.account));
+  });
 
   return store;
 }

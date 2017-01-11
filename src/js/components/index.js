@@ -4,6 +4,7 @@ export {default as btn} from './btn.js';
 export {default as calendryView} from './calendry/view.js';
 export {default as mapPlaceSearch} from './map/placeSearch.js';
 export {default as mapView} from './map/view.js';
+export {default as modalsAccountLoginOrCreate} from './modals/accountLoginOrCreate.js';
 export {default as modalsTripSetDateTime} from './modals/tripSetDateTime.js';
 export {default as modalWindow} from './modalWindow.js';
 export {default as navigation} from './navigation.js';

@@ -51,6 +51,10 @@
         <router-view />
       </keep-alive>
     </div>
+
+    <span @click="openModal('modalsAccountLoginOrCreate')" v-if="!$store.getters.accountIsLoggedIn" style="color:#fff;display:block;background:#222;position:fixed;bottom:1rem;left:1rem;right:1rem;z-index:9999;">
+      login
+    </span>
   </main>
 
 <!-- BEGIN: TEMPLATE PARTIALS -->

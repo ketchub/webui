@@ -9,7 +9,7 @@ export default {
     },
     __btnPostRide() {
       const { $store, $apiService, $$getTripSummary } = this;
-      $apiService.post('/post-ride', $$getTripSummary(), (err, resp) => {
+      $apiService.post('/rides/add', $$getTripSummary(), (err, resp) => {
         console.log('/post-ride [@todo: complete action]', err, resp);
       });
     },
@@ -18,7 +18,7 @@ export default {
       // open the overlay
       $store.dispatch('UI.SET_PAGE_HOME_SEARCH_OVERLAY', true);
       // post search results
-      $apiService.post('/search', $$getTripSummary(), (err, resp) => {
+      $apiService.post('/rides/search', $$getTripSummary(), (err, resp) => {
         $store.dispatch('SEARCH.SET_RESULTS', resp.results);
       });
     }
