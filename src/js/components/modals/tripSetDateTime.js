@@ -21,7 +21,7 @@ export default {
   methods: {
     asap() {
       this.$store.dispatch('TRIP.SET_WHEN', null);
-      this.closeModal();
+      this.$_toggleModal(false);
     },
     save() {
       const mm = moment(this.query.date);
@@ -39,7 +39,7 @@ export default {
       }
 
       this.$store.dispatch('TRIP.SET_WHEN', mm.toISOString());
-      this.closeModal();
+      this.$_toggleModal(false);
     }
   },
   mounted() {

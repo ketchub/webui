@@ -11,22 +11,23 @@ export default {
   },
   methods: {
     loginLocal() {
-      const { email, password, $apiService, $store, closeModal } = this;
-      $apiService.post('/auth/local', {email, password}, (err, resp) => {
-        if (err) { return alert(err); }
-        $store.dispatch('ACCOUNT.SET_TOKEN', resp.token);
-        $store.dispatch('ACCOUNT.SET_IS_LOGGED_IN', true);
-        closeModal();
+      const { $ketchApi, $_toggleModal } = this;
+      $ketchApi.account.authLocal({
+        email: this.email,
+        password: this.password
+      }, (err, resp) => {
+        if (!err) { $_toggleModal(false); }
       });
     },
     createAccountLocal() {
-      const { email, password, firstName, lastName, $apiService, $store, closeModal } = this;
-      const payload = { email, password, firstName, lastName };
-      $apiService.post('/account', payload, (err, resp) => {
-        if (err) { return alert(err.message); }
-        $store.dispatch('ACCOUNT.SET_TOKEN', resp.token);
-        $store.dispatch('ACCOUNT.SET_IS_LOGGED_IN', true);
-        closeModal();
+      const { $ketchApi, $_toggleModal } = this;
+      $ketchApi.account.create({
+        email: this.email,
+        password: this.password,
+        firstName: this.firstName,
+        lastName: this.lastName
+      }, (err, resp) => {
+        if (!err) { $_toggleModal(false); }
       });
     },
     setView(to) {

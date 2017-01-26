@@ -20,7 +20,7 @@
     "babel-polyfill": "6.16.0",
     "babel-preset-es2015": "6.16.0",
     "babel-root-import": "4.1.3",
-    "bootstrap": "4.0.0-alpha.4",
+    "bootstrap": "^4.0.0-alpha.6",
     "gulp": "3.9.1",
     "gulp-htmlmin": "3.0.0",
     "gulp-inception": "0.1.0",

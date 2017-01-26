@@ -27,11 +27,28 @@
   <nav app-mount :class="{'nav-open':$store.getters.navStatus}">
     <navigation inline-template>
       <div class="sidebar">
+        <account-basics v-if="$store.getters.accountIsLoggedIn"></account-basics>
+        <div class="account-basics entice" v-if="!$store.getters.accountIsLoggedIn">
+          <button class="btn btn-success btn-block" @click="$_toggleModal('modalsAccountLoginOrCreate')">Login</button>
+          <p>Don't have an account yet? <a @click="$_toggleModal('modalsAccountLoginOrCreate')">No but I want one</a></p>
+          <!-- <div class="btn-group">
+            <button class="btn btn-success">Login</button>
+            <button class="btn btn-basic">Sign Up</button>
+          </div> -->
+          <!-- <span @click="$_toggleModal('modalsAccountLoginOrCreate')">
+            Login or Create An Account Now
+          </span> -->
+        </div>
+
         <ul>
-          <li v-for="(item, index) in navItems" ref="listItems">
-            <router-link :to="item.path">{{ item.name }}</router-link>
-          </li>
+          <router-link v-for="(item, index) in navItems" tag="li" :to="item.path" exact>
+            <a>{{ item.name }}</a>
+          </router-link>
         </ul>
+
+        <btn :invoke="logout" v-if="$store.getters.accountIsLoggedIn" class="btn btn-success btn-block" style="position:absolute;left:0;bottom:0;">
+          <span>Sign Out</span>
+        </btn>
       </div>
     </navigation>
   </nav>
@@ -45,16 +62,12 @@
 
   <!-- ensure this is always the last [app-mount]'ed node -->
   <main app-mount :class="{'nav-open':$store.getters.navStatus}">
-    <a id="nav-trigger" class="icon-navicon" v-on:click="$__toggleNavHelper"></a>
+    <a id="nav-trigger" class="icon-navicon" v-on:click="$_toggleNav"></a>
     <div id="container-1">
       <keep-alive include="doKeepAlive">
-        <router-view />
+        <router-view></router-view>
       </keep-alive>
     </div>
-
-    <span @click="openModal('modalsAccountLoginOrCreate')" v-if="!$store.getters.accountIsLoggedIn" style="color:#fff;display:block;background:#222;position:fixed;bottom:1rem;left:1rem;right:1rem;z-index:9999;">
-      login
-    </span>
   </main>
 
 <!-- BEGIN: TEMPLATE PARTIALS -->

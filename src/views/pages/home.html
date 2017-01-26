@@ -1,63 +1,72 @@
-<div class="page-home" :class="{'search-overlay-open':$store.getters.pageHomeSearchOverlay}">
+<controllers-home inline-template>
+  <div class="page-home" :class="{'search-overlay-open':$store.getters.pageHomeSearchOverlay}">
 
-  <section class="mapping">
-    <map-view map-name="primary"></map-view>
-    <div class="location-searches">
-      <map-place-search class="map-place-search origin" map-name="primary" add-action="TRIP.SET_ORIGIN" unset-action="TRIP.UNSET_ORIGIN" value-getter="tripOrigin" placeholder="Where from?">
-        <use-current-location action="TRIP.SET_ORIGIN" inline-template>
-          <btn v-if="!$store.getters.tripOrigin" :invoke="useCurrentLocation" class="use-current-location">
-            <!-- <span>My Location</span> -->
-            <i class="icon-map-2"></i>
-          </btn>
-        </use-current-location>
-      </map-place-search>
-      <map-place-search class="map-place-search destination" map-name="primary" add-action="TRIP.SET_DESTINATION" unset-action="TRIP.UNSET_DESTINATION" value-getter="tripDestination" placeholder="Where to?"></map-place-search>
-      <div class="refinements" v-if="$store.getters.tripDirections">
-        <label><strong>When?</strong> {{ $store.getters.tripWhen | dateDisplay('As Soon As Possible') }}</label>
-        <span class="config-when" @click="openModal('modalsTripSetDateTime')">
-          <i class="icon-config"></i>
-        </span>
-      </div>
-    </div>
-    <btn :invoke="__btnSearch" v-if="$store.getters.tripDirections" class="btn btn-success execute-search-btn">
-      <span>Find Matching Trips</span>
-    </btn>
-  </section>
-
-  <section class="results-overlay" v-if="$store.getters.tripDirections">
-    <div class="scrollable">
-      <div class="textual-summary">
-        <h5>Summary</h5>
-        <div class="summary-items">
-          <div class="line-item"><strong>From</strong> {{ $store.getters.tripOrigin.formatted_address }}</div>
-          <div class="line-item"><strong>To</strong> {{ $store.getters.tripDestination.formatted_address }}</div>
-          <div class="line-item"><strong>Leaving</strong> ASAP</div>
-          <!-- temporary: clean this up -->
-          <div style="font-size:10px;">
-            <span style="font-weight:bold;">Distance: </span> {{ $store.getters.tripDistance }}
-            <span style="font-weight:bold;">Max $: </span> {{ $store.getters.tripMaxCharge | currency('usd') }}
-            <span style="font-weight:bold;">Origin search radius: </span> {{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles
-            <span style="font-weight:bold;">Dest search radius: </span> {{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles
-          </div>
+    <section class="mapping">
+      <map-view map-name="primary"></map-view>
+      <div class="location-searches">
+        <map-place-search class="map-place-search origin" map-name="primary" add-action="TRIP.SET_ORIGIN" unset-action="TRIP.UNSET_ORIGIN" value-getter="tripOrigin" placeholder="Where from?">
+          <use-current-location action="TRIP.SET_ORIGIN" inline-template>
+            <btn v-if="!$store.getters.tripOrigin" :invoke="useCurrentLocation" class="use-current-location">
+              <i class="icon-map-2"></i>
+            </btn>
+          </use-current-location>
+        </map-place-search>
+        <map-place-search class="map-place-search destination" map-name="primary" add-action="TRIP.SET_DESTINATION" unset-action="TRIP.UNSET_DESTINATION" value-getter="tripDestination" placeholder="Where to?"></map-place-search>
+        <div class="refinements" v-if="$store.getters.tripDirections">
+          <label><strong>When?</strong> {{ $store.getters.tripWhen | dateDisplay('As Soon As Possible') }}</label>
+          <span class="config-when" @click="$_toggleModal('modalsTripSetDateTime')">
+            <i class="icon-config"></i>
+          </span>
         </div>
       </div>
-      <div class="results-list">
-        <template v-if="$store.getters.searchResults">
-          <div class="search-results">
-            <search-results v-for="record in $store.getters.searchResults" :record="record"></search-results>
-          </div>
-        </template>
-      </div>
-    </div>
-    <div class="post-trip">
-      <p>Let others know you're looking for a ride, or would be willing to drive and pick others up!</p>
-      <btn class="btn btn-success btn-block" :invoke="__btnPostRide">
-        <span>Post My Ride</span>
+      <btn :invoke="btnSearch" v-if="$store.getters.tripDirections" class="btn btn-success execute-search-btn">
+        <span><span>Next</span> <i class="icon-angle-right"></i></span>
+        <!-- <span>Find Matching Trips</span> -->
       </btn>
-    </div>
-    <btn class="back-to-map" :invoke="__btnCloseSearchOverlay">
-      <i class="icon-angle-left"></i>
-    </btn>
-  </section>
+    </section>
 
-</div>
+    <section class="results-overlay" v-if="$store.getters.tripDirections">
+      <div class="scrollable">
+        <div class="textual-summary">
+          <h5>Others With Similar Routes</h5>
+          <div class="styled-select">
+            <select>
+              <option>Riders Only</option>
+              <option>Riders And/Or Drivers</option>
+              <option>Drivers Only</option>
+            </select>
+          </div>
+          <!-- <div class="summary-items">
+            <div class="line-item"><strong>From</strong>{{ $store.getters.tripOrigin.formatted_address }}</div>
+            <div class="line-item"><strong>To</strong>{{ $store.getters.tripDestination.formatted_address }}</div>
+            <div class="line-item"><strong>Leaving</strong>ASAP</div>
+            <div style="font-size:10px;">
+              <span style="font-weight:bold;">Distance: </span> {{ $store.getters.tripDistance }}
+              <span style="font-weight:bold;">Max $: </span> {{ $store.getters.tripMaxCharge | currency('usd') }}
+              <span style="font-weight:bold;">Origin search radius: </span> {{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles
+              <span style="font-weight:bold;">Dest search radius: </span> {{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles
+            </div>
+          </div> -->
+        </div>
+        <div class="results-list">
+          <template v-if="$store.getters.searchResults">
+            <div class="search-results">
+              <search-results v-for="record in $store.getters.searchResults" :record="record"></search-results>
+            </div>
+          </template>
+        </div>
+      </div>
+      <div class="post-trip">
+        <p>Let others know you're looking for a ride, or would be willing to drive and pick others up!</p>
+        <btn class="btn btn-success btn-block" :invoke="btnPostRide">
+          <span>Match Me</span>
+          <!-- <span>Post My Ride</span> -->
+        </btn>
+      </div>
+      <btn class="back-to-map" :invoke="btnCloseSearchOverlay">
+        <i class="icon-angle-left"></i>
+      </btn>
+    </section>
+
+  </div>
+</controllers-home>

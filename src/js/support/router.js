@@ -3,7 +3,8 @@ import routes from '@/routes';
 
 const router = new VueRouter({
   routes,
-  mode: 'history'
+  mode: 'history',
+  linkActiveClass: 'nav-active'
 });
 
 export default router;
@@ -13,7 +14,7 @@ export default router;
  * invoke an action to set navStatus to false.
  */
 router.afterEach(function () {
-  if( router.app && router.app.$__toggleNavHelper ) {
-    router.app.$__toggleNavHelper(false);
+  if( router.app && router.app.$_toggleNav ) {
+    router.app.$_toggleNav(false);
   }
 });

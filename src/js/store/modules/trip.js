@@ -1,3 +1,5 @@
+import Vue from 'vue';
+import { get } from 'lodash';
 import { milesToMeters } from '@/filters';
 const SET_ORIGIN = 'SET_ORIGIN';
 const SET_ORIGIN_SEARCH_RADIUS = 'SET_ORIGIN_SEARCH_RADIUS';
@@ -103,6 +105,9 @@ const moduleTrip = {
     tripDirections( state ) {
       return state._directions;
     },
+    tripPolyline( state ) {
+      return get(state, '_directions.routes[0].overview_polyline');
+    },
     tripDistance( state ) {
       if (!state._directions || !state._directions.routes) {
         return;
@@ -120,6 +125,38 @@ const moduleTrip = {
     },
     tripWhen( state ) {
       return state._when;
+    },
+    tripSummaryData( state ) {
+      const pluckAddressComponent = Vue.filter('pluckAddressComponent');
+      return {
+        tripDistance: get(state, '_directions.routes[0].legs[0].distance.value'),
+
+        originPoint: get(state, '_directions.request.origin'),
+        originSearchRadius: get(state, '_originSearchRadius'),
+        originAddress: {
+          formatted: get(state, '_origin.formatted_address'),
+          streetNumber: +pluckAddressComponent(get(state, '_origin', {}), 'street_number'),
+          streetName: pluckAddressComponent(get(state, '_origin', {}), 'route'),
+          city: pluckAddressComponent(get(state, '_origin', {}), 'locality'),
+          state: pluckAddressComponent(get(state, '_origin', {}), 'administrative_area_level_1'),
+          zip: +pluckAddressComponent(get(state, '_origin', {}), 'postal_code')
+        },
+
+        destinationPoint: get(state, '_directions.request.destination'),
+        destinationSearchRadius: get(state, '_destinationSearchRadius'),
+        destinationAddress: {
+          formatted: get(state, '_destination.formatted_address'),
+          streetNumber: +pluckAddressComponent(get(state, '_destination', {}), 'street_number'),
+          streetName: pluckAddressComponent(get(state, '_destination', {}), 'route'),
+          city: pluckAddressComponent(get(state, '_destination', {}), 'locality'),
+          state: pluckAddressComponent(get(state, '_destination', {}), 'administrative_area_level_1'),
+          zip: +pluckAddressComponent(get(state, '_destination', {}), 'postal_code')
+        },
+
+        encodedPolyline: get(state, '_directions.routes[0].overview_polyline'),
+        containmentPolygon: get(state, '_containmentPolygon'),
+        when: get(state, '_when')
+      };
     }
   }
 };

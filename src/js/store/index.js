@@ -20,7 +20,10 @@ export default function() {
         trip: JSON.parse(localStorage.getItem('ketch.trip'))
       }));
     }
-    store.subscribe((mutation, state) => {
+    store.subscribe((mutation, state, last) => {
+      // @todo: persist trip state in a more efficient way, this will
+      // reserialize and update on EVERY store mutation (NOT JUST CHANGES
+      // TO THE TRIP MODULE).
       localStorage.setItem('ketch.trip', JSON.stringify(state.trip));
     });
   }
@@ -28,13 +31,14 @@ export default function() {
   // Persist the login data to local storage on change
   // Currently we're operating under the assumption localStorage is available
   // no matter what; need a backup plan for this
-  if (localStorage.getItem('ketch.account')) {
-    store.replaceState(Object.assign({}, store.state, {
-      account: JSON.parse(localStorage.getItem('ketch.account'))
-    }));
+  if (localStorage.getItem('ketch.account.token')) {
+    store.commit('SET_TOKEN', localStorage.getItem('ketch.account.token'));
   }
-  store.subscribe((mutation, state) => {
-    localStorage.setItem('ketch.account', JSON.stringify(state.account));
+  store.watch(state => state.account._token, (newVal) => {
+    if (newVal) {
+      return localStorage.setItem('ketch.account.token', newVal);
+    }
+    localStorage.removeItem('ketch.account.token');
   });
 
   return store;

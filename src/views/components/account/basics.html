@@ -1,0 +1,7 @@
+<router-link :to="'/account'" class="account-basics">
+  <span class="user-pic" :style="accountImageStyleObj"></span>
+  <span class="meta">{{ $store.getters.accountInfo.firstName }} {{ $store.getters.accountInfo.lastName }}
+    <small class="text-muted">{{ $store.getters.accountInfo.email }}</small>
+    <small class="xs">View Account</small>
+  </span>
+</router-link>

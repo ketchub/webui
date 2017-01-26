@@ -1,3 +1,25 @@
-<div>
-  <h1>My Trips</h1>
-</div>
+<controllers-trips inline-template>
+  <div>
+    <h1>My Trips</h1>
+    <div class="btn-group">
+      <label class="btn btn-success" :class="{active:(chronology === 'upcoming')}">
+        <input type="radio" name="chronology" value="upcoming" v-model="chronology" autocomplete="off" /> Upcoming
+      </label>
+      <label class="btn btn-success" :class="{active:(chronology === 'previous')}">
+        <input type="radio" name="chronology" value="previous" v-model="chronology" autocomplete="off" /> Previous
+      </label>
+    </div>
+
+    <rides-history :chronology="chronology" inline-template>
+      <ul class="trips-list">
+        <li v-for="ride in $store.getters.accountRideHistory">
+          <small class="when">{{ ride.when | dateDisplay }}</small>
+          <small class="distance">About {{ ride.tripDistance | metersToMiles }} miles</small>
+          <span class="locale origin"><i class="icon-circle"></i> {{ ride.originAddress.formatted }}</span>
+          <span class="locale destination"><i class="icon-circle"></i> {{ ride.destinationAddress.formatted }}</span>
+          <static-map :polyline="ride.encodedPolyline"></static-map>
+        </li>
+      </ul>
+    </rides-history>
+  </div>
+</controllers-trips>

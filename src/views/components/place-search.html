@@ -1,6 +1,6 @@
 <div>
   <span class="icon-circle"></span>
-  <input class="form-control" type="text" ref="searchField" :placeholder="placeholder" :value="formattedValue" />
+  <input class="form-control" type="text" ref="searchField" :placeholder="placeholder" :value="formattedValue" :disabled="valueObj" />
   <a class="unset" @click="unset" v-if="valueObj">
     <span class="icon-close"></span>
   </a>

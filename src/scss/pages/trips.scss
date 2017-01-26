@@ -1,0 +1,21 @@
+.page-trips {
+  .btn-group {width:100%;
+    .btn {width:50%;
+      input {display:none;}
+    }
+  }
+  .trips-list {list-style:none;margin:0;padding:0;
+    li {position:relative;background:#fff;padding:2rem 1rem 1rem;margin-bottom:1rem;display:block;border-top:1px solid $gray-light;line-height:1;
+      small {font-size:70%;text-transform:uppercase;display:inline-block;color:#fff;background:$theme-dark;padding:0.35rem;position:absolute;top:0;
+        &.when {right:0;}
+        &.distance {left:0;}
+      }
+      .locale {font-size:90%;display:block;padding-bottom:0.5rem;font-weight:400;vertical-align:middle;@include textEllipsis;
+        i {display:inline;font-size:60%;vertical-align:middle;}
+        &.origin i {color:$theme-green;}
+        &.destination i {color:$theme-magenta;}
+      }
+      img {max-width:100%;height:auto;}
+    }
+  }
+}

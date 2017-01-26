@@ -14,13 +14,19 @@ export default [
     beforeEnter,
     path: '/trips',
     name: 'My Trips',
-    component: noKeepAlive({template:'#pages_trips'})
+    component: noKeepAlive({template:'#pages_trips'}),
+    meta: {
+      bodyClass: 'trips'
+    }
   },
   {
     beforeEnter,
     path: '/account',
     name: 'My Account',
-    component: noKeepAlive({template:'#pages_account'})
+    component: noKeepAlive({template:'#pages_account'}),
+    meta: {
+      unlisted: true
+    }
   },
   {
     beforeEnter,

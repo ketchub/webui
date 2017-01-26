@@ -329,7 +329,7 @@ function _queryDirections() {
  * Create a marker on the map and setup event listeners.
  */
 function _makeMarker(map, params) {
-  const { $google, $store, reverseGeocodeSearch } = this;
+  const { $google, $store, $_reverseGeocode } = this;
   const { actionOnDragEnd, actionOnSearchRadiusChange, initialSearchRadius } = params;
 
   const marker = new $google.maps.Marker(Object.assign({
@@ -355,10 +355,10 @@ function _makeMarker(map, params) {
     })
   }, params));
 
-  // Add listener for on drag end that initiates a reverseGeocodeSearch
+  // Add listener for on drag end that initiates a $_reverseGeocode
   // and emits an action
   marker.addListener('dragend', (data) => {
-    reverseGeocodeSearch(data.latLng.toJSON(), (bestGuess) => {
+    $_reverseGeocode(data.latLng.toJSON(), (err, bestGuess) => {
       bestGuess.MARKER_DROP_ESTIMATE = true;
       $store.dispatch(actionOnDragEnd, bestGuess);
     });

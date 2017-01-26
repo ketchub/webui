@@ -7,17 +7,16 @@
       <div class="pseudo-row">
         <span class="nombre">{{ record._account.firstName }} {{ record._account.lastName }}</span>
       </div>
+      <!-- <div class="pseudo-row">
+        <span class="city2city-summary">({{ record.originAddress.city }} to {{ record.destinationAddress.city }})</span>
+      </div> -->
       <div class="pseudo-row">
-        <span class="city2city-summary">({{ record.originCity }} to {{ record.destinationCity }})</span>
+        <span>{{ record.when | dateDisplay }}</span>
       </div>
       <div class="pseudo-row">
-        <span>Diff: ~{{ record._discrep | metersToMiles }} miles</span>
+        <span><strong>{{ record._fromDestination | metersToMiles }}</strong> miles of your destination</span>
       </div>
     </div>
-    <!-- <strong>From Start:</strong> {{ record._fromOrigin | metersToMiles }}
-    <strong>From Dest:</strong> {{ record._fromDestination | metersToMiles }}
-    <strong>Total Diff:</strong> {{ record._discrep | metersToMiles }}
-    <strong>Total Distance:</strong> {{ record.tripDistance | metersToMiles }}
-    {{ record.originCity }} to {{ record.destinationCity }} -->
+    <!-- <button class="btn btn-success">More</button> -->
   </div>
 </div>
