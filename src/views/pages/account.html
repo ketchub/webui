@@ -1,3 +1,9 @@
-<div>
-  <h1>My Account</h1>
-</div>
+<controllers-account inline-template>
+  <div>
+    <h1>My Account</h1>
+    <form>
+      <input type="tel" disabled :value="$store.getters.accountInfo.phone" />
+      (Unverified) <a @click="verifyPhone">Send Verification Code</a>
+    </form>
+  </div>
+</controllers-account>

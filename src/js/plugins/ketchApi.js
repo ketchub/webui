@@ -58,6 +58,13 @@ function Api( store ) {
           store.dispatch('ACCOUNT.SET_TOKEN', resp.token);
           done(err, resp);
         });
+      },
+      verifyPhoneRequest( done = noop ) {
+        fetch.get('/account/verify-phone-request', (err, resp) => {
+          if (err) { return alert(err); }
+          console.log(resp);
+          done(err, resp);
+        });
       }
     },
 

@@ -3,6 +3,7 @@
 export {default as accountBasics} from './account/basics.js';
 export {default as btn} from './btn.js';
 export {default as calendryView} from './calendry/view.js';
+export {default as controllersAccount} from './controllers/account.js';
 export {default as controllersHome} from './controllers/home.js';
 export {default as controllersTrips} from './controllers/trips.js';
 export {default as mapPlaceSearch} from './map/placeSearch.js';

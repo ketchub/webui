@@ -6,7 +6,7 @@ export default {
   computed: {
     accountImageStyleObj() {
       return {
-        'background-image': `url("${this.record._account.image.full}")`
+        'background-image': `url("${this.record._account.image}")`
       };
     }
   },

@@ -4,6 +4,7 @@ export default {
     return {
       viewForm: 'login',
       email: null,
+      phone: null,
       password: null,
       firstName: null,
       lastName: null
@@ -23,6 +24,7 @@ export default {
       const { $ketchApi, $_toggleModal } = this;
       $ketchApi.account.create({
         email: this.email,
+        phone: this.phone,
         password: this.password,
         firstName: this.firstName,
         lastName: this.lastName

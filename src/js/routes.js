@@ -1,4 +1,5 @@
 import { get } from 'lodash';
+import eventBus from '@/support/eventBus';
 
 export default [
   {
@@ -57,20 +58,14 @@ export default [
     path: '/contact',
     name: 'Contact',
     component: noKeepAlive({template:'#pages_contact'})
+  },
+  {
+    path: '/tokenized/:token',
+    beforeEnter(from, _, next) {
+      eventBus.$emit('token:set', from.params.token);
+      next('/');
+    }
   }
-  // ,{
-  //   beforeEnter,
-  //   path: '/*',
-  //   name: 'Anonz',
-  //   component: (resolve, reject) => {
-  //     console.log('dynamic route matched');
-  //     setTimeout(() => {
-  //       resolve(noKeepAlive({
-  //         template: '<div>resolved each time</div>'
-  //       }));
-  //     }, 1000);
-  //   }
-  // }
 ];
 
 /**
