@@ -60,7 +60,7 @@ function Api( store ) {
         });
       },
       verifyPhoneRequest( done = noop ) {
-        fetch.get('/account/verify-phone-request', (err, resp) => {
+        fetch.get('/account/send-phone-verification', (err, resp) => {
           if (err) { return alert(err); }
           console.log(resp);
           done(err, resp);
