@@ -319,8 +319,23 @@ function _queryDirections() {
     origin: tripOrigin.geometry.location,
     destination: tripDestination.geometry.location,
     travelMode: 'DRIVING',
+    provideRouteAlternatives: false
   }, (response, status) => {
+    // console.log('store directions here', response);
+    // $store.dispatch('TRIP.SET_DIRECTIONS', {
+    //   request: response.request,
+    //   route: {
+    //     bounds: response.routes[0].bounds,
+    //     distance: response.routes[0].legs[0].distance,
+    //     start_address: response.routes[0].legs[0].start_address,
+    //     start_location: response.routes[0].legs[0].start_location,
+    //     end_address: response.routes[0].legs[0].end_address,
+    //     end_location: response.routes[0].legs[0].end_location,
+    //     overview_polyline: response.routes[0].overview_polyline
+    //   }
+    // });
     $store.dispatch('TRIP.SET_DIRECTIONS', response);
+    
   });
 }
 

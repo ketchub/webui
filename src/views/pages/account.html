@@ -1,9 +1,19 @@
 <controllers-account inline-template>
   <div>
     <h1>My Account</h1>
-    <form>
-      <input type="tel" disabled :value="$store.getters.accountInfo.phone" />
-      (Unverified) <a @click="verifyPhone">Send Verification Code</a>
+    <form v-on:submit.prevent>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" v-model="newPhone" :placeholder="$store.getters.accountInfo.phone" />
+        <small class="form-text text-muted">Format: 123-456-7890</small>
+      </div>
+
+      <div>
+        (Unverified) <a @click="verifyPhone">Send Verification Code</a>
+      </div>
+      <div>
+        <a @click="updatePhone">Update Phone #</a>
+      </div>
     </form>
   </div>
 </controllers-account>

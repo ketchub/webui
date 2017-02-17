@@ -65,6 +65,12 @@ function Api( store ) {
           console.log(resp);
           done(err, resp);
         });
+      },
+      update( payload, done = noop ) {
+        fetch.put('/account', payload, (err, resp) => {
+          if (err) { return alert(err); }
+          done(err, resp);
+        });
       }
     },
 

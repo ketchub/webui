@@ -31,6 +31,7 @@ button, input, select {outline:none !important;}
   &:before {color:inherit;display:inline-block;content:'\e634';font-family:'icomoon';font-size:30px;position:absolute;right:0;top:50%;pointer-events:none;transform:translateY(-50%);}
   select {color:inherit;-webkit-appearance:none;border:0;border-radius:0;background:transparent;padding:0.5rem 0.75rem;margin:0;width:100%;display:block;}
 }
+h1 {margin:-3rem -2rem 2rem;background:#ddd;padding:0.75rem;text-align:center;font-size:1.5rem;font-weight:200;text-transform:uppercase;}
 
 $navMenuWidth: 300px;
 $navMenuTiming: 0.2s;

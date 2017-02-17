@@ -1,6 +1,6 @@
 import { isFunction } from 'lodash';
 const config = require(`../../../config/${process.env.NODE_ENV}`);
-export default { get, post, setAuthorizationToken };
+export default { get, post, put, setAuthorizationToken };
 
 let _authorizationToken;
 
@@ -27,7 +27,16 @@ function post(route, payload, done) {
   }), done);
 }
 
-// function put() {}, // implement once needed
+function put(route, payload, done) {
+  _fetchThen(_fetch(_fullyQualified(route), {
+    method: 'PUT',
+    headers: _headers({
+      'Content-Type': 'application/json'
+    }),
+    body: JSON.stringify(payload)
+  }), done);
+}
+
 // function delete() {}, // implement once needed
 
 /**
