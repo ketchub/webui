@@ -6,6 +6,7 @@
         <span><strong>From:</strong> {{ $store.getters.tripOrigin.formatted_address }}</span>
         <span><strong>To:</strong> {{ $store.getters.tripDestination.formatted_address }}</span>
         <span><strong>Leaving:</strong> {{ $store.getters.tripWhen | dateDisplay('As Soon As Possible') }}</span>
+        <span><small>{{ $store.getters.tripDistance | metersToMiles }} mi / {{ $store.getters.tripDistance | metersToMiles | math('multiply', 0.54) | currency('usd') }}</small></span>
       </div>
       <static-map :polyline="getPolyline"></static-map>
       <!-- <p>Add your trip to let others know you're looking for a ride, you'll be driving, or willing to do both.</p> -->

@@ -1,0 +1,13 @@
+.page-account {
+  form.account-properties {
+    // label {display:block;}
+    .btn-overlayed {position:relative;
+      button {position:absolute;top:0;right:0;}
+    }
+    fieldset.form-group {background:#fff;position:relative;padding:2.5rem 1rem 1rem;
+      label {position:absolute;top:0;left:0;margin:0;background:#111;color:#fff;font-size:80%;padding:0.25rem 0.5rem;text-transform:uppercase;}
+      .do-edit {position:absolute;top:0;right:0;}
+      strong.block {display:block;}
+    }
+  }
+}

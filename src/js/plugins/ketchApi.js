@@ -59,15 +59,26 @@ function Api( store ) {
           done(err, resp);
         });
       },
-      verifyPhoneRequest( done = noop ) {
-        fetch.get('/account/send-phone-verification', (err, resp) => {
+      updatePhone( phone, done = noop ) {
+        fetch.put('/account/phone', {phone}, (err, resp) => {
           if (err) { return alert(err); }
-          console.log(resp);
           done(err, resp);
         });
       },
-      update( payload, done = noop ) {
-        fetch.put('/account', payload, (err, resp) => {
+      verifyPhone( code, done = noop ) {
+        fetch.post('/account/phone/verify', {code}, (err, resp) => {
+          if (err) { return alert(err); }
+          done(err, resp);
+        });
+      },
+      updateEmail( email, done = noop ) {
+        fetch.put('/account/email', {email}, (err, resp) => {
+          if (err) { return alert(err); }
+          done(err, resp);
+        });
+      },
+      verifyEmail( token, done = noop ) {
+        fetch.post('/account/email/verify', {token}, (err, resp) => {
           if (err) { return alert(err); }
           done(err, resp);
         });

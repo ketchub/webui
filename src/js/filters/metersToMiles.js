@@ -1,5 +1,3 @@
-const METERS_PER_MILE = 3963.1676;
-
 export default function metersToMiles(meters) {
-  return +(meters / METERS_PER_MILE).toFixed(2);
+  return +(meters / 1609.344).toFixed(2);
 }

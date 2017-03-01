@@ -1,4 +1,4 @@
-import { each } from 'lodash';
+import { get, each } from 'lodash';
 import { consoleHelper } from '@/support/util';
 import mapStyles from '@/support/mapStyle';
 import getInstance from '@/components/map/_instance';
@@ -23,7 +23,7 @@ export default {
   methods: {
     init: _init,
     updateTripMarkers: _updateTripMarkers,
-    updateDirectionsDisplay: _updateDirectionsDisplay,
+    updateDirectionsPolyline: _updateDirectionsPolyline,
     updateContainmentPolygonDisplay: _updateContainmentPolygonDisplay,
     makeMarker: _makeMarker,
     queryDirections: _queryDirections,
@@ -139,7 +139,7 @@ function _init() {
     updateTripMarkers,
     updateContainmentPolygonDisplay,
     queryDirections,
-    updateDirectionsDisplay,
+    updateDirectionsPolyline,
     searchResultsHandler
   } = this;
 
@@ -152,7 +152,7 @@ function _init() {
     queryDirections();
   });
   $store.watch(state => state.trip._directions, () => {
-    updateDirectionsDisplay();
+    updateDirectionsPolyline();
   });
   $store.watch(state => state.trip._containmentPolygon, () => {
     updateContainmentPolygonDisplay();
@@ -161,7 +161,7 @@ function _init() {
 
   // Invoke all these methods on initialization to sync display to the store
   updateTripMarkers();
-  updateDirectionsDisplay();
+  updateDirectionsPolyline();
   updateContainmentPolygonDisplay();
 }
 
@@ -221,16 +221,30 @@ function _searchResultsHandler() {
  * Update directions *display* when store data changes.
  * @return {void}
  */
-function _updateDirectionsDisplay() {
-  const { $map, $directionsRenderer } = this;
+function _updateDirectionsPolyline() {
+  const { $map, $directionsRenderer, $google } = this;
   const { tripDirections } = this.$store.getters;
 
   if (!tripDirections) {
-    return $directionsRenderer.setMap(null);
+    if (this.$directionsPolyline) {
+      this.$directionsPolyline.setVisible(false);
+    }
+    return;
   }
 
-  $directionsRenderer.setMap($map);
-  $directionsRenderer.setDirections(tripDirections);
+  if (!this.$directionsPolyline) {
+    this.$directionsPolyline = new $google.maps.Polyline({
+      path: $google.maps.geometry.encoding.decodePath(tripDirections.overview_polyline),
+      strokeColor: '#31536b',
+      strokeOpacity: 1,
+      strokeWeight: 3,
+      map: $map,
+      zIndex: 2
+    });
+    return;
+  }
+  this.$directionsPolyline.setPath($google.maps.geometry.encoding.decodePath(tripDirections.overview_polyline));
+  this.$directionsPolyline.setVisible(true);
 }
 
 
@@ -287,7 +301,7 @@ function _updateContainmentPolygonDisplay() {
     return;
   }
 
-  if ( ! this.$containmentPolygon ) {
+  if (!this.$containmentPolygon) {
     this.$containmentPolygon = new $google.maps.Polygon({
       paths: tripContainmentPolygon,
       fillColor: '#00d0a3',
@@ -321,21 +335,24 @@ function _queryDirections() {
     travelMode: 'DRIVING',
     provideRouteAlternatives: false
   }, (response, status) => {
-    // console.log('store directions here', response);
-    // $store.dispatch('TRIP.SET_DIRECTIONS', {
-    //   request: response.request,
-    //   route: {
-    //     bounds: response.routes[0].bounds,
-    //     distance: response.routes[0].legs[0].distance,
-    //     start_address: response.routes[0].legs[0].start_address,
-    //     start_location: response.routes[0].legs[0].start_location,
-    //     end_address: response.routes[0].legs[0].end_address,
-    //     end_location: response.routes[0].legs[0].end_location,
-    //     overview_polyline: response.routes[0].overview_polyline
-    //   }
-    // });
-    $store.dispatch('TRIP.SET_DIRECTIONS', response);
-    
+    // @todo: error & status checking
+    const request = response.request;
+    const route   = response.routes[0];
+    const leg     = route.legs[0];
+
+    // @note: we're not storing the full directions response here,
+    // but just a subset instead. if more information is needed from
+    // the response, THIS is where should be adjusted
+    $store.dispatch('TRIP.SET_DIRECTIONS', {
+      request,
+      distance: leg.distance,
+      start_address: leg.start_address,
+      start_location: leg.start_location,
+      end_address: leg.end_address,
+      end_location: leg.end_location,
+      bounds: route.bounds,
+      overview_polyline: route.overview_polyline
+    });
   });
 }
 

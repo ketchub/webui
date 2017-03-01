@@ -1,5 +1,5 @@
 <controllers-trips inline-template>
-  <div>
+  <div class="body-padding">
     <h1>My Trips</h1>
     <div class="btn-group">
       <label class="btn btn-success" :class="{active:(chronology === 'upcoming')}">
@@ -8,6 +8,9 @@
       <label class="btn btn-success" :class="{active:(chronology === 'previous')}">
         <input type="radio" name="chronology" value="previous" v-model="chronology" autocomplete="off" /> Previous
       </label>
+      <!-- <label class="btn btn-success">
+        Favorites (eg. reuse these)
+      </label> -->
     </div>
 
     <rides-history :chronology="chronology" inline-template>

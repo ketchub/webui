@@ -26,7 +26,17 @@ export default [
     name: 'My Account',
     component: noKeepAlive({template:'#pages_account'}),
     meta: {
+      bodyClass: 'account',
       unlisted: true
+    }
+  },
+  {
+    beforeEnter,
+    path: '/groups',
+    name: 'My Groups',
+    component: noKeepAlive({template:'#pages_groups'}),
+    meta: {
+      bodyClass: 'groups'
     }
   },
   {
@@ -41,18 +51,18 @@ export default [
     name: 'How It Works',
     component: noKeepAlive({template:'#pages_how-it-works'})
   },
-  {
-    beforeEnter,
-    path: '/about-us',
-    name: 'About Us',
-    component: noKeepAlive({template:'#pages_about-us'})
-  },
-  {
-    beforeEnter,
-    path: '/safety',
-    name: 'Safety',
-    component: noKeepAlive({template:'#pages_safety'})
-  },
+  // {
+  //   beforeEnter,
+  //   path: '/about-us',
+  //   name: 'About Us',
+  //   component: noKeepAlive({template:'#pages_about-us'})
+  // },
+  // {
+  //   beforeEnter,
+  //   path: '/safety',
+  //   name: 'Safety',
+  //   component: noKeepAlive({template:'#pages_safety'})
+  // },
   {
     beforeEnter,
     path: '/contact',

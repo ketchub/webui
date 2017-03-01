@@ -1,19 +1,60 @@
 <controllers-account inline-template>
-  <div>
+  <div class="body-padding">
     <h1>My Account</h1>
-    <form v-on:submit.prevent>
-      <div class="form-group">
+    <form class="account-properties" v-on:submit.prevent>
+      <fieldset class="form-group">
         <label>Phone</label>
-        <input type="tel" v-model="newPhone" :placeholder="$store.getters.accountInfo.phone" />
-        <small class="form-text text-muted">Format: 123-456-7890</small>
-      </div>
+        <button class="btn btn-sm icon-config do-edit" type="button" @click="toggleEditPhone(true)"></button>
+        <template v-if="!editPhone">
+          <div v-if="accountInfo.phone">
+            <strong class="block">{{ accountInfo.phone | formatPhone }}</strong>
+            <small v-if="accountInfo.phoneValidated"><i class="icon-check"></i> Confirmed</small>
+            <div v-if="!accountInfo.phoneValidated">
+              <p class="text-danger small" style="border-top:1px solid #ccc;margin-top:1rem;padding-top:1rem;">Phone validation required; please enter the code you received below to activate this number.</p>
+              <div style="text-align:center;">
+                <input type="text" class="form-control" style="display:inline-block;width:100px;" v-model="phoneValidationCode" />
+                <button class="btn btn-danger" @click="verifyPhone">Confirm</button>
+              </div>
+            </div>
+          </div>
+          <div v-if="!accountInfo.phone">
+            <a @click="toggleEditPhone(true)"><i class="icon-plus"></i> Add Phone Number</a>
+          </div>
+        </template>
+        <template v-if="editPhone">
+          <div class="btn-overlayed">
+            <input class="form-control" type="tel" v-model="accountInfo.phone" />
+            <button class="btn btn-success" @click="updatePhone">Save</button>
+          </div>
+          <small class="form-text text-muted">A text message will be sent to this # for confirmation, and the code must be entered here before messages will be sent.</small>
+          <div style="text-align:center;padding-top:0.5rem;">
+            <button class="btn btn-link" @click="toggleEditPhone(false)">Nevermind</button>
+          </div>
+        </template>
+      </fieldset>
 
-      <div>
-        (Unverified) <a @click="verifyPhone">Send Verification Code</a>
-      </div>
-      <div>
-        <a @click="updatePhone">Update Phone #</a>
-      </div>
+      <fieldset class="form-group">
+        <label>Email</label>
+        <button class="btn btn-sm icon-config do-edit" type="button" @click="toggleEditEmail(true)"></button>
+        <template v-if="!editEmail">
+          <div v-if="accountInfo.email">
+            <strong class="block">{{ accountInfo.email }}</strong>
+            <small v-if="accountInfo.emailValidated"><i class="icon-check"></i> Confirmed</small>
+            <small v-if="!accountInfo.emailValidated"><i class="icon-less"></i> Confirmation Required</small>
+          </div>
+        </template>
+        <template v-if="editEmail">
+          <div class="btn-overlayed">
+            <input class="form-control" type="tel" v-model="accountInfo.email" />
+            <button class="btn btn-success" @click="updateEmail">Save</button>
+          </div>
+          <small class="form-text text-muted">A confirmation email will be sent to this address and must be used within 24 hours.</small>
+          <div style="text-align:center;padding-top:0.5rem;">
+            <button class="btn btn-link" @click="toggleEditEmail(false)">Nevermind</button>
+          </div>
+        </template>
+      </fieldset>
     </form>
+    {{ accountInfo }}
   </div>
 </controllers-account>

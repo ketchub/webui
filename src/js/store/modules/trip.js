@@ -77,7 +77,7 @@ const moduleTrip = {
       // payload received by this action should only ever be a valid set of
       // directions; not null. This is also the only way to invoke committing
       // SET_CONTAINMENT_POLYGON (there is no external action).
-      const bounds = payload.routes[0].bounds;
+      const bounds = payload.bounds; //payload.routes[0].bounds;
       const boundsNE = bounds.getNorthEast().toJSON();
       const boundsSW = bounds.getSouthWest().toJSON();
       const boundsNW = {lat:boundsNE.lat, lng:boundsSW.lng};
@@ -106,19 +106,10 @@ const moduleTrip = {
       return state._directions;
     },
     tripPolyline( state ) {
-      return get(state, '_directions.routes[0].overview_polyline');
+      return get(state, '_directions.overview_polyline');
     },
     tripDistance( state ) {
-      if (!state._directions || !state._directions.routes) {
-        return;
-      }
-      return state._directions.routes[0].legs[0].distance.text;
-    },
-    tripMaxCharge( state ) {
-      if (!state._directions || !state._directions.routes) {
-        return;
-      }
-      return ((state._directions.routes[0].legs[0].distance.value / 1609.344) * 0.54);
+      return get(state, '_directions.distance.value', 'Distance Unavilable');
     },
     tripContainmentPolygon( state ) {
       return state._containmentPolygon;
@@ -129,7 +120,7 @@ const moduleTrip = {
     tripSummaryData( state ) {
       const pluckAddressComponent = Vue.filter('pluckAddressComponent');
       return {
-        tripDistance: get(state, '_directions.routes[0].legs[0].distance.value'),
+        tripDistance: get(state, '_directions.distance.value'),
 
         originPoint: get(state, '_directions.request.origin'),
         originSearchRadius: get(state, '_originSearchRadius'),
@@ -153,7 +144,7 @@ const moduleTrip = {
           zip: +pluckAddressComponent(get(state, '_destination', {}), 'postal_code')
         },
 
-        encodedPolyline: get(state, '_directions.routes[0].overview_polyline'),
+        encodedPolyline: get(state, '_directions.overview_polyline'),
         containmentPolygon: get(state, '_containmentPolygon'),
         when: get(state, '_when')
       };

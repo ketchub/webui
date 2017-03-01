@@ -31,7 +31,7 @@ button, input, select {outline:none !important;}
   &:before {color:inherit;display:inline-block;content:'\e634';font-family:'icomoon';font-size:30px;position:absolute;right:0;top:50%;pointer-events:none;transform:translateY(-50%);}
   select {color:inherit;-webkit-appearance:none;border:0;border-radius:0;background:transparent;padding:0.5rem 0.75rem;margin:0;width:100%;display:block;}
 }
-h1 {margin:-3rem -2rem 2rem;background:#ddd;padding:0.75rem;text-align:center;font-size:1.5rem;font-weight:200;text-transform:uppercase;}
+h1 {margin:-3rem -2rem 2rem;padding:2.75rem;text-align:center;font-size:2.5rem;font-weight:200;text-transform:uppercase;background:url(https://images.unsplash.com/photo-1417354691640-148c3d652342?dpr=2&auto=compress,format&fit=crop&w=767&h=767&q=80&cs=tinysrgb&crop=);background-size:cover;background-position:100%;text-shadow:0 0 10px #fff;}
 
 $navMenuWidth: 300px;
 $navMenuTiming: 0.2s;
@@ -106,10 +106,7 @@ main {width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible;}
   #container-1 {height:100%;}
 }
 
-.page-default,
-.page-trips {
-  #container-1 > div {padding:3rem 2rem;}
-}
+.body-padding {padding:3rem 2rem;}
 
 .calendry {width:100%;padding:0;background:#fff;
   [calendry-header] {padding:0.5rem 0;text-align:center;font-weight:bold;text-transform:uppercase;border-bottom:1px solid #ddd;}
@@ -140,3 +137,4 @@ main {width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible;}
 
 @import './pages/home';
 @import './pages/trips';
+@import './pages/account';

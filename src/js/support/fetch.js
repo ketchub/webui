@@ -69,10 +69,13 @@ function _fetchThen(fetchPromise, done) {
   fetchPromise
     .then((resp) => { return resp.json(); })
     .then((resp) => {
-      if (resp.error) {
-        return done(resp.error);
+      if (resp.error || resp.err) { // @todo: ensure "err" or "error" is standardized!
+        return done(resp.error || resp.err);
       }
       done(null, resp);
+    })
+    .catch((ex) => {
+      console.log('Request failed at the fetch level: ', ex);
     });
 }
 

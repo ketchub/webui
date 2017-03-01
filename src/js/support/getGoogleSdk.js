@@ -8,7 +8,7 @@ import getConfig from '@/support/getConfig';
  * @return {void}
  */
 export default function(done) {
-  // done(null, mocker());
+  // return done(null, mocker());
   if (window['google']) { return done(null, window['google']); }
   const apiKey = getConfig('GOOGLE_MAPS_API_KEY');
   const scriptSrc = `//maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry,places`;
