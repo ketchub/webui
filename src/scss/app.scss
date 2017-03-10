@@ -31,7 +31,7 @@ button, input, select {outline:none !important;}
   &:before {color:inherit;display:inline-block;content:'\e634';font-family:'icomoon';font-size:30px;position:absolute;right:0;top:50%;pointer-events:none;transform:translateY(-50%);}
   select {color:inherit;-webkit-appearance:none;border:0;border-radius:0;background:transparent;padding:0.5rem 0.75rem;margin:0;width:100%;display:block;}
 }
-h1 {margin:-3rem -2rem 2rem;padding:2.75rem;text-align:center;font-size:2.5rem;font-weight:200;text-transform:uppercase;background:url(https://images.unsplash.com/photo-1417354691640-148c3d652342?dpr=2&auto=compress,format&fit=crop&w=767&h=767&q=80&cs=tinysrgb&crop=);background-size:cover;background-position:100%;text-shadow:0 0 10px #fff;}
+h1 {padding:2.75rem;text-align:center;font-size:2.5rem;font-weight:200;text-transform:uppercase;background:url(https://images.unsplash.com/photo-1417354691640-148c3d652342?dpr=2&auto=compress,format&fit=crop&w=767&h=767&q=80&cs=tinysrgb&crop=);background-size:cover;background-position:100%;text-shadow:0 0 10px #fff;}
 
 $navMenuWidth: 300px;
 $navMenuTiming: 0.2s;
@@ -49,7 +49,7 @@ $navMenuAnimation: ease;
   [app-mount] {display:block;}
 }
 
-#nav-trigger {margin:0.5rem;background:#1d1d1d;padding:0.5rem 0.5rem 0.5rem 0.6rem;color:#fff;position:fixed;top:0;left:0;z-index:99;font-size:1rem;transform:translateX(0);transition:all $navMenuTiming $navMenuAnimation;
+#nav-trigger {margin:0.5rem;background:#1d1d1d;padding:0.5rem 0.5rem 0.5rem 0.6rem;color:#fff;position:fixed;top:0;left:0;z-index:99;font-size:1rem;//transform:translateX(0);transition:all $navMenuTiming $navMenuAnimation;
   &:active, &:hover {color:#fff;}
 }
 
@@ -91,15 +91,15 @@ nav {position:fixed;top:0;right:0;bottom:0;left:0;
 }
 
 main {width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible;}
-#container-1 {width:100%;overflow-y:visible;transform:translateX(0) translateY(0);transition:all $navMenuTiming $navMenuAnimation;}
-
-.nav-open {
-  #nav-trigger {transform:translateX($navMenuWidth);background:lighten($theme-dark, 18%);}
-  #container-1 {transform:translateX($navMenuWidth);}
-  .sidebar {transform:translateX(0);
-    // li.entered {transform:rotateY(0) skewY(0);}
-  }
-}
+#container-1 {width:100%;overflow-y:visible;}//transform:translateX(0) translateY(0);transition:all $navMenuTiming $navMenuAnimation;}
+[navver] {position:fixed;top:0;right:0;bottom:0;left:-100%;width:100%;background:#222;}
+// .nav-open {
+//   #nav-trigger {transform:translateX($navMenuWidth);background:lighten($theme-dark, 18%);}
+//   #container-1 {transform:translateX($navMenuWidth);}
+//   .sidebar {transform:translateX(0);
+//     // li.entered {transform:rotateY(0) skewY(0);}
+//   }
+// }
 
 .page-home {overflow:hidden;
   main {height:100%;overflow:hidden;}

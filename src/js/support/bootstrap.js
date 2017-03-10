@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-import { each } from 'lodash';
+import { get, each } from 'lodash';
 import Vue from 'vue';
 import * as components from '@/components';
 import * as mixins from '@/mixins';
@@ -21,7 +21,14 @@ const store = getStore();
 const Application = Vue.extend({
   store,
   router,
-  ketchApi: new ketchApi.Api(store)
+  ketchApi: new ketchApi.Api(store),
+  computed: {
+    navItems() {
+      return get(this, '$router.options.routes').filter((r) => {
+        return !(r.meta && r.meta.unlisted);
+      });
+    }
+  }
 });
 
 export default function getApp(node) {
