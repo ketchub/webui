@@ -25,18 +25,5 @@ const Application = Vue.extend({
 });
 
 export default function getApp(node) {
-  const app = new Application({el: node});
-
-  /**
-   * This is a hack for the vue-router issue where it'll only update the route
-   * on *the last app instance* created on the DOM :(. Note that app._route is
-   * an ES5 getter/setter, so setting the _route on the instance in this way
-   * seems to work fine...
-   * @see https://github.com/vuejs/vue-router/issues/1102
-   */
-  router.afterEach((to, from) => {
-    app._route = to;
-  });
-
-  return app;
+  return new Application({el: node});
 }

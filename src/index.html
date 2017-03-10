@@ -53,14 +53,7 @@
     </navigation>
   </nav>
 
-  <!-- organizationally, we should put this *after* the <main> tag below,
-  but there's a VERY strange bug w/ vue-router where the ordering matters of
-  things that are mounted by the bootstrapper (eg. navigation will fail to
-  work). So the [app-mount] node with <router-view /> in it always needs to be
-  last. -->
-  <modal-window app-mount :class="{'open':$store.getters.modalStatus}"></modal-window>
-
-  <!-- ensure this is always the last [app-mount]'ed node -->
+  <!-- main app view -->
   <main app-mount :class="{'nav-open':$store.getters.navStatus}">
     <a id="nav-trigger" class="icon-navicon" v-on:click="$_toggleNav"></a>
     <div id="container-1">
@@ -69,6 +62,9 @@
       </keep-alive>
     </div>
   </main>
+
+  <!-- modal window -->
+  <modal-window app-mount :class="{'open':$store.getters.modalStatus}"></modal-window>
 
 <!-- BEGIN: TEMPLATE PARTIALS -->
 <!-- PARTIALS -->
