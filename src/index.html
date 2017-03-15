@@ -18,46 +18,35 @@
   <!-- defaults to assuming OFFLINE, and showing waiting for network -->
   <div id="offliner">
     <div id="offliner-message">
-      <img src="/img/ketch-logo.svg" />
+      <!-- <img src="/img/ketch-logo.svg" /> -->
+      <img src="/img/logo285x317.png" style="max-width:120px;" />
       <p>Checking the "work" in network...</p>
       <img src="/img/loading-ring.svg" />
     </div>
   </div>
 
-  <!-- <nav app-mount :class="{'nav-open':$store.getters.navStatus}">
-    <navigation inline-template>
+  <!-- main app view -->
+  <main app-mount>
+    <a ref="navTrigger" id="nav-trigger" class="icon-navicon" v-on:click="$_toggleNav(!$store.getters.navStatus)"></a>
+
+    <nav ref="navigation" navigation>
       <div class="sidebar">
         <account-basics v-if="$store.getters.accountIsLoggedIn"></account-basics>
         <div class="account-basics entice" v-if="!$store.getters.accountIsLoggedIn">
           <button class="btn btn-success btn-block" @click="$_toggleModal('modalsAccountLoginOrCreate')">Login</button>
           <p>Don't have an account yet? <a @click="$_toggleModal('modalsAccountLoginOrCreate')">No but I want one</a></p>
         </div>
-
         <ul>
           <router-link v-for="(item, index) in navItems" tag="li" :to="item.path" exact>
             <a>{{ item.name }}</a>
           </router-link>
         </ul>
-
-        <btn :invoke="logout" v-if="$store.getters.accountIsLoggedIn" class="btn btn-success btn-block" style="position:absolute;left:0;bottom:0;">
+        <btn :invoke="$_logout" v-if="$store.getters.accountIsLoggedIn" class="btn btn-success btn-block" style="position:absolute;left:0;bottom:0;">
           <span>Sign Out</span>
         </btn>
       </div>
-    </navigation>
-  </nav> -->
+    </nav>
 
-  <!-- main app view -->
-  <main app-mount :class="{'nav-open':$store.getters.navStatus}">
-    <a ref="navTrigger" id="nav-trigger" class="icon-navicon" v-on:click="$_toggleNav(!$store.getters.navStatus)"></a>
-    <!-- <navigation ref="navigationer" inline-template> -->
-      <div ref="navigation" navver>
-        <ul>
-          <router-link v-for="(item, index) in navItems" tag="li" :to="item.path" exact>
-            <a>{{ item.name }}</a>
-          </router-link>
-        </ul>
-      </div>
-    <!-- </navigation> -->
     <div id="container-1" ref="mainView">
       <keep-alive include="doKeepAlive">
         <router-view></router-view>

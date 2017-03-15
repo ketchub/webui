@@ -27,7 +27,38 @@ export default {
     updateContainmentPolygonDisplay: _updateContainmentPolygonDisplay,
     makeMarker: _makeMarker,
     queryDirections: _queryDirections,
-    searchResultsHandler: _searchResultsHandler
+    searchResultsHandler: _searchResultsHandler,
+    centerMap: function () {
+      const self = this;
+      const { $google, $map } = this;
+
+      if (!this.calcdBounds) {
+        this.calcdBounds = new $google.maps.LatLngBounds();
+        this.calcdBounds.union(self.$startMarker._circle.getBounds());
+        this.calcdBounds.union(self.$endMarker._circle.getBounds());
+      }
+
+      $map.panTo(this.calcdBounds.getCenter());
+
+      // $google.maps.event.addListenerOnce($map, 'resize', function() {
+        // const bounds = new $google.maps.LatLngBounds();
+        // // make bounds account for radius circle query
+        // bounds.union(self.$startMarker._circle.getBounds());
+        // bounds.union(self.$endMarker._circle.getBounds());
+        // $map.panTo(bounds.getCenter());
+        // $map.fitBounds(bounds);
+      // });
+      $google.maps.event.trigger($map, 'resize');
+
+
+
+      // setTimeout(function () {
+      //   console.log('set by bounds invoked', bounds, this.$map);
+      // }.bind(this), 250);
+
+      // this.$map.setCenter(this.$map.getCenter());
+      // this.$map.setZoom(1);
+    }
   },
   mounted() {
     const self = this;

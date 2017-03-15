@@ -18,12 +18,17 @@ export default function(name, done) {
       zoom: 4,
       mapTypeId: 'HighViz',
       mapTypeControl: false,
-      scrollwheel: false
+      scrollwheel: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+      zoomControl: false
     });
 
-    cache[name].mapTypes.set('HighViz', new google.maps.StyledMapType(mapStyles), {
-      name: 'HighViz'
-    });
+    cache[name].mapTypes.set('HighViz',
+      new google.maps.StyledMapType(mapStyles), {
+        name: 'HighViz'
+      }
+    );
 
     // @todo: dereference the 'node' variable once its been passed to the map?
 

@@ -2,7 +2,6 @@ import getGoogleSdk from '@/support/getGoogleSdk';
 import modernizr from 'modernizr';
 import { TweenLite } from 'gsap';
 
-const navToggleClass = 'nav-open';
 let _geocoderApi;
 
 /**
@@ -12,21 +11,22 @@ let _geocoderApi;
  */
 export default {
   methods: {
+    $_logout() {
+      this.$store.dispatch('ACCOUNT.DO_LOGOUT', null);
+    },
+
     /**
      * Toggle nav open or close (true = open, false/null = close).
      * @param {Boolean|null}
      */
     $_toggleNav( to ) {
-      TweenLite.to(this.$refs.mainView, 0.35, {
-        x: to ? 300 : 0
+      TweenLite.to([
+        this.$refs.mainView,
+        this.$refs.navTrigger,
+        this.$refs.navigation
+      ], 0.2, {
+        x: to ? this.$refs.navigation.clientWidth : 0
       });
-      TweenLite.to(this.$refs.navTrigger, 0.15, {
-        x: to ? 300 : 0
-      });
-      TweenLite.to(this.$refs.navigation, 0.35, {
-        x: to ? 300 : 0
-      });
-      console.log('navigation toggle', this.$refs, to);
       this.$store.dispatch('UI.NAV_TOGGLE', to);
     },
 

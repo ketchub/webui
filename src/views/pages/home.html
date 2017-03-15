@@ -1,9 +1,9 @@
 <controllers-home inline-template>
   <div class="page-home" :class="{'search-overlay-open':$store.getters.pageHomeSearchOverlay}">
 
-    <section class="mapping">
-      <map-view map-name="primary"></map-view>
-      <div class="location-searches">
+    <section ref="map" class="mapping">
+      <map-view ref="mapObj" map-name="primary"></map-view>
+      <div ref="searchFields" class="location-searches">
         <map-place-search class="map-place-search origin" map-name="primary" add-action="TRIP.SET_ORIGIN" unset-action="TRIP.UNSET_ORIGIN" value-getter="tripOrigin" placeholder="Where from?">
           <use-current-location action="TRIP.SET_ORIGIN" inline-template>
             <btn v-if="!$store.getters.tripOrigin" :invoke="useCurrentLocation" class="use-current-location">
@@ -25,17 +25,19 @@
       </btn>
     </section>
 
-    <section class="results-overlay" v-if="$store.getters.tripDirections">
+    <section ref="results" class="results-overlay" v-if="$store.getters.tripDirections">
       <div class="scrollable">
         <div class="textual-summary">
-          <h5>Others With Similar Routes</h5>
-          <div class="styled-select">
+          <h6>Others With Similar Routes</h6>
+          <!-- <p origin>From: <span>{{ $store.getters.tripOrigin.formatted_address }}</span></p>
+          <p destination>To: <span>{{ $store.getters.tripDestination.formatted_address }}</span></p> -->
+          <!-- <div class="styled-select">
             <select>
               <option>Riders Only</option>
               <option>Riders And/Or Drivers</option>
               <option>Drivers Only</option>
             </select>
-          </div>
+          </div> -->
           <!-- <div class="summary-items">
             <div class="line-item"><strong>From</strong>{{ $store.getters.tripOrigin.formatted_address }}</div>
             <div class="line-item"><strong>To</strong>{{ $store.getters.tripDestination.formatted_address }}</div>
