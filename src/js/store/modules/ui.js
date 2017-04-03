@@ -1,55 +1,59 @@
 import { isBoolean } from 'lodash';
 const NAV_TOGGLE = 'NAV_TOGGLE';
-const SET_MODAL_COMPONENT = 'SET_MODAL_COMPONENT';
-const SET_PAGE_HOME_SEARCH_OVERLAY = 'SET_PAGE_HOME_SEARCH_OVERLAY';
+const SET_MODAL = 'SET_MODAL';
+const SET_PAGE_HOME_RESULTS_VIEW = 'SET_PAGE_HOME_RESULTS_VIEW';
 
 const moduleUi = {
   state: {
     navOpen: false,
     modal: {
-      componentName: null
+      open: false,
+      componentName: null,
+      title: null
     },
     pageHome: {
-      searchOverlay: false
+      resultsView: false
     }
   },
 
   mutations: {
-    [NAV_TOGGLE]( state, value ) {
+    [NAV_TOGGLE](state, value) {
       state.navOpen = value;
     },
-    [SET_MODAL_COMPONENT]( state, value ) {
-      state.modal.componentName = value;
+    [SET_MODAL](state, value) {
+      state.modal = value;
     },
-    [SET_PAGE_HOME_SEARCH_OVERLAY]( state, value ) {
-      state.pageHome.searchOverlay = value;
+    [SET_PAGE_HOME_RESULTS_VIEW](state, value) {
+      state.pageHome.resultsView = value;
     }
   },
 
   actions: {
-    [`UI.NAV_TOGGLE`]( {state, commit}, value ) {
+    [`UI.NAV_TOGGLE`]({state, commit}, value) {
       commit(NAV_TOGGLE, isBoolean(value) ? value : !state.navOpen);
     },
-    [`UI.SET_MODAL_COMPONENT`]( {commit}, value ) {
-      commit(SET_MODAL_COMPONENT, value);
+    [`UI.SET_MODAL`]({state, commit}, value) {
+      commit(SET_MODAL, Object.assign({}, state.modal, value));
     },
-    [`UI.SET_PAGE_HOME_SEARCH_OVERLAY`]( {state, commit}, value ) {
-      commit(SET_PAGE_HOME_SEARCH_OVERLAY, isBoolean(value) ? value : !state.pageHome.searchOverlay);
+    [`UI.SET_PAGE_HOME_RESULTS_VIEW`]({state, commit}, value) {
+      commit(SET_PAGE_HOME_RESULTS_VIEW, 
+        isBoolean(value) ? value : !state.pageHome.resultsView
+      );
     }
   },
 
   getters: {
-    navStatus( state ) {
+    navStatus(state) {
       return state.navOpen;
     },
-    modalComponentName( state ) {
-      return state.modal.componentName;
+    modalData(state) {
+      return state.modal;
     },
-    modalStatus( state ) { // derived from state data
-      return !!state.modal.componentName;
+    modalStatus(state) {
+      return state.modal.open;
     },
-    pageHomeSearchOverlay( state ) {
-      return state.pageHome.searchOverlay;
+    pageHomeResultsView(state) {
+      return state.pageHome.resultsView;
     }
   }
 };

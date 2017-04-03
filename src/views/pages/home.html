@@ -1,5 +1,5 @@
 <controllers-home inline-template>
-  <div class="page-home" :class="{'search-overlay-open':$store.getters.pageHomeSearchOverlay}">
+  <div class="page-home" :class="{'results-view':$store.getters.pageHomeResultsView}">
 
     <section ref="map" class="mapping">
       <map-view ref="mapObj" map-name="primary"></map-view>
@@ -14,31 +14,38 @@
         <map-place-search class="map-place-search destination" map-name="primary" add-action="TRIP.SET_DESTINATION" unset-action="TRIP.UNSET_DESTINATION" value-getter="tripDestination" placeholder="Where to?"></map-place-search>
         <div class="refinements" v-if="$store.getters.tripDirections">
           <label><strong>When?</strong> {{ $store.getters.tripWhen | dateDisplay('As Soon As Possible') }}</label>
-          <span class="config-when" @click="$_toggleModal('modalsTripSetDateTime')">
+          <span class="config-when" @click="$_toggleModal({componentName:'modalsTripSetDateTime',title:'Leaving When?'})">
             <i class="icon-config"></i>
           </span>
         </div>
       </div>
       <btn :invoke="btnSearch" v-if="$store.getters.tripDirections" class="btn btn-success execute-search-btn">
         <span><span>Next</span> <i class="icon-angle-right"></i></span>
-        <!-- <span>Find Matching Trips</span> -->
       </btn>
     </section>
 
-    <section ref="results" class="results-overlay" v-if="$store.getters.tripDirections">
-      <div class="scrollable">
-        <div class="textual-summary">
-          <h6>Others With Similar Routes</h6>
-          <!-- <p origin>From: <span>{{ $store.getters.tripOrigin.formatted_address }}</span></p>
-          <p destination>To: <span>{{ $store.getters.tripDestination.formatted_address }}</span></p> -->
-          <!-- <div class="styled-select">
+    <section class="results-overlay" v-if="$store.getters.tripDirections">
+      <div class="action-bar">
+        <span>Others With Similar Routes</span>
+        <btn class="show-filters" :invoke="btnShowFilters">
+          <i class="icon-edit"></i>
+        </btn>
+        <btn class="back-to-map" :invoke="toggleSearchResults">
+          <i class="icon-angle-down"></i>
+        </btn>
+      </div>
+      <div class="scrollable" :class="{loading:resultsLoading}">
+        <!-- <div class="textual-summary">
+          <p origin>From: <span>{{ $store.getters.tripOrigin.formatted_address }}</span></p>
+          <p destination>To: <span>{{ $store.getters.tripDestination.formatted_address }}</span></p>
+          <div class="styled-select">
             <select>
               <option>Riders Only</option>
               <option>Riders And/Or Drivers</option>
               <option>Drivers Only</option>
             </select>
-          </div> -->
-          <!-- <div class="summary-items">
+          </div>
+          <div class="summary-items">
             <div class="line-item"><strong>From</strong>{{ $store.getters.tripOrigin.formatted_address }}</div>
             <div class="line-item"><strong>To</strong>{{ $store.getters.tripDestination.formatted_address }}</div>
             <div class="line-item"><strong>Leaving</strong>ASAP</div>
@@ -48,26 +55,22 @@
               <span style="font-weight:bold;">Origin search radius: </span> {{ $store.getters.tripOriginSearchRadius | metersToMiles }} miles
               <span style="font-weight:bold;">Dest search radius: </span> {{ $store.getters.tripDestinationSearchRadius | metersToMiles }} miles
             </div>
-          </div> -->
-        </div>
+          </div>
+        </div> -->
         <div class="results-list">
           <template v-if="$store.getters.searchResults">
             <div class="search-results">
-              <search-results v-for="record in $store.getters.searchResults" :record="record"></search-results>
+              <search-results v-for="record in $store.getters.searchResults" :key="record.id" :record="record"></search-results>
             </div>
           </template>
         </div>
       </div>
       <div class="post-trip">
-        <p>Let others know you're looking for a ride, or would be willing to drive and pick others up!</p>
+        <!-- <p>Let others know you're looking for a ride, or would be willing to drive and pick others up!</p> -->
         <btn class="btn btn-success btn-block" :invoke="btnPostRide">
-          <span>Match Me</span>
-          <!-- <span>Post My Ride</span> -->
+          <span>Share My Trip</span>
         </btn>
       </div>
-      <btn class="back-to-map" :invoke="btnCloseSearchOverlay">
-        <i class="icon-angle-left"></i>
-      </btn>
     </section>
 
   </div>

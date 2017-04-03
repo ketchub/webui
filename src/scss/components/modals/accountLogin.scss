@@ -1,0 +1,10 @@
+.modalizer.modalsAccountLogin[app-mount] {
+  .modal-aligner {max-width:340px;}
+  .socials {text-align:center;font-size:400%;line-height:1;padding:1rem;border-bottom:1px solid #ccc;
+    a {color:$theme-dark;text-shadow:0 0 10px rgba($theme-dark, 0.5);}
+  }
+  .form-body {padding:1rem;
+    a {text-decoration:underline;}
+    .form-group:last-child {margin-bottom:0;}
+  }
+}

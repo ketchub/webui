@@ -43,7 +43,7 @@ function put(route, payload, done) {
  * Set the authorization token to a value, or nullify it.
  * @param {String|null} value Token value or null
  */
-function setAuthorizationToken( value ) {
+function setAuthorizationToken(value) {
   _authorizationToken = value ? value : null;
 }
 
@@ -69,7 +69,8 @@ function _fetchThen(fetchPromise, done) {
   fetchPromise
     .then((resp) => { return resp.json(); })
     .then((resp) => {
-      if (resp.error || resp.err) { // @todo: ensure "err" or "error" is standardized!
+      // @todo: ensure "err" or "error" is standardized!
+      if (resp.error || resp.err) {
         return done(resp.error || resp.err);
       }
       done(null, resp);
@@ -109,7 +110,7 @@ function _fetch() {
  * @param  {Object} params Key:values
  * @return {string}        a=b&c=d...
  */
-function _queryParams( params ) {
+function _queryParams(params) {
   return Object.keys(params)
     .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`)
     .join('&');

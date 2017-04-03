@@ -1,0 +1,29 @@
+nav[navigation] {width:$navMobileWidth;position:fixed;top:0;right:0;bottom:0;left:-$navMobileWidth;background:#222;box-sizing:border-box;border-left:1px solid #222;z-index:2;
+  .sidebar {background:$theme-dark;position:absolute;top:0;left:0;width:100%;height:100%;color:#fff;box-shadow:inset -20px 0 20px -10px rgba(0, 0, 0, 0.35);
+    .account-basics {display:block;padding:1rem;background:rgba(0,0,0,0.3);border-bottom:1px solid darken($theme-dark, 8%);
+      .user-pic {vertical-align:middle;line-height:1;display:inline-block;width:50px;height:50px;border-radius:50%;background-position:50% 50%;background-size:cover;border:1px solid rgba(255,255,255,0.25);box-shadow:0 0 30px rgba($theme-magenta, 0.5);}
+      .meta {font-weight:500%;font-size:100%;text-transform:uppercase;margin:0;line-height:1;vertical-align:middle;display:inline-block;padding-left:0.75rem;
+        small {display:block;padding:0.25rem 0;text-transform:lowercase;
+          &.xs {font-size:60%;text-transform:uppercase;text-decoration:underline;color:lighten($theme-dark,30%);}
+        }
+      }
+      &.entice {text-align:center;
+        .btn {margin-bottom:1rem;}
+        p {font-size:80%;margin:0;
+          a {display:block;text-decoration:underline;text-transform:uppercase;font-size:140%;}
+        }
+      }
+    }
+    ul {padding:1rem 0;margin:0;font-size:160%;font-weight:900;text-transform:uppercase;line-height:1;
+      li {display:block;
+        a {color:lighten($theme-dark, 40%);display:block;padding:0.75rem 1.5rem;}
+        &.nav-active {
+          a {color:$theme-green;}
+        }
+      }
+    }
+  }
+
+  // breakpoint: restrict menu width past screen size sm
+  @include media-breakpoint-up(sm) {width:$navFullWidth;left:-$navFullWidth;}
+}

@@ -1,4 +1,5 @@
 export default function (el, binding) {
+  console.log('inputFormat directive: ', el, binding);
   // maybe later...
   // el.addEventListener('keyup', () => {
   //   const val = el.value;

@@ -3,7 +3,7 @@ const fs        = require('fs');
 const path      = require('path');
 const webpack   = require('webpack');
 const babelRc   = JSON.parse(fs.readFileSync('./.babelrc', 'utf8'));
-const package   = require('./package.json');
+const pkg       = require('./package.json');
 const context   = path.join(__dirname);
 const excludes  = /node_modules/;
 const includes  = [
@@ -17,13 +17,19 @@ const resolve = {
   }
 };
 const modules = {
-  preLoaders: [{
-    loader: 'jshint-loader',
-    test: /\.js$/,
-    exclude: excludes,
-    include: includes
-  }],
-  loaders: [
+  rules: [
+    {
+      enforce: 'pre',
+      test: /\.js$/,
+      exclude: excludes,
+      include: includes,
+      loader: 'eslint-loader',
+      options: {
+        emitError: false,
+        // failOnWarning: true,
+        // failOnError: true
+      }
+    },
     {
       test: /\.js$/,
       loader: 'babel-loader',
@@ -35,18 +41,13 @@ const modules = {
     },
     {
       test: /\.modernizrrc$/,
-      loader: 'modernizr'
+      loader: 'modernizr-loader'
     }
   ]
-};
-const jshint = {
-  emitErrors: false,
-  failOnHint: true
 };
 
 module.exports = {
   development: {
-    jshint,
     resolve,
     context,
     devtool: 'eval',
@@ -61,14 +62,13 @@ module.exports = {
       new webpack.DefinePlugin({
         'process.env': {
           NODE_ENV: JSON.stringify('development'),
-          VERSION: JSON.stringify(package.version)
+          VERSION: JSON.stringify(pkg.version)
         }
       })
     ]
   },
 
   test: {
-    jshint,
     resolve,
     context,
     module: modules,
@@ -81,14 +81,13 @@ module.exports = {
       new webpack.DefinePlugin({
         'process.env': {
           NODE_ENV: JSON.stringify('test'),
-          VERSION: JSON.stringify(package.version)
+          VERSION: JSON.stringify(pkg.version)
         }
       })
     ]
   },
 
   production: {
-    jshint,
     resolve,
     context,
     devtool: 'source-map',
@@ -103,7 +102,7 @@ module.exports = {
       new webpack.DefinePlugin({
         'process.env': {
           NODE_ENV: JSON.stringify('production'),
-          VERSION: JSON.stringify(package.version)
+          VERSION: JSON.stringify(pkg.version)
         }
       }),
       new webpack.optimize.UglifyJsPlugin({

@@ -1,14 +1,33 @@
-import { TweenLite, TimelineLite, Expo, Power2 } from 'gsap';
-import getGoogleSdk from '@/support/getGoogleSdk';
+// import { TweenLite, TimelineLite, Expo, Power2 } from 'gsap';
 
 export default {
+  data() {
+    return {
+      resultsLoading: true
+    };
+  },
+  watch: {
+    '$store.getters.pageHomeResultsView': function (status) {
+      console.log('pageHomeResultsViewWatcher status: ', status);
+      // if (!status) {
+      //   return this.$tl.reverse();
+      // }
+      // this.$tl.play();
+    },
+    // Automatically do something when directions are avail?
+    '$store.getters.tripDirections': function (v) {
+      console.log('dirs: ',v);
+    }
+  },
   methods: {
-    btnCloseSearchOverlay() {
-      this.$store.dispatch('UI.SET_PAGE_HOME_SEARCH_OVERLAY', false);
+    btnShowFilters() {
+      alert('show filters');
     },
     btnPostRide() {
-      const { $_toggleModal } = this;
-      $_toggleModal('modalsTripAdd');
+      this.$_toggleModal({
+        componentName: 'modalsTripAdd',
+        title: 'Add Trip'
+      });
 
       // const { $store, $ketchApi } = this;
       // $ketchApi.rides.add($store.getters.tripSummaryData, (err, resp) => {
@@ -21,48 +40,48 @@ export default {
      * transition is completed...)
      */
     btnSearch() {
+      const self = this;
       const { $store, $ketchApi } = this;
-      // open the overlay
-      // $store.dispatch('UI.SET_PAGE_HOME_SEARCH_OVERLAY', true);
-      // send the query
-      $ketchApi.rides.search($store.getters.tripSummaryData, (err, resp) => {
-        console.log('got here', err, resp);
+      // results results loading to show animated thing
+      self.resultsLoading = true;
+      const payload = $store.getters.tripSummaryData;
+      payload.routeBoxes = this.$refs.mapObj.$routeBoxes.map((rect) => {
+        return rect.getBounds().toJSON();
       });
-      this.animateSearchIn();
+      // send the query
+      $ketchApi.rides.search(payload, (err) => {
+        if (err) { return alert('query error :(...'); }
+        self.resultsLoading = false;
+      });
+      // show results view
+      this.toggleSearchResults(true);
     },
-    animateSearchIn() {
-      if ( !!(this.$tl.progress()) ) {
-        return this.$tl.reverse();
-      }
-      this.$tl.play();
+    toggleSearchResults(to = false) {
+      this.$store.dispatch('UI.SET_PAGE_HOME_RESULTS_VIEW', to);
     }
   },
   mounted() {
     const { $refs } = this;
 
-    this.$tl = new TimelineLite({
-      paused: true
-    });
+    $refs.map.addEventListener('transitionend', (ev) => {
+      if (ev.target !== $refs.map) { return; }
+      $refs.mapObj.centerMap();
+    }, false);
 
-    this.$tl.to($refs.searchFields, 0.3, {
-      // top: -$refs.searchFields.clientHeight,
-      // left: 0,
-      // right: 0,
-      // maxWidth: '100%',
-      className: '+=mini'
-    });
-
-    this.$tl.to($refs.map, 0.3, {
-      height: document.body.clientHeight * 0.3,
-      onComplete: $refs.mapObj.centerMap,
-      onReverseComplete: $refs.mapObj.centerMap,
-      onUpdate: $refs.mapObj.centerMap,
-      ease: Power2.easeOut
-    }, '-=0.2');
-
-    // this.$tl.to($refs.results, 0.2, {
-    //   display: 'block',
-    //   top: document.body.clientHeight
+    // this.$tl = new TimelineLite({
+    //   paused: true
     // });
+    //
+    // this.$tl.to($refs.searchFields, 0.3, {
+    //   className: '+=mini'
+    // });
+    //
+    // this.$tl.to($refs.map, 0.15, {
+    //   height: document.body.clientHeight * 0.3,
+    //   onComplete: $refs.mapObj.centerMap,
+    //   onReverseComplete: $refs.mapObj.centerMap,
+    //   // onUpdate: $refs.mapObj.centerMap,
+    //   ease: Power2.easeOut
+    // }, '-=0.2');
   }
 };

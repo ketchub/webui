@@ -1,8 +1,8 @@
 export default {
   template: '#components_modal-window',
   computed: {
-    componentName() {
-      return this.$store.getters.modalComponentName;
+    modalData() {
+      return this.$store.getters.modalData;
     }
   }
 };

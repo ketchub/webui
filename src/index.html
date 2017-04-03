@@ -18,7 +18,6 @@
   <!-- defaults to assuming OFFLINE, and showing waiting for network -->
   <div id="offliner">
     <div id="offliner-message">
-      <!-- <img src="/img/ketch-logo.svg" /> -->
       <img src="/img/logo285x317.png" style="max-width:120px;" />
       <p>Checking the "work" in network...</p>
       <img src="/img/loading-ring.svg" />
@@ -26,26 +25,29 @@
   </div>
 
   <!-- main app view -->
-  <main app-mount>
-    <a ref="navTrigger" id="nav-trigger" class="icon-navicon" v-on:click="$_toggleNav(!$store.getters.navStatus)"></a>
+  <main app-mount="main" :class="{'nav-open':$store.getters.navStatus}">
+    <!-- <a ref="navTrigger" id="nav-trigger" class="icon-navicon" v-on:click="$_toggleNav(!$store.getters.navStatus)"></a> -->
 
-    <nav ref="navigation" navigation>
-      <div class="sidebar">
-        <account-basics v-if="$store.getters.accountIsLoggedIn"></account-basics>
-        <div class="account-basics entice" v-if="!$store.getters.accountIsLoggedIn">
-          <button class="btn btn-success btn-block" @click="$_toggleModal('modalsAccountLoginOrCreate')">Login</button>
-          <p>Don't have an account yet? <a @click="$_toggleModal('modalsAccountLoginOrCreate')">No but I want one</a></p>
+    <navigation ref="navigation" inline-template>
+      <nav navigation>
+        <a id="nav-trigger" class="icon-navicon" v-on:click="$_toggleNav(!$store.getters.navStatus)"></a>
+        <div class="sidebar">
+          <account-basics v-if="$store.getters.accountIsLoggedIn"></account-basics>
+          <div class="account-basics entice" v-if="!$store.getters.accountIsLoggedIn">
+            <button class="btn btn-success btn-block" @click="openAccountLogin">Login</button>
+            <p>Don't have an account yet? <a @click="openAccountCreate">No but I want one</a></p>
+          </div>
+          <ul>
+            <router-link v-for="(item, index) in navItems" :key="item.name" tag="li" :to="item.path" exact>
+              <a>{{ item.name }}</a>
+            </router-link>
+          </ul>
+          <btn :invoke="$_logout" v-if="$store.getters.accountIsLoggedIn" class="btn btn-success btn-block" style="position:absolute;left:0;bottom:0;">
+            <span>Sign Out</span>
+          </btn>
         </div>
-        <ul>
-          <router-link v-for="(item, index) in navItems" tag="li" :to="item.path" exact>
-            <a>{{ item.name }}</a>
-          </router-link>
-        </ul>
-        <btn :invoke="$_logout" v-if="$store.getters.accountIsLoggedIn" class="btn btn-success btn-block" style="position:absolute;left:0;bottom:0;">
-          <span>Sign Out</span>
-        </btn>
-      </div>
-    </nav>
+      </nav>
+    </navigation>
 
     <div id="container-1" ref="mainView">
       <keep-alive include="doKeepAlive">
@@ -55,7 +57,7 @@
   </main>
 
   <!-- modal window -->
-  <modal-window app-mount :class="{'open':$store.getters.modalStatus}"></modal-window>
+  <modal-window app-mount v-show="$store.getters.modalStatus"></modal-window>
 
 <!-- BEGIN: TEMPLATE PARTIALS -->
 <!-- PARTIALS -->

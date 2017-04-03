@@ -1,8 +1,7 @@
 export default {
-  template: '#components_modals_account-login-or-create',
+  template: '#components_modals_account-create',
   data() {
     return {
-      viewForm: 'login',
       email: null,
       phone: null,
       password: null,
@@ -11,16 +10,7 @@ export default {
     };
   },
   methods: {
-    loginLocal() {
-      const { $ketchApi, $_toggleModal } = this;
-      $ketchApi.account.authLocal({
-        email: this.email,
-        password: this.password
-      }, (err, resp) => {
-        if (!err) { $_toggleModal(false); }
-      });
-    },
-    createAccountLocal() {
+    doCreateAccount() {
       const { $ketchApi, $_toggleModal } = this;
       $ketchApi.account.create({
         email: this.email,
@@ -31,9 +21,6 @@ export default {
       }, (err, resp) => {
         if (!err) { $_toggleModal(false); }
       });
-    },
-    setView(to) {
-      this.viewForm = to;
     }
   }
 };

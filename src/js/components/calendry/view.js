@@ -9,6 +9,7 @@ export default {
   },
   data() {
     return {
+      // eslint-disable-next-line
       activeMonthKey: `${this.$monthMapMoment.get('year')}-${this.$monthMapMoment.get('month')}`,
       activeDateKey: this.$selectedDate
     };
@@ -38,6 +39,7 @@ export default {
     },
     _setActiveMonthKey(method) {
       this.$monthMapMoment[method](1, 'months');
+      // eslint-disable-next-line
       this.activeMonthKey = `${this.$monthMapMoment.get('year')}-${this.$monthMapMoment.get('month')}`;
       this.$forceUpdate();
     }
@@ -62,7 +64,7 @@ export default {
  * @return {array} Loop to display for the month.
  */
 const monthMapCache = {};
-function getMonthMap( $$moment ) {
+function getMonthMap($$moment) {
   // Key is string '{year}-{month}', where month is 0-indexed.
   const key = `${$$moment.get('year')}-${$$moment.get('month')}`;
 
@@ -72,18 +74,19 @@ function getMonthMap( $$moment ) {
 
   const monthStart         = moment($$moment).startOf('month');
   const monthEnd           = moment(monthStart).endOf('month');
+  // eslint-disable-next-line
   const calendarStart      = moment(monthStart).subtract(monthStart.day(), 'days');
   const calendarEnd        = moment(monthEnd).add((6 - monthEnd.day()), 'days');
   const calendarDayCount   = Math.abs(calendarEnd.diff(calendarStart, 'days'));
 
-  monthMapCache[key]       = (function( daysInCalendar, calendarStart, _array ){
-    for( var _i = 0; _i <= daysInCalendar; _i++ ){
+  monthMapCache[key]       = (function (daysInCalendar, calendarStart, _array) {
+    for (var _i = 0; _i <= daysInCalendar; _i++){
       let m = moment(calendarStart).add(_i, 'days');
       m._inMonth = m.isSame(monthStart, 'month');
       _array.push(m);
     }
     return _array;
-  })( calendarDayCount, calendarStart, []);
+  })(calendarDayCount, calendarStart, []);
 
   return monthMapCache[key];
 }

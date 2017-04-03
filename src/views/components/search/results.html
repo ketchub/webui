@@ -11,7 +11,7 @@
         <span class="city2city-summary">({{ record.originAddress.city }} to {{ record.destinationAddress.city }})</span>
       </div> -->
       <div class="pseudo-row">
-        <span>{{ record.when | dateDisplay }}</span>
+        <span>Leaving {{ record.when | dateDisplay }}</span>
       </div>
       <div class="pseudo-row">
         <span><strong>{{ record._fromDestination | metersToMiles }}</strong> miles of your destination</span>

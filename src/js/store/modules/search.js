@@ -6,19 +6,19 @@ const moduleSearch = {
   },
 
   mutations: {
-    [SET_RESULTS]( state, payload ) {
+    [SET_RESULTS](state, payload) {
       state._results = payload;
     }
   },
 
   actions: {
-    [`SEARCH.SET_RESULTS`]( {commit}, payload ) {
+    [`SEARCH.SET_RESULTS`]({commit}, payload) {
       commit(SET_RESULTS, payload);
     }
   },
 
   getters: {
-    searchResults( state ) {
+    searchResults(state) {
       return state._results;
     }
   }

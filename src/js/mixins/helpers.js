@@ -1,6 +1,4 @@
-import getGoogleSdk from '@/support/getGoogleSdk';
 import modernizr from 'modernizr';
-import { TweenLite } from 'gsap';
 
 let _geocoderApi;
 
@@ -10,6 +8,7 @@ let _geocoderApi;
  * "$_".
  */
 export default {
+  inject: ['$google'],
   methods: {
     $_logout() {
       this.$store.dispatch('ACCOUNT.DO_LOGOUT', null);
@@ -20,13 +19,6 @@ export default {
      * @param {Boolean|null}
      */
     $_toggleNav( to ) {
-      TweenLite.to([
-        this.$refs.mainView,
-        this.$refs.navTrigger,
-        this.$refs.navigation
-      ], 0.2, {
-        x: to ? this.$refs.navigation.clientWidth : 0
-      });
       this.$store.dispatch('UI.NAV_TOGGLE', to);
     },
 
@@ -34,9 +26,12 @@ export default {
      * Toggle modal (pass in a component name to open, or false/null to close).
      * @param {string|null} componentName Component name to render in modal
      */
-    $_toggleModal( componentName = false ) {
-      this.$store.dispatch('UI.SET_MODAL_COMPONENT',
-        componentName ? componentName : null
+    $_toggleModal( options = false ) {
+      this.$store.dispatch('UI.SET_MODAL', !!(options) ?
+        Object.assign({open:true}, options) :
+        // note, we do *not* set componentName to null as we need to let it
+        // stay rendered during the transition out!
+        {open: false, title: null}
       );
     },
 
@@ -49,6 +44,7 @@ export default {
      * @param {Function} done On complete callback
      */
     $_reverseGeocode(query, done) {
+      const { $google } = this;
       const payload = {location: query};
 
       function onResponse(results, status) {
@@ -59,11 +55,9 @@ export default {
       }
 
       if (!_geocoderApi) {
-        return getGoogleSdk((err, google) => {
-          if (err) { return done(err); }
-          _geocoderApi = new google.maps.Geocoder();
-          _geocoderApi.geocode(payload, onResponse);
-        });
+        _geocoderApi = new $google.maps.Geocoder();
+        _geocoderApi.geocode(payload, onResponse);
+        return;
       }
 
       _geocoderApi.geocode(payload, onResponse);

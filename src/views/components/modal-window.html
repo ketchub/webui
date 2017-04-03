@@ -1,6 +1,12 @@
-<div class="modalizer">
-  <span class="icon-close modalizer-close" @click="$_toggleModal()"></span>
-  <div class="modalizer-inner">
-    <component :is="componentName"></component>
+<transition name="modal-slide">
+  <div ref="modalRoot" class="modalizer" :class="modalData.componentName">
+    <div ref="modalAligner" class="modal-aligner">
+      <header><span>{{ modalData.title }}</span>
+        <button type="button" class="modalizer-close" @click="$_toggleModal(false)">
+          <i class="icon-close"></i>
+        </button>
+      </header>
+      <component :is="modalData.componentName" class="modal-cargo"></component>
+    </div>
   </div>
-</div>
+</transition>

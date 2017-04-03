@@ -9,6 +9,18 @@ export default {
     }
   },
   methods: {
+    openAccountLogin() {
+      this.$_toggleModal({
+        componentName: 'modalsAccountLogin',
+        title: 'Login'
+      });
+    },
+    openAccountCreate() {
+      this.$_toggleModal({
+        componentName: 'modalsAccountCreate',
+        title: 'Create Account'
+      });
+    },
     logout() {
       this.$store.dispatch('ACCOUNT.DO_LOGOUT', null);
     }

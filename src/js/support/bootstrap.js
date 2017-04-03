@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-import { get, each } from 'lodash';
+import { each } from 'lodash';
 import Vue from 'vue';
 import * as components from '@/components';
 import * as mixins from '@/mixins';
@@ -9,6 +9,8 @@ import * as directives from '@/directives';
 import getStore from '@/store';
 import router from '@/support/router';
 import ketchApi from '@/plugins/ketchApi';
+import * as appmounts from '@/appmounts';
+import getGoogleSdk from '@/support/getGoogleSdk';
 
 each(components, (definition, name) => { Vue.component(name, definition); });
 each(filters, (definition, name) => { Vue.filter(name, definition); });
@@ -21,16 +23,31 @@ const store = getStore();
 const Application = Vue.extend({
   store,
   router,
-  ketchApi: new ketchApi.Api(store),
-  computed: {
-    navItems() {
-      return get(this, '$router.options.routes').filter((r) => {
-        return !(r.meta && r.meta.unlisted);
-      });
-    }
-  }
+  ketchApi: new ketchApi.Api(store)
+});
+
+const scripts = new Promise((resolve, reject) => {
+  getGoogleSdk((err, _google) => {
+    if (err) { return reject(err); }
+    resolve(_google);
+  });
 });
 
 export default function getApp(node) {
-  return new Application({el: node});
+  scripts.then(($google) => {
+    /*eslint-disable no-new */
+    new Application(Object.assign(
+      {
+        el: node,
+        provide: {
+          $google
+        }
+      },
+      // This is a mechanism by which we can extend only *specific* instances
+      // that are mounted to nodes with the 'app-mount="..."' attribute. If the
+      // attribute does have a value, we try and look for the matching name
+      // exported from the appmounts directory and load that.
+      appmounts[node.getAttribute('app-mount')] || {}
+    ));
+  });
 }

@@ -2,7 +2,7 @@ import getGoogleSdk from '@/support/getGoogleSdk';
 import mapStyles from '@/support/mapStyle';
 const cache = {};
 
-export default function(name, done) {
+export default function (name, done) {
   if (cache[name]) {
     return done(null, cache[name]);
   }
@@ -21,7 +21,7 @@ export default function(name, done) {
       scrollwheel: false,
       streetViewControl: false,
       fullscreenControl: false,
-      zoomControl: false
+      zoomControl: true
     });
 
     cache[name].mapTypes.set('HighViz',

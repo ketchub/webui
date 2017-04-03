@@ -1,12 +1,14 @@
+import RouteBoxer from '@/support/routeBoxer';
+import routeBoxTracer from '@/support/routeBoxTracer';
 import { get, each } from 'lodash';
 import { consoleHelper } from '@/support/util';
 import mapStyles from '@/support/mapStyle';
 import getInstance from '@/components/map/_instance';
-import getGoogleSdk from '@/support/getGoogleSdk';
 import eventBus from '@/support/eventBus';
 // https://github.com/denissellu/routeboxer
 
 export default {
+  inject: ['$google'],
   render(createElement) {
     return createElement('div', {
       attrs: {
@@ -28,9 +30,12 @@ export default {
     makeMarker: _makeMarker,
     queryDirections: _queryDirections,
     searchResultsHandler: _searchResultsHandler,
+    updateRouteBoxes: _updateRouteBoxes,
     centerMap: function () {
       const self = this;
       const { $google, $map } = this;
+
+      $google.maps.event.trigger($map, 'resize');
 
       if (!this.calcdBounds) {
         this.calcdBounds = new $google.maps.LatLngBounds();
@@ -38,110 +43,87 @@ export default {
         this.calcdBounds.union(self.$endMarker._circle.getBounds());
       }
 
-      $map.panTo(this.calcdBounds.getCenter());
-
-      // $google.maps.event.addListenerOnce($map, 'resize', function() {
-        // const bounds = new $google.maps.LatLngBounds();
-        // // make bounds account for radius circle query
-        // bounds.union(self.$startMarker._circle.getBounds());
-        // bounds.union(self.$endMarker._circle.getBounds());
-        // $map.panTo(bounds.getCenter());
-        // $map.fitBounds(bounds);
-      // });
-      $google.maps.event.trigger($map, 'resize');
-
-
-
-      // setTimeout(function () {
-      //   console.log('set by bounds invoked', bounds, this.$map);
-      // }.bind(this), 250);
-
-      // this.$map.setCenter(this.$map.getCenter());
-      // this.$map.setZoom(1);
+      $map.fitBounds(this.calcdBounds);
     }
   },
   mounted() {
     const self = this;
-    const { $store, makeMarker, mapName, init } = this;
+    const { $store, $google, makeMarker, mapName, init } = this;
 
-    getGoogleSdk((err, google) => {
-      self.$google = google;
+    getInstance(mapName, (err, map) => {
+      self.$map = map;
+      self.$el.appendChild(map.getDiv());
 
-      getInstance(mapName, (err, map) => {
-        self.$map = map;
-        self.$el.appendChild(map.getDiv());
+      const iconDefaults = {
+        size: new $google.maps.Size(40, 40),
+        origin: new $google.maps.Point(0, 0),
+        anchor: new $google.maps.Point(20, 20)
+      };
 
-        const iconDefaults = {
-          size: new google.maps.Size(40, 40),
-          origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(20, 20)
-        };
-
-        // Create markers (hidden by default)
-        self.$startMarker = makeMarker(map, {
-          title: 'Start Location',
-          icon: Object.assign({
-            url: '/img/custom-target-icon.svg'
-          }, iconDefaults),
-          actionOnDragEnd: 'TRIP.SET_ORIGIN',
-          actionOnSearchRadiusChange: 'TRIP.SET_ORIGIN_SEARCH_RADIUS',
-          initialSearchRadius: $store.getters.tripOriginSearchRadius
-        });
-
-        self.$endMarker = makeMarker(map, {
-          title: 'End Location',
-          icon: Object.assign({
-            url: '/img/custom-target-icon-red.svg'
-          }, iconDefaults),
-          actionOnDragEnd: 'TRIP.SET_DESTINATION',
-          actionOnSearchRadiusChange: 'TRIP.SET_DESTINATION_SEARCH_RADIUS',
-          initialSearchRadius: $store.getters.tripDestinationSearchRadius
-        });
-
-        self.$directionsRenderer = new google.maps.DirectionsRenderer({
-          suppressMarkers: true,
-          preserveViewport: true,
-          map: map
-        });
-
-        self.$directionsService = new google.maps.DirectionsService();
-
-        init();
-
-        // per maps api docs: "This event is fired when the map becomes idle
-        // after panning or zooming."
-        map.addListener('idle', () => {
-          localStorage.setItem('ketch.mapSettings', JSON.stringify({
-            zoom: map.getZoom(),
-            center: map.getCenter()
-          }));
-        });
-
-        // When reloading the page, zoom/center back to last spot
-        if (localStorage.getItem('ketch.mapSettings')) {
-          const lastMapStatus = JSON.parse(localStorage.getItem('ketch.mapSettings'));
-          map.setZoom(lastMapStatus.zoom);
-          map.setCenter(lastMapStatus.center);
-        }
-
-        // show recents
-        // self.$apiService.get('/recent', {}, (err, resp) => {
-        //   each(resp.results, (record) => {
-        //     let path = new google.maps.Polyline({
-        //       path: google.maps.geometry.encoding.decodePath(record.encodedPolyline),
-        //       strokeColor: '#00D0A3',
-        //       strokeOpacity: 0.65,
-        //       strokeWeight: 3,
-        //       map: instance.map,
-        //       _meta: record
-        //     });
-        //     // must be 'function' not () => {} to bind 'this' properly
-        //     // path.addListener('click', function() {
-        //     //   alert(`Origin: ${this._meta.originZip}, Destination: ${this._meta.destinationZip}`);
-        //     // });
-        //   });
-        // });
+      // Create markers (hidden by default)
+      self.$startMarker = makeMarker(map, {
+        title: 'Start Location',
+        icon: Object.assign({
+          url: '/img/custom-target-icon.svg'
+        }, iconDefaults),
+        actionOnDragEnd: 'TRIP.SET_ORIGIN',
+        actionOnSearchRadiusChange: 'TRIP.SET_ORIGIN_SEARCH_RADIUS',
+        initialSearchRadius: $store.getters.tripOriginSearchRadius
       });
+
+      self.$endMarker = makeMarker(map, {
+        title: 'End Location',
+        icon: Object.assign({
+          url: '/img/custom-target-icon-red.svg'
+        }, iconDefaults),
+        actionOnDragEnd: 'TRIP.SET_DESTINATION',
+        actionOnSearchRadiusChange: 'TRIP.SET_DESTINATION_SEARCH_RADIUS',
+        initialSearchRadius: $store.getters.tripDestinationSearchRadius
+      });
+
+      self.$directionsRenderer = new $google.maps.DirectionsRenderer({
+        suppressMarkers: true,
+        preserveViewport: true,
+        map: map
+      });
+
+      self.$directionsService = new $google.maps.DirectionsService();
+
+      init();
+
+      // per maps api docs: "This event is fired when the map becomes idle
+      // after panning or zooming."
+      map.addListener('idle', () => {
+        localStorage.setItem('ketch.mapSettings', JSON.stringify({
+          zoom: map.getZoom(),
+          center: map.getCenter()
+        }));
+      });
+
+      // When reloading the page, zoom/center back to last spot
+      if (localStorage.getItem('ketch.mapSettings')) {
+        const lastMapStatus = JSON.parse(localStorage.getItem('ketch.mapSettings'));
+        map.setZoom(lastMapStatus.zoom);
+        map.setCenter(lastMapStatus.center);
+      }
+
+      // show recents
+      // self.$apiService.get('/recent', {}, (err, resp) => {
+      //   each(resp.results, (record) => {
+      //     let path = new google.maps.Polyline({
+      //       path: google.maps.geometry.encoding.decodePath(record.encodedPolyline),
+      //       strokeColor: '#00D0A3',
+      //       strokeOpacity: 0.65,
+      //       strokeWeight: 3,
+      //       map: instance.map,
+      //       _meta: record
+      //     });
+      //     // must be 'function' not () => {} to bind 'this' properly
+      //     // path.addListener('click', function() {
+      //     //   alert(`Origin: ${this._meta.originZip}, Destination: ${this._meta.destinationZip}`);
+      //     // });
+      //   });
+      // });
     });
   },
   // @todo: this shouldn't be applicable any more because we want to
@@ -253,7 +235,7 @@ function _searchResultsHandler() {
  * @return {void}
  */
 function _updateDirectionsPolyline() {
-  const { $map, $directionsRenderer, $google } = this;
+  const { $map, $directionsRenderer, $google, updateRouteBoxes } = this;
   const { tripDirections } = this.$store.getters;
 
   if (!tripDirections) {
@@ -272,12 +254,63 @@ function _updateDirectionsPolyline() {
       map: $map,
       zIndex: 2
     });
-    return;
+    return updateRouteBoxes();
   }
   this.$directionsPolyline.setPath($google.maps.geometry.encoding.decodePath(tripDirections.overview_polyline));
   this.$directionsPolyline.setVisible(true);
+  updateRouteBoxes();
 }
 
+/**
+ * Generate distance bounded containment rectangles tracing the
+ * entire route.
+ */
+function _updateRouteBoxes() {
+  const self = this;
+  const { $map, $google } = this;
+  const routeBoxer = new RouteBoxer();
+  const dist = 0.75; // @todo: make dynamic as a function of total trip distance
+  const boxes = routeBoxer.box(this.$directionsPolyline, dist);
+  if (this.$routeBoxes) {
+    each(this.$routeBoxes, (poly) => {
+      poly.setMap(null);
+    });
+  }
+
+  console.log('rboxer', routeBoxer);
+
+  this.$routeBoxes = [];
+  each(boxes, (_box) => {
+    self.$routeBoxes.push(new $google.maps.Rectangle({
+      bounds: _box,
+      fillOpacity: 0,
+      strokeOpacity: 1.0,
+      strokeColor: '#000000',
+      strokeWeight: 1,
+      map: $map
+    }));
+  });
+
+  const ordered = routeBoxTracer(boxes);
+
+  each(ordered, (latLng, i) => {
+    new $google.maps.Marker({
+      map: $map,
+      position: latLng,
+      label: `${i}`,
+      draggable: true
+    });
+  });
+
+  var rect = new $google.maps.Polygon({
+    paths: ordered,
+    fillOpacity: 0.8,
+    fillColor: '#222222',
+    strokeOpacity: 0,
+    strokeWeight: 0,
+    map: $map
+  });
+}
 
 /**
  * Update trip markers, and map view/bounds.
@@ -332,9 +365,11 @@ function _updateContainmentPolygonDisplay() {
     return;
   }
 
+  if (true) { return; }
+
   if (!this.$containmentPolygon) {
-    this.$containmentPolygon = new $google.maps.Polygon({
-      paths: tripContainmentPolygon,
+    this.$containmentPolygon = new $google.maps.Rectangle({
+      bounds: tripContainmentPolygon,
       fillColor: '#00d0a3',
       fillOpacity: 0.25,
       strokeColor: '#ffffff',
@@ -345,7 +380,7 @@ function _updateContainmentPolygonDisplay() {
     });
     return;
   }
-  this.$containmentPolygon.setPaths(tripContainmentPolygon);
+  this.$containmentPolygon.setBounds(tripContainmentPolygon);
   this.$containmentPolygon.setVisible(true);
 }
 

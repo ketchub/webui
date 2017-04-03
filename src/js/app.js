@@ -4,6 +4,7 @@ import getApp from '@/support/bootstrap';
 
 // Log build information to the console
 consoleHelper.blue(
+  // eslint-disable-next-line
   `VERSION=${process.env.VERSION}; ENVIRONMENT=${process.env.NODE_ENV}; RUNTIME=${process.title}`
 );
 

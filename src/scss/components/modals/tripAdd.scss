@@ -1,7 +1,6 @@
-.modal-trip-add {max-width:340px;margin:0 auto;
-  form {background:#f1f1f1;box-shadow:0 0 15px rgba(0,0,0,0.45);
-    h1 {font-weight:200;font-style:italic;margin:0;color:$theme-green;background:$theme-dark;padding:1rem;text-transform:uppercase;}
-    .form-body {padding:1rem;font-size:90%;
+.modalizer.modalsTripAdd[app-mount] {
+  .modal-aligner {max-width:340px;
+    .modal-cargo {font-size:90%;
       .form-group:last-child {margin-bottom:0;}
       .summary {max-width:100%;padding-bottom:1rem;
         span {display:block;max-width:100%;@include textEllipsis();}
@@ -12,7 +11,7 @@
         input[type="radio"] {display:none;}
         input[type="radio"]:checked ~ .custom-circular-radio {background:$theme-green-darker;border-color:$theme-green-darker;}
       }
-      img {max-width:100%;margin-bottom:1rem;box-shadow:0 0 10px rgba($theme-dark, 0.5);border-radius:5px;}
+      img {display:block;margin:0 auto 1rem;max-width:95%;margin-bottom:1rem;box-shadow:0 0 10px rgba($theme-dark, 0.5);border-radius:5px;}
     }
   }
 }
