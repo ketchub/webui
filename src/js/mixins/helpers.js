@@ -1,4 +1,4 @@
-import modernizr from 'modernizr';
+// import modernizr from 'modernizr';
 
 let _geocoderApi;
 
@@ -18,7 +18,7 @@ export default {
      * Toggle nav open or close (true = open, false/null = close).
      * @param {Boolean|null}
      */
-    $_toggleNav( to ) {
+    $_toggleNav(to) {
       this.$store.dispatch('UI.NAV_TOGGLE', to);
     },
 
@@ -26,7 +26,7 @@ export default {
      * Toggle modal (pass in a component name to open, or false/null to close).
      * @param {string|null} componentName Component name to render in modal
      */
-    $_toggleModal( options = false ) {
+    $_toggleModal(options = false) {
       this.$store.dispatch('UI.SET_MODAL', !!(options) ?
         Object.assign({open:true}, options) :
         // note, we do *not* set componentName to null as we need to let it

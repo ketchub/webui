@@ -14,7 +14,7 @@ export default router;
  * invoke an action to set navStatus to false.
  */
 router.afterEach(function () {
-  if( router.app && router.app.$_toggleNav ) {
+  if (router.app && router.app.$_toggleNav) {
     router.app.$_toggleNav(false);
   }
 });

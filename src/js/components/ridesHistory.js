@@ -16,7 +16,7 @@ export default {
     }
   },
   watch: {
-    chronology(a,b) {
+    chronology(/*a, b*/) {
       this.fetchRides();
     }
   },

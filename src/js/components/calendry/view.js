@@ -80,7 +80,7 @@ function getMonthMap($$moment) {
   const calendarDayCount   = Math.abs(calendarEnd.diff(calendarStart, 'days'));
 
   monthMapCache[key]       = (function (daysInCalendar, calendarStart, _array) {
-    for (var _i = 0; _i <= daysInCalendar; _i++){
+    for (var _i = 0; _i <= daysInCalendar; _i++) {
       let m = moment(calendarStart).add(_i, 'days');
       m._inMonth = m.isSame(monthStart, 'month');
       _array.push(m);

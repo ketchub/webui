@@ -18,7 +18,7 @@ export default {
         password: this.password,
         firstName: this.firstName,
         lastName: this.lastName
-      }, (err, resp) => {
+      }, (err/*, resp*/) => {
         if (!err) { $_toggleModal(false); }
       });
     }

@@ -3,15 +3,17 @@ import getConfig from '@/support/getConfig';
 
 /**
  * Load the google maps SDK and return 'google' global var to callback.
- * @todo: error handling; if fails to load, do timeout and actually return an error
+ * @todo: error handling; if fails to load, do timeout and actually 
+ * return an error
  * @param  {Function} done callback
  * @return {void}
  */
-export default function(done) {
+export default function (done) {
   // return done(null, mocker());
   if (window['google']) { return done(null, window['google']); }
   const apiKey = getConfig('GOOGLE_MAPS_API_KEY');
-  const scriptSrc = `//maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry,places`;
+  const scriptSrc = 
+    `//maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=geometry,places`;
   loadScriptHelper(scriptSrc, () => {
     done(null, window['google']);
   });
@@ -23,6 +25,7 @@ export default function(done) {
  * used below.
  * @return {Object} GoogleMaps API mock.
  */
+/* eslint-disable */
 function mocker() {
   function _stubber(data) {
     return Object.assign(data || {}, {
@@ -76,3 +79,4 @@ function mocker() {
     }
   };
 }
+/* eslint-enable */

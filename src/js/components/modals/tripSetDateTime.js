@@ -58,7 +58,7 @@ function getTimeDefault() {
   let minute = +(now.format('m'));
   const period = now.format('A');
 
-  switch(true) {
+  switch (true) {
     case minute < 15:
       minute = 15;
       break;

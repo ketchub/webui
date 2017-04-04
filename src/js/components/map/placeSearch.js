@@ -1,8 +1,10 @@
 import getInstance from '@/components/map/_instance';
 
+/* eslint-disable */
 /**
  * @ref: https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete
  */
+/* eslint-enable */
 export default {
   template: '#components_place-search',
   inject: ['$google'],
@@ -37,7 +39,7 @@ export default {
     }
   },
   methods: {
-    unset(actionName) {
+    unset(/*actionName*/) {
       this.$store.dispatch(this.unsetAction);
       this.$refs.searchField.value = null;
     }

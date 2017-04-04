@@ -26,7 +26,7 @@ function install(_Vue) {
  * Initialized once and injected into all vue instances.
  * @param {store} store Vuex store instance.
  */
-function Api( store ) {
+function Api(store) {
   // On init, if store has an account token, pass to fetch
   if (store.getters.accountToken) {
     fetch.setAuthorizationToken(store.getters.accountToken);
@@ -45,39 +45,39 @@ function Api( store ) {
           store.dispatch('ACCOUNT.SET_INFO', resp);
         });
       },
-      authLocal( payload, done = noop ) {
+      authLocal(payload, done = noop) {
         fetch.post('/auth/local', payload, (err, resp) => {
           if (err) { return alert(err); }
           store.dispatch('ACCOUNT.SET_TOKEN', resp.token);
           done(err, resp);
         });
       },
-      create( payload, done = noop ) {
+      create(payload, done = noop) {
         fetch.post('/account', payload, (err, resp) => {
           if (err) { return alert(err); }
           store.dispatch('ACCOUNT.SET_TOKEN', resp.token);
           done(err, resp);
         });
       },
-      updatePhone( phone, done = noop ) {
+      updatePhone(phone, done = noop) {
         fetch.put('/account/phone', {phone}, (err, resp) => {
           if (err) { return alert(err); }
           done(err, resp);
         });
       },
-      verifyPhone( code, done = noop ) {
+      verifyPhone(code, done = noop) {
         fetch.post('/account/phone/verify', {code}, (err, resp) => {
           if (err) { return alert(err); }
           done(err, resp);
         });
       },
-      updateEmail( email, done = noop ) {
+      updateEmail(email, done = noop) {
         fetch.put('/account/email', {email}, (err, resp) => {
           if (err) { return alert(err); }
           done(err, resp);
         });
       },
-      verifyEmail( token, done = noop ) {
+      verifyEmail(token, done = noop) {
         fetch.post('/account/email/verify', {token}, (err, resp) => {
           if (err) { return alert(err); }
           done(err, resp);
@@ -86,20 +86,20 @@ function Api( store ) {
     },
 
     rides: {
-      list( query, done = noop ) {
+      list(query, done = noop) {
         fetch.get('/trips/list', query, (err, resp) => {
           if (err) { return alert(err); }
           done(err, resp);
         });
       },
-      search( payload, done = noop ) {
+      search(payload, done = noop) {
         fetch.post('/trips/search', payload, (err, resp) => {
           if (err) { return alert(err); }
           store.dispatch('SEARCH.SET_RESULTS', resp.results);
           done(err, resp);
         });
       },
-      add( payload, done = noop ) {
+      add(payload, done = noop) {
         fetch.post('/trips/add', payload, (err, resp) => {
           if (err) { return alert(err); }
           console.log('ride added');

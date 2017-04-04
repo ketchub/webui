@@ -4,6 +4,10 @@
  * it this will make the invocation work properly!
  */
 export default {
-  blue: console.log.bind(console, '%c--> %s', 'color:#4bbfcc;background:#3d3d3d;'),
-  green: console.log.bind(console, '%c--> %s', 'color:#28ab8e;background:#3d3d3d;')
+  blue: console.log.bind(
+    console, '%c--> %s', 'color:#4bbfcc;background:#3d3d3d;'
+  ),
+  green: console.log.bind(
+    console, '%c--> %s', 'color:#28ab8e;background:#3d3d3d;'
+  )
 };

@@ -22,7 +22,13 @@ export default {
   },
   methods: {
     submit() {
-      const { $store, $ketchApi, $_toggleModal, rideOrDrive, seatCapacity } = this;
+      const { 
+        $store,
+        $ketchApi,
+        $_toggleModal,
+        rideOrDrive,
+        seatCapacity
+      } = this;
       const payload = Object.assign({}, $store.getters.tripSummaryData, {
         rideOrDrive, seatCapacity
       });

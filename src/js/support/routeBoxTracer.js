@@ -1,10 +1,9 @@
 import { each } from 'lodash';
 
-/*eslint-disable */
 /**
  * @see http://stackoverflow.com/questions/13746284/merging-multiple-adjacent-rectangles-into-one-polygon
  */
-/*eslint-enable */
+/*eslint complexity: [0, 200] max-statements: [0, 100]*/
 export default function (boxes) {
 
   const dedupedPoints = [];
@@ -17,9 +16,13 @@ export default function (boxes) {
       const sw = _box.getSouthWest().toJSON();
       const se = {lat:sw.lat, lng:ne.lng};
       const nw = {lat:ne.lat, lng:sw.lng};
+      if (accumulator[`${ne.lat}_${ne.lng}`]) { console.log('dup:', `${ne.lat}_${ne.lng}`); }
       accumulator[`${ne.lat}_${ne.lng}`] = ne;
+      if (accumulator[`${se.lat}_${se.lng}`]) { console.log('dup:', `${se.lat}_${se.lng}`); }
       accumulator[`${se.lat}_${se.lng}`] = se;
+      if (accumulator[`${sw.lat}_${sw.lng}`]) { console.log('dup:', `${sw.lat}_${sw.lng}`); }
       accumulator[`${sw.lat}_${sw.lng}`] = sw;
+      if (accumulator[`${nw.lat}_${nw.lng}`]) { console.log('dup:', `${nw.lat}_${nw.lng}`); }
       accumulator[`${nw.lat}_${nw.lng}`] = nw;
       return accumulator;
     }, {}),
@@ -53,13 +56,13 @@ export default function (boxes) {
     return Math.abs(a.lng) < Math.abs(b.lng) ? -1 : 1;
   });
 
-  each(sortedLat, lll => {
-    console.log(`${lll.lat} _ ${lll.lng} \n`);
-  });
-  console.log('\n-----\n');
-  each(sortedLng, lll => {
-    console.log(`${lll.lat} _ ${lll.lng} \n`);
-  });
+  // each(sortedLat, lll => {
+  //   console.log(`${lll.lat} _ ${lll.lng} \n`);
+  // });
+  // console.log('\n-----\n');
+  // each(sortedLng, lll => {
+  //   console.log(`${lll.lat} _ ${lll.lng} \n`);
+  // });
 
   var x = 0;
   var latLen = sortedLat.length - 1;
@@ -70,8 +73,8 @@ export default function (boxes) {
       var aLng = sortedLat[x].lng;
       var bLat = sortedLat[x + 1].lat;
       var bLng = sortedLat[x + 1].lng;
-      edgesV[aLat + ':' + aLng] = bLat + ':' + bLng;
-      edgesV[bLat + ':' + bLng] = aLat + ':' + aLng;
+      edgesH[aLat + ':' + aLng] = bLat + ':' + bLng;
+      edgesH[bLat + ':' + bLng] = aLat + ':' + aLng;
       x += 2;
     }
   }
@@ -85,8 +88,8 @@ export default function (boxes) {
       var aaLng = sortedLng[i].lng;
       var bbLat = sortedLng[i + 1].lat;
       var bbLng = sortedLng[i + 1].lng;
-      edgesH[aaLat + ':' + aaLng] = bbLat + ':' + bbLng;
-      edgesH[bbLat + ':' + bbLng] = aaLat + ':' + aaLng;
+      edgesV[aaLat + ':' + aaLng] = bbLat + ':' + bbLng;
+      edgesV[bbLat + ':' + bbLng] = aaLat + ':' + aaLng;
       i += 2;
     }
   }
@@ -96,21 +99,21 @@ export default function (boxes) {
   while (Object.keys(edgesH).length) {
     var startKey = Object.keys(edgesH)[0];
     var polygon = [[startKey, 0]];
-    delete(edgesH[startKey]);
+    // delete(edgesH[startKey]);
 
     while (true) {
       var curr = polygon[polygon.length - 1][0];
       var e = polygon[polygon.length - 1][1];
       var nextVertex;
       if (e === 0) {
+        nextVertex = edgesH[curr];
+        if (nextVertex) { break; }
+        delete edgesH[curr];
+        polygon.push([nextVertex, 1]);
+      } else {
         nextVertex = edgesV[curr];
         if (!nextVertex) { break; }
         delete edgesV[curr];
-        polygon.push([nextVertex, 1]);
-      } else {
-        nextVertex = edgesH[curr];
-        if (!nextVertex) { break; }
-        delete edgesH[curr];
         polygon.push([nextVertex, 0]);
       }
       if (polygon[polygon.length - 1][0] === polygon[0][0]) {
@@ -130,7 +133,7 @@ export default function (boxes) {
     }
   }
 
-  console.log('\n\n', p, '\n\n');
+  // console.log('\n\n', p, '\n\n');
 
   return p;
 }

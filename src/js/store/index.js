@@ -8,20 +8,20 @@ import eventBus from '@/support/eventBus';
  * Make this a function to return new store instances so they're easy to
  * recreate during testing.
  */
-export default function() {
+export default function () {
   const store = new Store({
     modules,
     strict: process.env.NODE_ENV !== 'production'
   });
 
-  if ( getConfig('ENABLE_TRIP_LOCAL_STORAGE') && modernizr.localstorage ) {
+  if (getConfig('ENABLE_TRIP_LOCAL_STORAGE') && modernizr.localstorage) {
     // Persist the trip data to local storage on change
     if (localStorage.getItem('ketch.trip')) {
       store.replaceState(Object.assign({}, store.state, {
         trip: JSON.parse(localStorage.getItem('ketch.trip'))
       }));
     }
-    store.subscribe((mutation, state, last) => {
+    store.subscribe((mutation, state) => {
       // @todo: persist trip state in a more efficient way, this will
       // reserialize and update on EVERY store mutation (NOT JUST CHANGES
       // TO THE TRIP MODULE).

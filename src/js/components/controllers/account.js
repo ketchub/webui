@@ -58,7 +58,7 @@ export default {
     // if the route query contains ?verify_email, then pass along
     const verifyEmailToken = this.$route.query.verify_email;
     if (verifyEmailToken) {
-      self.$ketchApi.account.verifyEmail(verifyEmailToken, (err, resp) => {
+      self.$ketchApi.account.verifyEmail(verifyEmailToken, (err/*, resp*/) => {
         if (err) { return alert(err); }
         // if no error, assume it worked and refetch account
         self.$router.replace(self.$route.path);

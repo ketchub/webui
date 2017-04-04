@@ -1,9 +1,9 @@
-import { filter } from 'lodash';
+// import { filter } from 'lodash';
 
 const FORMAT_USD = 'usd';
 
 const formatters = {
-  [FORMAT_USD]( value, symbol = '$' ) {
+  [FORMAT_USD](value, symbol = '$') {
     return `${symbol}${(+value).toFixed(2)}`;
   }
 };

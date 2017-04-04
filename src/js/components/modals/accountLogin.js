@@ -12,7 +12,7 @@ export default {
       $ketchApi.account.authLocal({
         email: this.email,
         password: this.password
-      }, (err, resp) => {
+      }, (err/*, resp*/) => {
         if (!err) { $_toggleModal(false); }
       });
     },

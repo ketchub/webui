@@ -1,5 +1,5 @@
 export default function math(value, operation, against) {
-  switch(operation) {
+  switch (operation) {
     case 'multiply':
       return value * against;
     default:

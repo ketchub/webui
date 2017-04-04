@@ -1,8 +1,8 @@
 const scriptPromises = {};
 
-export default function(url, callback) {
+export default function (url, callback) {
   if (!scriptPromises[url]) {
-    scriptPromises[url] = new Promise((resolve, reject) => {
+    scriptPromises[url] = new Promise((resolve/*, reject*/) => {
       const script = document.createElement('script');
       script.type = 'text/javascript';
       script.src = url;

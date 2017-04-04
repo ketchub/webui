@@ -1,8 +1,7 @@
 import RouteBoxer from '@/support/routeBoxer';
 import routeBoxTracer from '@/support/routeBoxTracer';
-import { get, each } from 'lodash';
+import { each } from 'lodash';
 import { consoleHelper } from '@/support/util';
-import mapStyles from '@/support/mapStyle';
 import getInstance from '@/components/map/_instance';
 import eventBus from '@/support/eventBus';
 // https://github.com/denissellu/routeboxer
@@ -102,11 +101,14 @@ export default {
 
       // When reloading the page, zoom/center back to last spot
       if (localStorage.getItem('ketch.mapSettings')) {
-        const lastMapStatus = JSON.parse(localStorage.getItem('ketch.mapSettings'));
+        const lastMapStatus = JSON.parse(
+          localStorage.getItem('ketch.mapSettings')
+        );
         map.setZoom(lastMapStatus.zoom);
         map.setCenter(lastMapStatus.center);
       }
 
+      /* eslint-disable */
       // show recents
       // self.$apiService.get('/recent', {}, (err, resp) => {
       //   each(resp.results, (record) => {
@@ -124,6 +126,7 @@ export default {
       //     // });
       //   });
       // });
+      /* eslint-enable */
     });
   },
   // @todo: this shouldn't be applicable any more because we want to
@@ -235,7 +238,7 @@ function _searchResultsHandler() {
  * @return {void}
  */
 function _updateDirectionsPolyline() {
-  const { $map, $directionsRenderer, $google, updateRouteBoxes } = this;
+  const { $map, $google, updateRouteBoxes } = this;
   const { tripDirections } = this.$store.getters;
 
   if (!tripDirections) {
@@ -247,7 +250,9 @@ function _updateDirectionsPolyline() {
 
   if (!this.$directionsPolyline) {
     this.$directionsPolyline = new $google.maps.Polyline({
-      path: $google.maps.geometry.encoding.decodePath(tripDirections.overview_polyline),
+      path: $google.maps.geometry.encoding.decodePath(
+        tripDirections.overview_polyline
+      ),
       strokeColor: '#31536b',
       strokeOpacity: 1,
       strokeWeight: 3,
@@ -256,7 +261,9 @@ function _updateDirectionsPolyline() {
     });
     return updateRouteBoxes();
   }
-  this.$directionsPolyline.setPath($google.maps.geometry.encoding.decodePath(tripDirections.overview_polyline));
+  this.$directionsPolyline.setPath(
+    $google.maps.geometry.encoding.decodePath(tripDirections.overview_polyline
+  ));
   this.$directionsPolyline.setVisible(true);
   updateRouteBoxes();
 }
@@ -298,11 +305,12 @@ function _updateRouteBoxes() {
       map: $map,
       position: latLng,
       label: `${i}`,
-      draggable: true
+      draggable: true,
+      title: JSON.stringify(latLng)
     });
   });
 
-  var rect = new $google.maps.Polygon({
+  new $google.maps.Polygon({
     paths: ordered,
     fillOpacity: 0.8,
     fillColor: '#222222',
@@ -315,6 +323,7 @@ function _updateRouteBoxes() {
 /**
  * Update trip markers, and map view/bounds.
  */
+/* eslint-disable */
 function _updateTripMarkers() {
   const { tripOrigin, tripDestination } = this.$store.getters;
   const { $google, $map, $startMarker, $endMarker } = this;
@@ -322,23 +331,23 @@ function _updateTripMarkers() {
   $startMarker.setVisible(tripOrigin ? true : false);
   $endMarker.setVisible(tripDestination ? true : false);
 
-  if( tripOrigin ) {
+  if (tripOrigin) {
     $startMarker.setPosition(tripOrigin.geometry.location);
-    if ( ! tripDestination ){
+    if (!tripDestination) {
       $map.setZoom(12);
       return $map.panTo($startMarker.position);
     }
   }
 
-  if( tripDestination ) {
+  if (tripDestination) {
     $endMarker.setPosition(tripDestination.geometry.location);
-    if ( ! tripOrigin ) {
+    if (! tripOrigin) {
       $map.setZoom(12);
       return $map.panTo($endMarker.position);
     }
   }
 
-  if ( tripOrigin && tripDestination ) {
+  if (tripOrigin && tripDestination) {
     const bounds = new $google.maps.LatLngBounds();
     // make bounds account for radius circle query
     bounds.union($startMarker._circle.getBounds());
@@ -347,6 +356,7 @@ function _updateTripMarkers() {
     $map.fitBounds(bounds);
   }
 }
+/* eslint-enable */
 
 
 /**
@@ -389,7 +399,7 @@ function _updateContainmentPolygonDisplay() {
  * Gets directions between two points and renders to the display.
  */
 function _queryDirections() {
-  const { $store, $directionsService, $google } = this;
+  const { $store, $directionsService } = this;
   const { tripOrigin, tripDestination } = $store.getters;
   if (!tripOrigin || !tripDestination) { return; }
 
@@ -400,7 +410,7 @@ function _queryDirections() {
     destination: tripDestination.geometry.location,
     travelMode: 'DRIVING',
     provideRouteAlternatives: false
-  }, (response, status) => {
+  }, (response/*, status*/) => {
     // @todo: error & status checking
     const request = response.request;
     const route   = response.routes[0];
@@ -428,7 +438,11 @@ function _queryDirections() {
  */
 function _makeMarker(map, params) {
   const { $google, $store, $_reverseGeocode } = this;
-  const { actionOnDragEnd, actionOnSearchRadiusChange, initialSearchRadius } = params;
+  const {
+    actionOnDragEnd,
+    actionOnSearchRadiusChange,
+    initialSearchRadius
+  } = params;
 
   const marker = new $google.maps.Marker(Object.assign({
     draggable: true,
@@ -463,7 +477,7 @@ function _makeMarker(map, params) {
   });
 
   // When marker position changes, update the circle position
-  marker.addListener('position_changed', (data) => {
+  marker.addListener('position_changed', (/*data*/) => {
     marker._circle.setCenter(marker.position);
   });
 
